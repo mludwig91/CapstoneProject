@@ -1,0 +1,464 @@
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+/** This section defines the various fonts and colors */
+/**
+ *  This section contains the various SCSS variables we are going to use.
+ *  Note that this section will use the font and color variables we have defined
+ *  in the previous section.
+ */
+/* General CSS */
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+/* line 9, core/static/css/base/_base.scss */
+html {
+  position: relative;
+  min-height: 100%; }
+
+/* line 14, core/static/css/base/_base.scss */
+body {
+  font-family: roboto, helvetica, arial, sans-serif; }
+
+/* Header-Related CSS */
+/* line 19, core/static/css/base/_base.scss */
+#page-header {
+  position: sticky;
+  top: 0;
+  z-index: 1071;
+  min-height: 70px;
+  background-color: #3a4958 !important; }
+  /* line 27, core/static/css/base/_base.scss */
+  #page-header .nav-link {
+    font-size: 1rem;
+    color: #d4c99e !important; }
+  /* line 32, core/static/css/base/_base.scss */
+  #page-header .nav-link:hover {
+    color: #337ab7 !important; }
+  /* line 37, core/static/css/base/_base.scss */
+  #page-header .navbar-brand {
+    color: #fdfdfd !important; }
+  /* line 41, core/static/css/base/_base.scss */
+  #page-header .navbar-brand:hover {
+    color: #337ab7 !important; }
+  /* line 46, core/static/css/base/_base.scss */
+  #page-header .dropdown-menu {
+    min-width: 0; }
+  /* line 50, core/static/css/base/_base.scss */
+  #page-header .dropdown-item {
+    color: #337ab7 !important; }
+  /* line 54, core/static/css/base/_base.scss */
+  #page-header .dropdown-item:hover {
+    color: #fdfdfd !important;
+    background-color: #3a4958 !important;
+    opacity: 0.15; }
+  /* line 61, core/static/css/base/_base.scss */
+  #page-header .btn-auth {
+    color: #d4c99e !important;
+    border-color: #d4c99e !important; }
+  /* line 66, core/static/css/base/_base.scss */
+  #page-header .btn-auth:hover {
+    color: #337ab7 !important;
+    background-color: #d4c99e !important;
+    border-color: #d4c99e !important; }
+
+/* line 73, core/static/css/base/_base.scss */
+#site-title {
+  font-family: oswald, helvetica, arial, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 200 !important; }
+
+/* Footer-Related CSS */
+/* line 80, core/static/css/base/_base.scss */
+#page-footer {
+  height: 90px;
+  color: #fdfdfd !important;
+  background-color: #86898c !important; }
+  /* line 86, core/static/css/base/_base.scss */
+  #page-footer .footer-link {
+    font-size: 1rem;
+    color: #d4c99e !important;
+    text-decoration: none; }
+  /* line 92, core/static/css/base/_base.scss */
+  #page-footer .footer-link:hover {
+    color: #337ab7 !important; }
+
+/* line 4, core/static/css/components/_overlay.scss */
+.container {
+  width: 100%; }
+
+/* line 8, core/static/css/components/_overlay.scss */
+.progressbar {
+  counter-reset: step; }
+  /* line 11, core/static/css/components/_overlay.scss */
+  .progressbar li {
+    position: relative;
+    float: left;
+    width: 33%;
+    text-align: center;
+    list-style-type: none; }
+  /* line 19, core/static/css/components/_overlay.scss */
+  .progressbar li::before {
+    display: block;
+    width: 35px;
+    height: 35px;
+    margin: auto auto auto auto;
+    line-height: 30px;
+    text-align: center;
+    content: counter(step);
+    counter-increment: step;
+    background-color: #bdbdbd;
+    border: 1px solid #bdbdbd;
+    border-radius: 50%; }
+  /* line 33, core/static/css/components/_overlay.scss */
+  .progressbar li::after {
+    position: absolute;
+    top: 20px;
+    left: -50%;
+    z-index: -1;
+    width: 100%;
+    height: 10px;
+    content: "";
+    background-color: #30343f; }
+  /* line 44, core/static/css/components/_overlay.scss */
+  .progressbar li:first-child::after {
+    content: none; }
+
+/* line 49, core/static/css/components/_overlay.scss */
+.active {
+  color: #ff8c5f; }
+
+/* line 53, core/static/css/components/_overlay.scss */
+.active::before {
+  border-color: #bdbdbd; }
+
+/* line 57, core/static/css/components/_overlay.scss */
+.active + li::after {
+  background-color: #ff8c5f; }
+
+/** This section defines the various fonts and colors */
+/**
+ *  This section contains the various SCSS variables we are going to use.
+ *  Note that this section will use the font and color variables we have defined
+ *  in the previous section.
+ */
+/* line 5, core/static/css/components/_ace.scss */
+.ace-chaos .ace_gutter-cell.ace_correct {
+  padding-left: 0;
+  color: #000;
+  background: #5cb85c;
+  border-left: none; }
+
+/* line 12, core/static/css/components/_ace.scss */
+.ace-chaos .ace_keyword.ace_operator {
+  color: #ff8c5f !important; }
+
+/* line 16, core/static/css/components/_ace.scss */
+.ace-chaos .ace_keyword {
+  color: #337ab7; }
+
+/* line 20, core/static/css/components/_ace.scss */
+.ace-chaos .ace_gutter {
+  color: #fdfdfd !important; }
+
+/* ACE Editor-Related CSS */
+/* line 25, core/static/css/components/_ace.scss */
+.ace_folding-enabled > .ace_gutter-cell {
+  padding-right: 10px;
+  padding-left: 30px; }
+
+/* line 30, core/static/css/components/_ace.scss */
+.tooltip > .tooltip-inner {
+  color: #000;
+  background-color: #d3d3d3; }
+
+/* line 35, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_gutter-cell.ace_correct {
+  padding-left: 0;
+  color: #000;
+  background: #5cb85c;
+  border-left: none; }
+
+/* line 42, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_gutter {
+  color: #337ab7 !important;
+  background: #e0e0e0; }
+
+/* line 47, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_print-margin {
+  width: 1px;
+  background: #e8e8e8; }
+
+/* line 52, core/static/css/components/_ace.scss */
+.ace-solarized-light {
+  color: #3a4958 !important;
+  background-color: #fdfdfd !important; }
+
+/* line 57, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_cursor {
+  color: #337ab7 !important; }
+
+/* line 61, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_marker-layer .ace_selection {
+  background: rgba(7, 54, 67, 0.09); }
+
+/* line 65, core/static/css/components/_ace.scss */
+.ace-solarized-light.ace_multiselect .ace_selection.ace_start {
+  box-shadow: 0 0 3px 0 #fdf6e3; }
+
+/* line 69, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_marker-layer .ace_step {
+  background: yellow; }
+
+/* line 73, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_marker-layer .ace_bracket {
+  margin: -1px 0 0 -1px;
+  border: 1px solid rgba(147, 161, 161, 0.5); }
+
+/* line 78, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_marker-layer .ace_active-line {
+  background: #e0e0e0; }
+
+/* line 82, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_gutter-active-line {
+  background-color: #a0a0a0; }
+
+/* line 86, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_marker-layer .ace_selected-word {
+  border: 1px solid #337ab7 !important; }
+
+/* line 90, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_invisible {
+  color: rgba(147, 161, 161, 0.5); }
+
+/* line 94, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_keyword,
+.ace-solarized-light .ace_meta,
+.ace-solarized-light .ace_support.ace_class,
+.ace-solarized-light .ace_support.ace_type {
+  color: #9f41a4; }
+
+/* line 101, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_constant.ace_character,
+.ace-solarized-light .ace_constant.ace_other {
+  color: #cb4b16; }
+
+/* line 106, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_constant.ace_language {
+  color: #916a22; }
+
+/* line 110, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_constant.ace_numeric {
+  color: #916a22; }
+
+/* line 114, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_fold {
+  background-color: #268bd2;
+  border-color: #586e75; }
+
+/* line 119, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_entity.ace_name.ace_function,
+.ace-solarized-light .ace_entity.ace_name.ace_tag,
+.ace-solarized-light .ace_support.ace_function,
+.ace-solarized-light .ace_variable,
+.ace-solarized-light .ace_variable.ace_language {
+  color: #268bd2; }
+
+/* line 127, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_storage {
+  color: #073642; }
+
+/* line 131, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_string {
+  color: #649e59; }
+
+/* line 135, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_string.ace_regexp {
+  color: #337ab7 !important; }
+
+/* line 139, core/static/css/components/_ace.scss */
+.ace-solarized-light .ace_comment,
+.ace-solarized-light .ace_entity.ace_other.ace_attribute-name {
+  color: #8a8a8a; }
+
+/** This section defines the various fonts and colors */
+/**
+ *  This section contains the various SCSS variables we are going to use.
+ *  Note that this section will use the font and color variables we have defined
+ *  in the previous section.
+ */
+/* line 7, core/static/css/components/_smiley.scss */
+form#smileys input[type="radio"] {
+  -webkit-appearance: none;
+  width: 90px;
+  height: 90px;
+  border: none;
+  cursor: pointer;
+  transition: border .2s ease;
+  filter: grayscale(100%);
+  margin: 0 5px;
+  transition: all .2s ease; }
+  /* line 18, core/static/css/components/_smiley.scss */
+  form#smileys input[type="radio"]:hover, form#smileys input[type="radio"]:checked {
+    filter: grayscale(0); }
+  /* line 22, core/static/css/components/_smiley.scss */
+  form#smileys input[type="radio"]:focus {
+    outline: 0; }
+  /* line 26, core/static/css/components/_smiley.scss */
+  form#smileys input.happy[type="radio"] {
+    background: url("https://res.cloudinary.com/turdlife/image/upload/v1492864443/happy_ampvnc.svg") center;
+    background-size: cover; }
+  /* line 31, core/static/css/components/_smiley.scss */
+  form#smileys input.neutral[type="radio"] {
+    background: url("https://res.cloudinary.com/turdlife/image/upload/v1492864443/neutral_t3q8hz.svg") center;
+    background-size: cover; }
+  /* line 35, core/static/css/components/_smiley.scss */
+  form#smileys input.sad[type="radio"] {
+    background: url("https://res.cloudinary.com/turdlife/image/upload/v1492864443/sad_bj1tuj.svg") center;
+    background-size: cover; }
+
+/* line 43, core/static/css/components/_smiley.scss */
+.mtt {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  color: #999;
+  text-decoration: none; }
+  /* line 50, core/static/css/components/_smiley.scss */
+  .mtt span {
+    color: #e74c3c; }
+  /* line 54, core/static/css/components/_smiley.scss */
+  .mtt:hover {
+    color: #666; }
+    /* line 57, core/static/css/components/_smiley.scss */
+    .mtt:hover span {
+      color: #c0392b; }
+
+/* Tutorial Layout-Related CSS */
+/* line 11, core/static/css/pages/lesson.scss */
+#page-content {
+  height: calc(100vh - 160px);
+  overflow: hidden; }
+  /* line 6, core/static/css/components/_jumbotron.scss */
+  #page-content .jumbotron {
+    color: #fdfdfd !important;
+    background-color: #4c6085 !important; }
+  /* line 11, core/static/css/components/_jumbotron.scss */
+  #page-content .btn-jumbotron {
+    color: #d4c99e !important;
+    border-color: #d4c99e !important; }
+  /* line 16, core/static/css/components/_jumbotron.scss */
+  #page-content .btn-jumbotron:hover {
+    color: #fdfdfd !important;
+    background-color: #d4c99e !important;
+    border-color: #d4c99e !important; }
+
+/* line 19, core/static/css/pages/lesson.scss */
+#tutorialCol {
+  height: calc(100vh - 160px); }
+
+/* line 23, core/static/css/pages/lesson.scss */
+#tutorialContent {
+  overflow-x: hidden;
+  overflow-y: auto; }
+  /* line 27, core/static/css/pages/lesson.scss */
+  #tutorialContent a {
+    text-decoration: none; }
+  /* line 31, core/static/css/pages/lesson.scss */
+  #tutorialContent .inlineCode {
+    font-family: "Courier New", Courier, monospace; }
+
+/* line 36, core/static/css/pages/lesson.scss */
+#editor {
+  border-right: 10px solid #3a4958 !important; }
+
+/* line 40, core/static/css/pages/lesson.scss */
+.navbar-toggle {
+  float: left !important;
+  margin-left: 15px; }
+
+/* line 45, core/static/css/pages/lesson.scss */
+.modal-nav-content {
+  width: 100%;
+  height: auto; }
+
+/* line 50, core/static/css/pages/lesson.scss */
+.modal-nav-body {
+  margin-top: 100px; }
+  /* line 53, core/static/css/pages/lesson.scss */
+  .modal-nav-body ul {
+    width: 100%;
+    color: #fff;
+    list-style-type: none; }
+  /* line 59, core/static/css/pages/lesson.scss */
+  .modal-nav-body ul li {
+    padding: 8px;
+    font-size: 130%;
+    text-align: center;
+    text-transform: uppercase; }
+
+/* line 67, core/static/css/pages/lesson.scss */
+.btn-dark {
+  background-color: #30343f; }
+
+/* line 71, core/static/css/pages/lesson.scss */
+.btn-dark:hover {
+  background-color: #30343f;
+  border: 1px solid #30343f; }
+
+/* line 76, core/static/css/pages/lesson.scss */
+#activity-cards {
+  color: #fdfdfd !important;
+  background-color: #4c6085 !important; }
+
+/* line 81, core/static/css/pages/lesson.scss */
+#progress-modal {
+  background-color: rgba(48, 52, 63, 0.8); }
+
+/* line 85, core/static/css/pages/lesson.scss */
+#are-you-sure {
+  color: #3a4958 !important; }
+
+/* line 89, core/static/css/pages/lesson.scss */
+#dont {
+  color: #fff;
+  background-color: #3a4958 !important; }
+
+/* line 94, core/static/css/pages/lesson.scss */
+#prev {
+  margin: 2px 2px 2px 2px; }
+
+/* line 98, core/static/css/pages/lesson.scss */
+#next {
+  margin: 2px 2px 2px 2px; }
+
+/* line 102, core/static/css/pages/lesson.scss */
+#results {
+  margin: 5px 5px 5px 5px; }
+
+/* line 106, core/static/css/pages/lesson.scss */
+#resultCard {
+  margin: 5px 5px 5px 5px; }
+
+/* line 110, core/static/css/pages/lesson.scss */
+#explainBox {
+  display: block;
+  width: 100%;
+  resize: none; }
+
+/* line 116, core/static/css/pages/lesson.scss */
+#select {
+  margin-left: 12px; }
+
+/* line 120, core/static/css/pages/lesson.scss */
+#radio {
+  margin-left: 36px; }
+
+/* line 125, core/static/css/pages/lesson.scss */
+.page-section-heading {
+  color: #222529;
+  border-bottom: 5px solid #4c6085 !important; }
+
+/* line 130, core/static/css/pages/lesson.scss */
+.tool-back {
+  background: #3a4958 !important; }

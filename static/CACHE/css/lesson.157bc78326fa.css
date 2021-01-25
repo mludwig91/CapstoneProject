@@ -1,0 +1,337 @@
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+/** This section defines the various fonts and colors */
+/**
+ *  This section contains the various SCSS variables we are going to use.
+ *  Note that this section will use the font and color variables we have defined
+ *  in the previous section.
+ */
+/* General CSS */
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+/* line 9, core/static/css/base/_base.scss */
+html {
+  position: relative;
+  min-height: 100%; }
+
+/* line 14, core/static/css/base/_base.scss */
+body {
+  font-family: roboto, helvetica, arial, sans-serif; }
+
+/* Header-Related CSS */
+/* line 19, core/static/css/base/_base.scss */
+#page-header {
+  position: sticky;
+  top: 0;
+  z-index: 1071;
+  min-height: 70px;
+  background-color: #3a4958 !important; }
+  /* line 27, core/static/css/base/_base.scss */
+  #page-header .nav-link {
+    font-size: 1rem;
+    color: #d4c99e !important; }
+  /* line 32, core/static/css/base/_base.scss */
+  #page-header .nav-link:hover {
+    color: #337ab7 !important; }
+  /* line 37, core/static/css/base/_base.scss */
+  #page-header .navbar-brand {
+    color: #fdfdfd !important; }
+  /* line 41, core/static/css/base/_base.scss */
+  #page-header .navbar-brand:hover {
+    color: #337ab7 !important; }
+  /* line 46, core/static/css/base/_base.scss */
+  #page-header .dropdown-menu {
+    min-width: 0; }
+  /* line 50, core/static/css/base/_base.scss */
+  #page-header .dropdown-item {
+    color: #337ab7 !important; }
+  /* line 54, core/static/css/base/_base.scss */
+  #page-header .dropdown-item:hover {
+    color: #fdfdfd !important;
+    background-color: #3a4958 !important;
+    opacity: 0.15; }
+  /* line 61, core/static/css/base/_base.scss */
+  #page-header .btn-auth {
+    color: #d4c99e !important;
+    border-color: #d4c99e !important; }
+  /* line 66, core/static/css/base/_base.scss */
+  #page-header .btn-auth:hover {
+    color: #337ab7 !important;
+    background-color: #d4c99e !important;
+    border-color: #d4c99e !important; }
+
+/* line 73, core/static/css/base/_base.scss */
+#site-title {
+  font-family: oswald, helvetica, arial, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 200 !important; }
+
+/* Footer-Related CSS */
+/* line 80, core/static/css/base/_base.scss */
+#page-footer {
+  height: 90px;
+  color: #fdfdfd !important;
+  background-color: #86898c !important; }
+  /* line 86, core/static/css/base/_base.scss */
+  #page-footer .footer-link {
+    font-size: 1rem;
+    color: #d4c99e !important;
+    text-decoration: none; }
+  /* line 92, core/static/css/base/_base.scss */
+  #page-footer .footer-link:hover {
+    color: #337ab7 !important; }
+
+/* line 4, core/static/css/components/_overlay.scss */
+.container {
+  width: 100%; }
+
+/* line 8, core/static/css/components/_overlay.scss */
+.progressbar {
+  counter-reset: step; }
+  /* line 11, core/static/css/components/_overlay.scss */
+  .progressbar li {
+    position: relative;
+    float: left;
+    width: 33%;
+    text-align: center;
+    list-style-type: none; }
+  /* line 19, core/static/css/components/_overlay.scss */
+  .progressbar li::before {
+    display: block;
+    width: 35px;
+    height: 35px;
+    margin: auto auto auto auto;
+    line-height: 30px;
+    text-align: center;
+    content: counter(step);
+    counter-increment: step;
+    background-color: #bdbdbd;
+    border: 1px solid #bdbdbd;
+    border-radius: 50%; }
+  /* line 33, core/static/css/components/_overlay.scss */
+  .progressbar li::after {
+    position: absolute;
+    top: 20px;
+    left: -50%;
+    z-index: -1;
+    width: 100%;
+    height: 10px;
+    content: "";
+    background-color: #30343f; }
+  /* line 44, core/static/css/components/_overlay.scss */
+  .progressbar li:first-child::after {
+    content: none; }
+
+/* line 49, core/static/css/components/_overlay.scss */
+.active {
+  color: #ff8c5f; }
+
+/* line 53, core/static/css/components/_overlay.scss */
+.active::before {
+  border-color: #bdbdbd; }
+
+/* line 57, core/static/css/components/_overlay.scss */
+.active + li::after {
+  background-color: #ff8c5f; }
+
+/** This section defines the various fonts and colors */
+/**
+ *  This section contains the various SCSS variables we are going to use.
+ *  Note that this section will use the font and color variables we have defined
+ *  in the previous section.
+ */
+/* Tutorial Layout-Related CSS */
+/* line 8, core/static/css/pages/lesson.scss */
+#page-content {
+  height: calc(100vh - 160px);
+  overflow: hidden; }
+
+/* line 13, core/static/css/pages/lesson.scss */
+#tutorialCol {
+  height: calc(100vh - 160px); }
+
+/* line 17, core/static/css/pages/lesson.scss */
+#tutorialContent {
+  overflow-x: hidden;
+  overflow-y: auto; }
+  /* line 21, core/static/css/pages/lesson.scss */
+  #tutorialContent a {
+    text-decoration: none; }
+  /* line 25, core/static/css/pages/lesson.scss */
+  #tutorialContent .inlineCode {
+    font-family: "Courier New", Courier, monospace; }
+
+/* line 30, core/static/css/pages/lesson.scss */
+#editor {
+  border-top: 5px solid #141414 !important;
+  border-bottom: 5px solid #141414 !important; }
+
+/* line 35, core/static/css/pages/lesson.scss */
+.navbar-toggle {
+  float: left !important;
+  margin-left: 15px; }
+
+/* line 40, core/static/css/pages/lesson.scss */
+.modal-nav-content {
+  width: 100%;
+  height: auto; }
+
+/* line 45, core/static/css/pages/lesson.scss */
+.modal-nav-body {
+  margin-top: 100px; }
+  /* line 48, core/static/css/pages/lesson.scss */
+  .modal-nav-body ul {
+    width: 100%;
+    color: #fff;
+    list-style-type: none; }
+  /* line 54, core/static/css/pages/lesson.scss */
+  .modal-nav-body ul li {
+    padding: 8px;
+    font-size: 130%;
+    text-align: center;
+    text-transform: uppercase; }
+
+/* line 62, core/static/css/pages/lesson.scss */
+.btn-dark {
+  background-color: #30343f; }
+
+/* line 66, core/static/css/pages/lesson.scss */
+.btn-dark:hover {
+  background-color: #30343f;
+  border: 1px solid #30343f; }
+
+/* line 71, core/static/css/pages/lesson.scss */
+.ace-chaos .ace_gutter-cell.ace_correct {
+  padding-left: 0;
+  color: #000;
+  background: #58c554;
+  border-left: none; }
+
+/* line 78, core/static/css/pages/lesson.scss */
+.tool-back {
+  background: #3a4958; }
+
+/* line 82, core/static/css/pages/lesson.scss */
+.ace-chaos .ace_keyword.ace_operator {
+  color: #ff8c5f !important; }
+
+/* line 86, core/static/css/pages/lesson.scss */
+.ace-chaos .ace_keyword {
+  color: #337ab7; }
+
+/* ACE Editor-Related CSS */
+/* line 91, core/static/css/pages/lesson.scss */
+.ace_folding-enabled > .ace_gutter-cell {
+  padding-right: 10px;
+  padding-left: 30px; }
+
+/* line 96, core/static/css/pages/lesson.scss */
+.tooltip > .tooltip-inner {
+  color: #000;
+  background-color: #d3d3d3; }
+
+/* line 102, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_gutter {
+  background: #3a4958 !important;
+  color: #fdfdfd !important; }
+
+/* line 107, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_print-margin {
+  width: 1px;
+  background: #e8e8e8; }
+
+/* line 112, core/static/css/pages/lesson.scss */
+.ace-solarized-light {
+  background-color: #F2F2F2;
+  color: #3a4958 !important; }
+
+/* line 117, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_cursor {
+  color: #000000; }
+
+/* line 121, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_marker-layer .ace_selection {
+  background: rgba(7, 54, 67, 0.09); }
+
+/* line 125, core/static/css/pages/lesson.scss */
+.ace-solarized-light.ace_multiselect .ace_selection.ace_start {
+  box-shadow: 0 0 3px 0px #FDF6E3; }
+
+/* line 129, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_marker-layer .ace_step {
+  background: yellow; }
+
+/* line 133, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_marker-layer .ace_bracket {
+  margin: -1px 0 0 -1px;
+  border: 1px solid rgba(147, 161, 161, 0.5); }
+
+/* line 138, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_marker-layer .ace_active-line {
+  background: #EEE8D5; }
+
+/* line 142, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_gutter-active-line {
+  background-color: #EDE5C1; }
+
+/* line 146, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_marker-layer .ace_selected-word {
+  border: 1px solid #7f9390; }
+
+/* line 150, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_invisible {
+  color: rgba(147, 161, 161, 0.5); }
+
+/* line 154, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_keyword,
+.ace-solarized-light .ace_meta,
+.ace-solarized-light .ace_support.ace_class,
+.ace-solarized-light .ace_support.ace_type {
+  color: #FF4700; }
+
+/* line 161, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_constant.ace_character,
+.ace-solarized-light .ace_constant.ace_other {
+  color: #CB4B16; }
+
+/* line 166, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_constant.ace_language {
+  color: #B58900; }
+
+/* line 170, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_constant.ace_numeric {
+  color: #00D613; }
+
+/* line 174, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_fold {
+  background-color: #268BD2;
+  border-color: #586E75; }
+
+/* line 179, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_entity.ace_name.ace_function,
+.ace-solarized-light .ace_entity.ace_name.ace_tag,
+.ace-solarized-light .ace_support.ace_function,
+.ace-solarized-light .ace_variable,
+.ace-solarized-light .ace_variable.ace_language {
+  color: #268BD2; }
+
+/* line 187, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_storage {
+  color: #073642; }
+
+/* line 191, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_string {
+  color: #2AA198; }
+
+/* line 195, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_string.ace_regexp {
+  color: #0089FF; }
+
+/* line 199, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_comment,
+.ace-solarized-light .ace_entity.ace_other.ace_attribute-name {
+  color: #0089FF; }
+
+/* line 204, core/static/css/pages/lesson.scss */
+.ace-solarized-light .ace_indent-guide {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHjy8NJ/AAjgA5fzQUmBAAAAAElFTkSuQmCC) right repeat-y; }
