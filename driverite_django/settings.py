@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'l46i#coubyfrpmlk2%h#kp^t_^w_kv8xpwtxm&5#x361wieb@f'
+SECRET_KEY = 'j6w!slz&5v5gw5psx+2!ovcya$fmbp!emqy!q0s9!c9qg@a_2u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,8 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # client keys and secret for google auth
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '440772211828-t27jfq6nq5sa75aueb7e4uknd67lhrin.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'QitezbEq7hPQWRUod9-Tg90G'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '440772211828-8ou3qv9fd4ca9129sa475g5c58i2ut6g.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '-6hQKNZzkOQhcw_Ux4NLIFOT'
 
 # Application definition
 

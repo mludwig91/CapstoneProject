@@ -1,1 +1,13 @@
 <!-- This is the home page for our website-->
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+    Home Page
+    <a href="{% url 'accounts:login' %}">Login Page link</a>
+{% endblock %}
