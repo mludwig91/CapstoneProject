@@ -1,1 +1,13 @@
 <!-- This is where we tentatively will have them login-->
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+    Home Page
+    <a href="{% url 'index' %}">Home Page link</a>
+{% endblock %}
