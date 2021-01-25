@@ -8,6 +8,10 @@
 {% endblock %}
 
 {% block main_content %}
-    Home Page
+    Login Page
     <a href="{% url 'index' %}">Home Page link</a>
+    <a href="{% url 'social:begin' 'google-oauth2' %}?next={% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'index' %}{% endif %}">
+        <input type="image" src="{% static 'images/google.png' %}" width="240"
+               height="55" alt="Sign in with Google"/>
+    </a>
 {% endblock %}
