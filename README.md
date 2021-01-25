@@ -1,5 +1,6 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+The Driver Incentive Program -- DriveRite (by DriveRite Technologies) is a Django-based web application designed to empower transportation companies to give points to their drivers, and 
+allow those drivers to pick rewards from a sponsor-curated set of online-shoppable items.
 
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
