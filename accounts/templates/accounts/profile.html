@@ -1,0 +1,14 @@
+<!-- This is where we tentatively will have the profile-->
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+    Profile Page
+    <a href="{% url 'index' %}">Home Page link</a>
+    <a href="{% url 'accounts:login' %}">Login Page link</a>
+{% endblock %}
