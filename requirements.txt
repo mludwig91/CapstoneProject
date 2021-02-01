@@ -5,3 +5,15 @@ django-libsass==0.8
 social-auth-app-django==4.0.0
 django-crispy-forms==1.9.2
 django-mathfilters==1.0.0
+
+"""
+Django - MongoDB backend requirements
+
+Djongo is an SQL to MongoDB query transpiler
+Installing Djongo may downgrade version of Django so
+Run < pip install --upgrade Django > after djongo 
+install. Also update HOST connection string in mongo_client.py
+
+"""
+Djongo==1.3.3
+dnspython==2.1.0
