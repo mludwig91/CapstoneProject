@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from core import views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     # Our own applications
@@ -28,3 +29,5 @@ urlpatterns = [
     # External Plugins
     path('', include('social_django.urls', namespace='social'))
 ]
+
+urlpatterns += staticfiles_urlpatterns()

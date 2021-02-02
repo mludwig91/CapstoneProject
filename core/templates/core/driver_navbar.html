@@ -1,0 +1,32 @@
+<body>
+    <!-- Collapse -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="collapsingNavbar">
+        
+    <!-- Links -->
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+        <a class="nav-link" href="#">Points</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link" href="#">Catalog</a>
+        </li>
+
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="{% url 'accounts:profile' %}" id="navbardrop" data-toggle="dropdown">
+            Profile
+            </a>
+            <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a>
+            <a class="dropdown-item" href="#">Order History</a>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:login' %}">Logout</a>
+        </li>
+    </ul>
+</body>
