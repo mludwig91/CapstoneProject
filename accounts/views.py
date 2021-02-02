@@ -26,3 +26,14 @@ def logout(request):
         HttpResponse: A generated http response object to the request.
     """
     return redirect("/")
+
+def profile(request):
+    """function profile This function handles the view for the profile page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/profile.html")
