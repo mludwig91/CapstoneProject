@@ -1,14 +1,83 @@
 <!-- This is where we tentatively will have the profile-->
 {% extends "core/base.html" %}
-{% load static compress %}
-
-{% block css %}
-    {% compress css %}
-    {% endcompress %}
-{% endblock %}
-
+{% load static %}
 {% block main_content %}
-    Profile Page
-    <a href="{% url 'index' %}">Home Page link</a>
-    <a href="{% url 'accounts:login' %}">Login Page link</a>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'accounts/style.css' %}">
+    </head>
+    <body>
+        <div class="profile-title">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h2>My Profile</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="container profile-head">
+            <div class="row">
+                <div class="col-10">
+                    <div class="profile-name">
+                        <h3>First Last</h3>
+                        <h6>Trucking Company</h6> 
+                        <h6>Driver</h6>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <a href="#" class="btn profile-edit-btn" role="button">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+
+            <div class="container profile-info">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>User ID</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>Flast</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Name</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>First Last</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>flast@email.com</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Phone</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>123-456-7890</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Address</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>123 Main St, Town</p>
+                    </div>
+                </div>
+                
+
+            </div>
+        
+    </body>
+</html>
 {% endblock %}
