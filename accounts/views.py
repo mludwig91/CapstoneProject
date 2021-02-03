@@ -2,6 +2,7 @@
 This module contains our Django views for the "accounts" application.
 """
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 
 def login(request):
@@ -27,6 +28,8 @@ def logout(request):
     """
     return redirect("/")
 
+
+@login_required(login_url='/accounts/login/')
 def profile(request):
     """function profile This function handles the view for the profile page of the application.
 

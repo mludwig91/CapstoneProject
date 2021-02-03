@@ -2,8 +2,10 @@
 This module contains our Django views for the "core" application.
 """
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
+@login_required(login_url='/accounts/login/')
 def home(request):
     """function home This function handles the view for the index page of the application.
 
