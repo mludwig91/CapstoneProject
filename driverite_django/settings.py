@@ -94,18 +94,11 @@ WSGI_APPLICATION = 'driverite_django.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-        'default': {
-        'ENGINE': 'djongo',
-        'CLIENT': {
-            'name': 'DriveRiteDB',
-            'host': 'mongodb+srv://driveriteApp:V1sx3rBAygzD8tg5@cluster0.boofi.mongodb.net/DriveRiteDB?retryWrites=true&w=majority',
-            'username': 'driveriteApp',
-            'password': 'V1sx3rBAygzD8tg5',
-            'authMechanism': 'SCRAM-SHA-1',
-            },    
-        }
-
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+}
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin
