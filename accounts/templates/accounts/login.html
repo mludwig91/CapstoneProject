@@ -3,19 +3,13 @@
 
 {% block css %}
     {% compress css %}
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--===============================================================================================-->
-        <link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
-    <!--===============================================================================================-->
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-            crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
     {% endcompress %}
 {% endblock %}
 
 {% block main_content %}
     <div class="container">
-        <div class="card w-50 mt-3 mx-auto shadow-lg rounded text-center">
+        <div class="card w-50 mt-3 mx-auto shadow-lg rounded fadeInDown text-center">
             <div class="card-body">
                 <h2 class="card-title mb-3">Welcome to Driverite</h2>
                     <a href="{% url 'social:begin' 'google-oauth2' %}?next={% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'accounts:profile' %}{% endif %}">
