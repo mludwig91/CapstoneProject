@@ -18,9 +18,26 @@
     @include generateJumbotron($page-content-text-color-light, $page-content-border-color-dark, $page-content-border-color-3);
 }
 
-#disable{
-    position: absolute;
-    bottom: 15px;
-    left: 10%;
-    margin-left: 10;
+#Title {
+    position: center;
+    color: $page-content-border-color-3;
+    padding-top: 20px;
+    margin-left: 20px;
+    padding-bottom: 20px;
+}
+
+#Disable {
+    background-color: red;
+    margin-left: 20px;
+    padding-left: 20px;
+}
+
+#Back {
+    background-color: green;
+}
+
+#Divider {
+    padding-left: 40px;
+    height:auto;
+    display:inline-block;
 }

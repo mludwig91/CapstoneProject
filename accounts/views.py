@@ -6,6 +6,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 
 from accounts.forms import UserInformationForm
 from accounts.models import UserInformation
@@ -90,13 +92,25 @@ def register(request):
             form = UserInformationForm(request.POST, instance=UserInformation.objects.get(user=user))
         else:
             form = UserInformationForm(request.POST)
-
         # Case 1a: A valid user profile form
         if form.is_valid():
             # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
             user_info = form.save(commit=False)
             user_info.user = user
             user_info.save()
+            #Send confirmation email to new user
+            msg = EmailMessage(
+            'DriveRite Inc',
+            '<h2>Thank you for signing up with DriveRite Inc</h2>\
+            <h3>A sponsor will review your application and contact \
+            you shortly. <br> </br> Sincerely, \
+            <br> The DriveRite Team</h3>',
+            'DriveRite',
+            [user.email])
+            msg.content_subtype = "html"
+            msg.send()
+
+            # Email sponsor as well
 
             request.session.set_expiry(0)
             return redirect("/accounts/applied")
@@ -127,3 +141,20 @@ def applied(request):
         HttpResponse: A generated http response object to the request.
     """
     return render(request, "accounts/applied.html")
+
+@login_required(login_url='/accounts/login/')
+def disable_account(request):
+
+    if request.method == 'POST':
+        #Get user instance
+        user = request.user
+        #If post request includes "Disable", change is_active flag
+        if request.POST.get("Disable"):
+            user.is_active = False
+            user.save()
+            messages.success(request, 'Profile successfully disabled')
+        #Otherwise redirect back to profile
+        else:
+            return redirect("/accounts/profile")
+
+    return render(request, "accounts/disable_account.html")
