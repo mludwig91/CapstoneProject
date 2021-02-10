@@ -7,6 +7,7 @@ from django.core.validators import MaxValueValidator, MinLengthValidator, MinVal
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 from django.db.models.deletion import CASCADE, SET_NULL
+from django.db.models.fields import DateTimeField
 
 class SponsorCompany(models.Model):
     """
@@ -25,7 +26,7 @@ class UserInformation(models.Model):
     """
     # All of the fields in the model has validators to make sure they are valid.
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # Foreign key referring to an entry in the user table
-    
+
     #Two-tuple for roles where item 1 is the field value, and item 2 is the display name
     ROLE_NAME_CHOICES = (
         ('driver', 'Driver'),
@@ -34,10 +35,10 @@ class UserInformation(models.Model):
     )
 
     role_name = models.CharField("Role Name", max_length=25, choices=ROLE_NAME_CHOICES, default="driver", validators=[MinLengthValidator(1)])
-    first_name = models.CharField("First Name", max_length=25, default="N/A", validators=[MinLengthValidator(1)]) 
+    first_name = models.CharField("First Name", max_length=25, default="N/A", validators=[MinLengthValidator(1)])
     last_name = models.CharField("Last Name", max_length=25, default="N/A", validators=[MinLengthValidator(1)])
-    phone_number = models.IntegerField("Phone Number", null=True, validators=[MinValueValidator(1000000000), MaxValueValidator(99999999999999)]) 
-    last_login = models.DateTimeField("Last User Login", default="1969-12-31 11:59")
+    phone_number = models.IntegerField("Phone Number", null=True, validators=[MinValueValidator(1000000000), MaxValueValidator(99999999999999)])
+    last_login = models.DateTimeField("Last User Login", auto_now_add=True, blank=True)
     is_email_verified = models.BooleanField("If User Verified Email", default=False)
     approving_user = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     is_active_account = models.BooleanField("If User Has Account Enabled", default=True)
@@ -144,4 +145,4 @@ class AuditLoginAttempt(models.Model):
     """
     attempt_time = models.DateTimeField("DateTime of login attempt")
     login_user = models.ForeignKey(UserInformation, on_delete=CASCADE)
-    is_successful = models.NullBooleanField("Whether a login attempt is successful")
+    is_successful = models.BooleanField("Whether a login attempt is successful", null=True)
