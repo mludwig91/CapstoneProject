@@ -49,7 +49,7 @@ class UserInformation(models.Model):
         Returns:
             str: user email
         """
-        return self.first_name
+        return self.first_name + " " + self.last_name
 
     def get_user_email(self):
         """function get_user_email is an helper function to retrieve the email associated with the user
