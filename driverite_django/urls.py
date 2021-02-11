@@ -22,6 +22,7 @@ urlpatterns = [
     # Our own applications
     path('', views.home, name='index'),
     path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('catalog/', include('catalog.urls', namespace='catalog')),
 
     # Django admin
     path('admin/', admin.site.urls),

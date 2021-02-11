@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Our own applications
     'accounts',
     'core',
+    'catalog',
 
     # External Plugins
     'social_django',
