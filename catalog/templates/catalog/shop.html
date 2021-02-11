@@ -1,0 +1,20 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+    <br>
+    {% for listing in listings %}
+        <div>{{ listing.title }}</div>
+        <img src = "{{ listing.main_image }}", alt = "{{ listing.title }}">
+        <div>price: ${{ listing.price }}</div>
+        <div>Listing ID: {{ listing.listing_id }}</div>
+        <br>
+    {% endfor %}
+
+{% endblock %}

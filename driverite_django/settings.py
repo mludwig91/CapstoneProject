@@ -220,3 +220,8 @@ LOGGING = {
     },
 }
 
+# ETSY API
+# protect key better
+ETSY_BASE_URL = 'https://openapi.etsy.com/v2'
+ETSY_API_KEY = '1a3ofydrsprc5cev28c3vb7l'
+
