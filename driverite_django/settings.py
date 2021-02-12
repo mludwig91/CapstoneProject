@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'django_ace',
     'compressor',
     'crispy_forms',
-    'mathfilters'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
