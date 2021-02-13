@@ -20,6 +20,14 @@ class SponsorCompany(models.Model):
     company_state = models.CharField("Company State", max_length=25, validators=[MinLengthValidator(1)])
     company_zipcode = models.IntegerField("Zip Code", validators=[MinValueValidator(500), MaxValueValidator(99999)])
 
+    def __str__(self):
+        """function __str__ is used to create a string representation of this class
+
+        Returns:
+            str: company name
+        """
+        return self.company_name
+
 class UserInformation(models.Model):
     """
     Contains a model of a user to keep track of user information.
