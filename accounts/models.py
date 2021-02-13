@@ -9,13 +9,12 @@ from django.db.models.constraints import UniqueConstraint
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields import DateTimeField
 
-
 class SponsorCompany(models.Model):
     """
     Model of a sponsor company to keep track of info for sponsors' companies.
     """
     company_name = models.CharField("Company Name", max_length=25, validators=[MinLengthValidator(1)])
-    company_phone_number = models.IntegerField("Phone Number", validators=[MinValueValidator(1000000000), MaxValueValidator(99999999999999)])
+    company_phone_number =  models.IntegerField("Phone Number", validators=[MinValueValidator(1000000000), MaxValueValidator(99999999999999)])
     company_street_address = models.CharField("Company Street Address", max_length=32, validators=[MinLengthValidator(1)])
     company_city = models.CharField("Company City", max_length=25, validators=[MinLengthValidator(1)])
     company_state = models.CharField("Company State", max_length=25, validators=[MinLengthValidator(1)])
@@ -28,7 +27,6 @@ class SponsorCompany(models.Model):
             str: company name
         """
         return self.company_name
-
 
 class UserInformation(models.Model):
     """
@@ -71,7 +69,6 @@ class UserInformation(models.Model):
         return self.user.email
     get_user_email.short_description = 'User Email'  # Renames column head
 
-
 class CatalogItem(models.Model):
     """
     Model of a particular catalog item.
@@ -83,7 +80,6 @@ class CatalogItem(models.Model):
     #URL Validator necessary for API entry?
     api_item_Id = models.CharField("API Link/Identifier", max_length=256, validators=[MinLengthValidator(1)])
 
-
 class CatalogItemImage(models.Model):
     """
     Model of a particular image belonging to a particular catalog item.
@@ -91,7 +87,6 @@ class CatalogItemImage(models.Model):
     catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE)
     image_link = models.URLField("Static Image Link")
     #filename = models.ImageField("Unique Image Filename", UniqueConstraint)
-
 
 class SponsorCatalogItem(models.Model):
     """
@@ -101,7 +96,6 @@ class SponsorCatalogItem(models.Model):
     sponsor_company = models.ForeignKey(SponsorCompany, on_delete=CASCADE)
     point_value = models.IntegerField("Driver Point Value", validators=[MinValueValidator(1)])
     is_available_to_drivers = models.BooleanField("Is Item Available For Driver Redemption", default=False)
-
 
 class Order(models.Model):
     """
@@ -125,7 +119,6 @@ class Order(models.Model):
     retail_at_order = models.FloatField("Retail Price (MSRP) at Order Time", null=True, validators=[MinValueValidator(0.01)])
     points_at_order = models.IntegerField("Driver Point Cost at Order Time", null=True, validators=[MinValueValidator(1)])
 
-
 class AuditApplication(models.Model):
     """
     Model of a particular application being audited (regardless of application status).
@@ -145,7 +138,6 @@ class AuditApplication(models.Model):
     apply_status = models.CharField("Application Status", max_length=25, choices=APPLICATION_STATUS_CHOICES)
     reject_reason = models.CharField("Rejection Reason", max_length=128, blank=True)
 
-
 class AuditPointChange(models.Model):
     """
     Model of a particular point change performed against a driver being audited.
@@ -154,7 +146,6 @@ class AuditPointChange(models.Model):
     driver = models.ForeignKey(UserInformation, on_delete=CASCADE)
     point_change = models.IntegerField("Point Change for Driver")
     change_reason = models.CharField("Point Change Reason", max_length=128)
-
 
 class AuditLoginAttempt(models.Model):
     """
