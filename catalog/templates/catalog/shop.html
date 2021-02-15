@@ -9,12 +9,13 @@
 
 {% block main_content %}
     <br>
-    {% for listing in listings %}
-        <div>{{ listing.title }}</div>
-        <img src = "{{ listing.main_image }}", alt = "{{ listing.title }}">
-        <div>price: ${{ listing.price }}</div>
-        <div>Listing ID: {{ listing.listing_id }}</div>
+    {% for listing, image in listings %}
+        <div>{{ listing.item_name }}</div>
+        <img src = "{{ image.image_link }}", alt = "image not available">
+        <div>price: ${{ listing.retail_price | floatformat:2 }}</div>
+        <div>Listing ID: {{ listing.api_item_Id }}</div>
         <br>
     {% endfor %}
 
+    
 {% endblock %}
