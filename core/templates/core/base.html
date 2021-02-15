@@ -49,12 +49,15 @@
     <!-- Brand -->
     <a class="navbar-brand" href="{% url 'index' %}">Driverite</a>
 
-    <!-- if driver -->
-    {# include "core/driver_navbar.html" #}
-    <!-- else sponsor -->
-    {# include "core/sponsor_navbar.html" #}
-    <!-- else admin -->
-    {% include "core/admin_navbar.html" %}
+    {% if user.is_authenticated %}
+        {% if user.userinformation.role_name == "driver" %}
+            {% include "core/driver_navbar.html" %}
+        {% elif user.userinformation.role_name == "sponsor" %}
+            {% include "core/sponsor_navbar.html" %}
+        {% elif user.userinformation.role_name == "admin" %}
+            {% include "core/admin_navbar.html" %}
+        {% endif %}
+    {% endif %}
 </nav>
 {% endblock body %}  
 
