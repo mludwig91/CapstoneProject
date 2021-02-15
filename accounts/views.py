@@ -98,7 +98,7 @@ def register(request):
             user_info = form.save(commit=False)
             user_info.user = user
             user_info.save()
-            #Send confirmation email to new user
+            # Send confirmation email to new user
             msg = EmailMessage(
             'DriveRite Inc',
             '<h2>Thank you for signing up with DriveRite Inc</h2>\
@@ -131,6 +131,7 @@ def register(request):
         return render(request, "accounts/register.html", {'form': form})
 
 
+@login_required(login_url='/accounts/login/')
 def applied(request):
     """function logout This function handles the view for the logout page of the application.
 
@@ -141,6 +142,65 @@ def applied(request):
         HttpResponse: A generated http response object to the request.
     """
     return render(request, "accounts/applied.html")
+
+
+@login_required(login_url='/accounts/login/')
+def review_apps(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+    if request.method == 'POST':
+        if request.POST.get('approve') is not None:
+            print("approving ", request.POST.get('user'))
+            pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
+            pending_user.approving_user = current_user
+            pending_user.is_email_verified = True
+            pending_user.save()
+
+            # Send Approval email to new user
+            msg = EmailMessage(
+                'DriveRite Inc',
+                '<h2>Your Account Has Been Approved</h2>\
+                <h3>After reviewing your application, \
+                you have been approved to begin using DriveRite. \
+                You may now begin earning rewards!  \
+                <br> </br> Sincerely, \
+                <br> The DriveRite Team</h3>',
+                'DriveRite',
+                [pending_user.user.email])
+            msg.content_subtype = "html"
+            msg.send()
+
+        if request.POST.get('reject') is not None:
+            print("rejecting ", request.POST.get('user'))
+            pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
+            pending_user.delete()
+
+            # Send Reject email to new user
+            msg = EmailMessage(
+                'DriveRite Inc',
+                '<h2>Your Account Has Been Rejected</h2>\
+                <h3>After reviewing your application, \
+                unfortunately you have been denied. \
+                Please reach out if you think there \
+                has been a mistake!  \
+                <br> </br> Sincerely, \
+                <br> The DriveRite Team</h3>',
+                'DriveRite',
+                [pending_user.user.email])
+            msg.content_subtype = "html"
+            msg.send()
+
+    open_apps = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).filter(is_email_verified=False).all()
+    return render(request, "accounts/review_apps.html", {'open_apps': open_apps})
+
 
 @login_required(login_url='/accounts/login/')
 def disable_account(request):

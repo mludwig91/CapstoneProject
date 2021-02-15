@@ -5,7 +5,8 @@ the model, the data will be accessible through Django's admin functionality.
 
 # Register your models here.
 from django.contrib import admin
-from .models import UserInformation
+from .models import UserInformation, SponsorCompany, CatalogItem, CatalogItemImage, SponsorCatalogItem, Order, \
+    AuditApplication, AuditPointChange, AuditLoginAttempt
 
 
 class UserInformationAdmin(admin.ModelAdmin):
@@ -18,3 +19,11 @@ class UserInformationAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(UserInformation, UserInformationAdmin)
+admin.site.register(SponsorCompany)
+admin.site.register(CatalogItem)
+admin.site.register(CatalogItemImage)
+admin.site.register(SponsorCatalogItem)
+admin.site.register(Order)
+admin.site.register(AuditApplication)
+admin.site.register(AuditPointChange)
+admin.site.register(AuditLoginAttempt)
