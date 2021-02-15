@@ -20,6 +20,7 @@ class SponsorCompany(models.Model):
     company_city = models.CharField("Company City", max_length=25, validators=[MinLengthValidator(1)])
     company_state = models.CharField("Company State", max_length=25, validators=[MinLengthValidator(1)])
     company_zipcode = models.IntegerField("Zip Code", validators=[MinValueValidator(500), MaxValueValidator(99999)])
+    company_point_ratio = models.IntegerField("US Cents to Catalog Points Ratio", default=1)
 
     def __str__(self):
         """function __str__ is used to create a string representation of this class
