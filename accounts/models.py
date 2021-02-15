@@ -8,6 +8,7 @@ from django.db import models
 from django.db.models.constraints import UniqueConstraint
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields import DateTimeField
+import datetime
 
 class SponsorCompany(models.Model):
     """
@@ -65,12 +66,13 @@ class CatalogItem(models.Model):
     """
     Model of a particular catalog item.
     """
-    item_name = models.CharField("Item Name", max_length=25, validators=[MinLengthValidator(1)])
-    item_description = models.CharField("First Name", max_length=256, validators=[MinLengthValidator(1)])
-    retail_price = models.FloatField("Retail Price (MSRP)", null=True, validators=[MinValueValidator(0.01)])
+    item_name = models.CharField("Item Name", max_length=25, validators=[MinLengthValidator(1)], null=True)
+    item_description = models.CharField("First Name", max_length=256, validators=[MinLengthValidator(1)], null=True)
+    retail_price = models.FloatField("Retail Price (MSRP)", null=True, validators=[MinValueValidator(0.01)]),
     is_available = models.BooleanField("Item is Available From Retail", default=False)
+    last_update = models.DateTimeField("DateTime of Last Update to Item", default=datetime.datetime.utcnow)
     #URL Validator necessary for API entry?
-    api_item_Id = models.CharField("API Link/Identifier", max_length=256, validators=[MinLengthValidator(1)])
+    api_item_Id = models.CharField("API Link/Identifier", max_length=256, validators=[MinLengthValidator(1)], unique=True)
 
 class CatalogItemImage(models.Model):
     """
@@ -87,6 +89,7 @@ class SponsorCatalogItem(models.Model):
     catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE)
     sponsor_company = models.ForeignKey(SponsorCompany, on_delete=CASCADE)
     point_value = models.IntegerField("Driver Point Value", validators=[MinValueValidator(1)])
+    last_update = models.DateTimeField("DateTime of Last Update to Item", default=datetime.datetime.utcnow)
     is_available_to_drivers = models.BooleanField("Is Item Available For Driver Redemption", default=False)
 
 class Order(models.Model):
@@ -107,7 +110,7 @@ class Order(models.Model):
     sponsor_catalog_item = models.ForeignKey(SponsorCatalogItem, on_delete=SET_NULL, null=True)
     ordering_driver = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True)
     order_status = models.CharField("Order Status", max_length=25, choices=ORDER_STATUS_CHOICES)
-    last_status_change = models.DateTimeField("Last DateTime of OrderStatus Update")
+    last_status_change = models.DateTimeField("Last DateTime of OrderStatus Update", default=datetime.datetime.utcnow)
     retail_at_order = models.FloatField("Retail Price (MSRP) at Order Time", null=True, validators=[MinValueValidator(0.01)])
     points_at_order = models.IntegerField("Driver Point Cost at Order Time", null=True, validators=[MinValueValidator(1)])
 
@@ -134,7 +137,7 @@ class AuditPointChange(models.Model):
     """
     Model of a particular point change performed against a driver being audited.
     """
-    change_time = models.DateTimeField("DateTime of Point Change")
+    change_time = models.DateTimeField("DateTime of Point Change", default=datetime.datetime.utcnow)
     driver = models.ForeignKey(UserInformation, on_delete=CASCADE)
     point_change = models.IntegerField("Point Change for Driver")
     change_reason = models.CharField("Point Change Reason", max_length=128)
