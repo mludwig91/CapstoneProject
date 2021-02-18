@@ -9,7 +9,7 @@
 
 {% block main_content %}
     <br>
-    {% for listing,  image in listings %}
+    {% for listing, sponsor, image in listings %}
         {% if forloop.first %}
             <div class="row">  
         {% endif %}
@@ -18,14 +18,8 @@
             <img src = "{{ image.image_link }}", alt = "image not available">
             <div>{{ listing.item_name|slice:":35" }}...</div>
             <div>price: ${{ listing.retail_price | floatformat:2 }}</div>
+            <div>points: {{ sponsor.point_value }}</div>
             <div>Listing ID: {{ listing.api_item_Id }}</div>
-            <form action="{% url 'catalog:shop' %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="ID" value="{{ listing.api_item_Id }}"/>
-                <input type="submit" name="change" value="Add" />
-                <input type="submit" name="change" value="Remove" />
-            </form>
-
         </div> 
     
         {% if forloop.counter|divisibleby:3 %}
@@ -40,8 +34,3 @@
     {% endfor %}
 
 {% endblock %}
-<!--
-<div>
-    <input type="checkbox" name="add_to_sponsor_list" value="{{ listing.api_item_Id }}"> Add to Catalog
-</div>
--->

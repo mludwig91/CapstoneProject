@@ -11,4 +11,5 @@ app_name = 'catalog'
 # URL patterns to be matched.
 urlpatterns = [
     path('shop', views.shop, name='shop'),
+    path('my-catalog', views.my_catalog, name='my-catalog'),
 ]
