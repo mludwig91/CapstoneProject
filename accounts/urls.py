@@ -18,5 +18,6 @@ urlpatterns = [
     path('applied', views.applied, name='applied'),
     path('review_apps', views.review_apps, name='review_apps'),
     path('disable_account', views.disable_account, name='disable_account'),
-    path('sponsor_about_page_D', views.sponsor_about_page_D, name='sponsor_about_page_D')
+    path('sponsor_about_page_D', views.sponsor_about_page_D, name='sponsor_about_page_D'),
+    path('sponsor_about_page_S', views.sponsor_about_page_S, name='sponsor_about_page_S')
 ]

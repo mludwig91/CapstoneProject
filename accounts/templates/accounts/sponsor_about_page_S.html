@@ -10,7 +10,7 @@
 {% block main_content %}
     <div class="jumbotron jumbotron-fluid py-5 mb-0">
         <div class="container text-center">
-            <h1>About *Sponsor Company*</h1>
+            <h1> About {{ user.userinformation.sponsor_company.company_name }} </h1>
         </div>
     </div>
     <div class="container px-3 py-0">
@@ -30,10 +30,9 @@
                 
                 <div id="edit" contenteditable="true"> <!-- Remove this part for Drivers -->
                     
-                    Info
+                    {{ user.userinformation.sponsor_company.company_about_info }}
                     
                 </div>
-
                 
 
             </div>
