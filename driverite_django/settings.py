@@ -25,7 +25,8 @@ SECRET_KEY = 'j6w!slz&5v5gw5psx+2!ovcya$fmbp!emqy!q0s9!c9qg@a_2u'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#SECURITY WARNING: Allowing any hosts to connect to app
+ALLOWED_HOSTS = ['*']
 
 # client keys and secret for google auth
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '440772211828-8ou3qv9fd4ca9129sa475g5c58i2ut6g.apps.googleusercontent.com'
