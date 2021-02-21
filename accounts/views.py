@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
-
+from datetime import datetime
 from accounts.forms import UserInformationForm
-from accounts.models import UserInformation
+from accounts.models import UserInformation, AuditApplication, SponsorCompany
 
 
 def login(request):
@@ -54,20 +54,10 @@ def profile(request):
     if UserInformation.objects.filter(user=user).exists():
         # Validate that we have a proper user information model
         user_info = UserInformation.objects.get(user=user)
-        try:
-            user_info.full_clean()
-
-            # Case 1a: The user information model is valid, therefore we can render the profile page.
-            request.session.set_expiry(0)
-            return render(request, "accounts/profile.html")
-        except ValidationError:
-            # Case 1b: The user information model is invalid,
-            #           we redirect to the register page
-            return redirect("/accounts/register")
+        return render(request, "accounts/profile.html")
     # Case 2: The user doesn't have an entry in our user information table,
     #          we redirect to the register page
-    else:
-        return redirect("/accounts/register")
+    return redirect("/accounts/register")
 
 
 @login_required(login_url='/accounts/login/')
@@ -111,6 +101,11 @@ def register(request):
             msg.send()
 
             # Email sponsor as well
+
+            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=user_info.sponsor_company,
+                                         driver=user_info, apply_status='pending',
+                                         reject_reason='N/A')
+            audit_app.save()
 
             request.session.set_expiry(0)
             return redirect("/accounts/applied")
@@ -164,6 +159,11 @@ def review_apps(request):
             pending_user.is_email_verified = True
             pending_user.save()
 
+            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=pending_user.sponsor_company,
+                                         sponsor=current_user, driver=pending_user, apply_status='accepted',
+                                         reject_reason=request.POST.get('reason'))
+            audit_app.save()
+
             # Send Approval email to new user
             msg = EmailMessage(
                 'DriveRite Inc',
@@ -181,7 +181,14 @@ def review_apps(request):
         if request.POST.get('reject') is not None:
             print("rejecting ", request.POST.get('user'))
             pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
-            pending_user.delete()
+            pending_user.is_active_account = False
+
+            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=current_user.sponsor_company,
+                                         sponsor=current_user, driver=pending_user, apply_status='rejected',
+                                         reject_reason=request.POST.get('reason'))
+            audit_app.save()
+
+            pending_user.save()
 
             # Send Reject email to new user
             msg = EmailMessage(
@@ -198,8 +205,15 @@ def review_apps(request):
             msg.content_subtype = "html"
             msg.send()
 
-    open_apps = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).filter(is_email_verified=False).all()
-    return render(request, "accounts/review_apps.html", {'open_apps': open_apps})
+    if current_user.role_name == 'sponsor':
+        open_apps = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).filter(
+            is_email_verified=False).all()
+    else:
+        open_apps = UserInformation.objects.filter(is_email_verified=False).all()
+    sponsor_companies = SponsorCompany.objects.all()
+    number_of_sponsors = len(sponsor_companies)
+    return render(request, "accounts/review_apps.html", {'open_apps': open_apps, 'sponsors': sponsor_companies,
+                                                         'number_of_sponsors': number_of_sponsors})
 
 
 @login_required(login_url='/accounts/login/')
