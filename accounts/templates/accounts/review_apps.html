@@ -28,7 +28,7 @@
                                 <br><br>
                                 <p class="card-text" style="float: left"> <b>Email:</b></p><p class="card-text" style="float: right"> {{ obj.user.email | safe }} </p>
                                 <br><br>
-                                <p class="card-text" style="float: left"> <b>Application Date:</b></p><p class="card-text" style="float: right"> {{ obj.last_login | safe }} </p>
+                                <p class="card-text" style="float: left"> <b>Application Date:</b></p><p class="card-text" style="float: right"> {{ obj.last_login | date:"F j, Y" }} </p>
                                 <br><br>
                                 <form action="{% url 'accounts:review_apps' %}" method="POST">
                                     {% csrf_token %}
@@ -66,12 +66,12 @@
                         <br><br>
                         <p class="card-text" style="float: left"> <b>Email:</b></p><p class="card-text" style="float: right"> {{ obj.user.email | safe }} </p>
                         <br><br>
-                        <p class="card-text" style="float: left"> <b>Application Date:</b></p><p class="card-text" style="float: right"> {{ obj.last_login | safe }} </p>
+                        <p class="card-text" style="float: left"> <b>Application Date:</b></p><p class="card-text" style="float: right"> {{ obj.last_login | date:"F j, Y" }} </p>
                         <br><br>
                         <form action="{% url 'accounts:review_apps' %}" method="POST">
                             {% csrf_token %}
                             <div class="container">
-                                <input type="text" name="reason" value="Explain Reason Here" />
+                                <input type="text" name="reason" value="Explain Reason Here" class="text-box"/>
                                 <br><br>
                             <div class="row">
                                 <div class="col text-center">

@@ -100,8 +100,6 @@ def register(request):
             msg.content_subtype = "html"
             msg.send()
 
-            # Email sponsor as well
-
             audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=user_info.sponsor_company,
                                          driver=user_info, apply_status='pending',
                                          reject_reason='N/A')
@@ -159,10 +157,20 @@ def review_apps(request):
             pending_user.is_email_verified = True
             pending_user.save()
 
-            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=pending_user.sponsor_company,
-                                         sponsor=current_user, driver=pending_user, apply_status='accepted',
-                                         reject_reason=request.POST.get('reason'))
-            audit_app.save()
+            existing_audit_app = AuditApplication.objects.get(driver=pending_user)
+            print(existing_audit_app)
+
+            if current_user.role_name == 'sponsor':
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.sponsor = current_user
+                existing_audit_app.apply_status = 'accepted'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
+            else:
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.apply_status = 'accepted'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
 
             # Send Approval email to new user
             msg = EmailMessage(
@@ -183,10 +191,20 @@ def review_apps(request):
             pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
             pending_user.is_active_account = False
 
-            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=current_user.sponsor_company,
-                                         sponsor=current_user, driver=pending_user, apply_status='rejected',
-                                         reject_reason=request.POST.get('reason'))
-            audit_app.save()
+            existing_audit_app = AuditApplication.objects.get(driver=pending_user)
+            print(existing_audit_app)
+
+            if current_user.role_name == 'sponsor':
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.sponsor = current_user
+                existing_audit_app.apply_status = 'rejected'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
+            else:
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.apply_status = 'rejected'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
 
             pending_user.save()
 
@@ -207,9 +225,9 @@ def review_apps(request):
 
     if current_user.role_name == 'sponsor':
         open_apps = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).filter(
-            is_email_verified=False).all()
+            is_email_verified=False).filter(is_active_account=True).all()
     else:
-        open_apps = UserInformation.objects.filter(is_email_verified=False).all()
+        open_apps = UserInformation.objects.filter(is_email_verified=False).filter(is_active_account=True).all()
     sponsor_companies = SponsorCompany.objects.all()
     number_of_sponsors = len(sponsor_companies)
     return render(request, "accounts/review_apps.html", {'open_apps': open_apps, 'sponsors': sponsor_companies,

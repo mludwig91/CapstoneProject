@@ -52,7 +52,7 @@ class UserInformation(models.Model):
     is_email_verified = models.BooleanField("If User Verified Email", default=False)
     approving_user = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     is_active_account = models.BooleanField("If User Has Account Enabled", default=True)
-    sponsor_company = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True)
+    sponsor_company = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         """function __str__ is used to create a string representation of this class
@@ -137,7 +137,7 @@ class AuditApplication(models.Model):
     #Associated to company so that any sponsor employee of company may approve/reject
     sponsor_company = models.ForeignKey(SponsorCompany, on_delete=CASCADE)
     #Approving/Rejecting Sponsor
-    sponsor = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_sponsor")
+    sponsor = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_sponsor", blank=True)
     driver = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_driver")
     apply_status = models.CharField("Application Status", max_length=25, choices=APPLICATION_STATUS_CHOICES)
     reject_reason = models.CharField("Rejection Reason", max_length=128, blank=True)
