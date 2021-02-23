@@ -136,6 +136,43 @@ def applied(request):
     """
     return render(request, "accounts/applied.html")
 
+@login_required(login_url='/accounts/login/')
+def sponsor_about_page_D(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/sponsor_about_page_D.html")
+
+
+@login_required(login_url='/accounts/login/')
+def sponsor_about_page_S(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/sponsor_about_page_S.html")
+
+@login_required(login_url='/accounts/login/')
+def edit_profile(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/edit_profile.html")
+
 
 @login_required(login_url='/accounts/login/')
 def review_apps(request):
@@ -250,3 +287,4 @@ def disable_account(request):
             return redirect("/accounts/profile")
 
     return render(request, "accounts/disable_account.html")
+

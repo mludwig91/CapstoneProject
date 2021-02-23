@@ -54,6 +54,7 @@ class UserInformation(models.Model):
     is_active_account = models.BooleanField("If User Has Account Enabled", default=True)
     sponsor_company = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
 
+
     def __str__(self):
         """function __str__ is used to create a string representation of this class
 
