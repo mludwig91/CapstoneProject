@@ -2,77 +2,20 @@
 This module contains custom forms used to collect the information needed to create a model.
 """
 from django import forms
-from .models import UserInformation
+from .models import UserInformation, SponsorCompany
 
 
 class UserInformationForm(forms.ModelForm):
     """
     This form creates an instance of a UserInformation model and collects its fields
     """
-    # Special options
-    blank = ''
-    prefer = 'Prefer Not To Answer'
-
-    # School options
-    clemson = 'Clemson University'
-    fau = 'Florida Atlantic University'
-    osu = 'The Ohio State University'
-    rhit = 'Rose-Hulman Institute of Technology'
-    other = 'Other'
-    schools = [
-        (blank, ''),
-        (clemson, 'Clemson University'),
-        (fau, 'Florida Atlantic University'),
-        (osu, 'The Ohio State University'),
-        (rhit, 'Rose-Hulman Institute of Technology'),
-        (other, 'Other')
-    ]
-
-    # Courses options
-    cpsc2150 = 'CPSC2150'
-    cpsc3720 = 'CPSC3720'
-    classes = [
-        (blank, ''),
-        (cpsc2150, 'CPSC2150'),
-        (cpsc3720, 'CPSC3720'),
-        (other, 'Other')
-    ]
-
-    # Gender options
-    male = 'Male'
-    female = 'Female'
-    genders = [
-        (blank, ''),
-        (male, 'Male'),
-        (female, 'Female'),
-        (prefer, 'Prefer Not To Answer')
-    ]
-
-    # Race options
-    native = 'American Indian or Alaska Native'
-    asian = 'Asian'
-    black = 'Black or African American'
-    hispanic = 'Hispanic or Latino'
-    hawaiian = 'Native Hawaiian or Other Pacific Islander'
-    white = 'White'
-    races = [
-        (blank, ''),
-        (native, 'American Indian or Alaska Native'),
-        (asian, 'Asian'),
-        (black, 'Black or African American'),
-        (hispanic, 'Hispanic or Latino'),
-        (hawaiian, 'Native Hawaiian or Other Pacific Islander'),
-        (white, 'White'),
-        (prefer, 'Prefer Not To Answer')
-    ]
-
     # Fields that will need to be completed in this form
     user_email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'readonly': 'readonly'}))  # read only
-    user_nickname = forms.CharField(label='Nickname', max_length=25)
-    user_school = forms.ChoiceField(label='School', choices=schools)
-    user_class = forms.ChoiceField(label='Class', choices=classes)
-    user_gender = forms.ChoiceField(label='Gender', choices=genders)
-    user_race = forms.ChoiceField(label='Race', choices=races)
+    first_name = forms.CharField(label='First Name', max_length=25)
+    last_name = forms.CharField(label='Last Name', max_length=25)
+    phone_number = forms.IntegerField(label='Phone Number', max_value=9999999999, min_value=1000000000)
+    sponsor_company = forms.ModelChoiceField(label='Sponsor', queryset=SponsorCompany.objects.all())
+
 
     def __init__(self, *args, **kwargs):
         """function __init__ is called to instantiate the user information form
@@ -92,4 +35,7 @@ class UserInformationForm(forms.ModelForm):
         A class that stores the meta information about this form
         """
         model = UserInformation
-        fields = ['user_email', 'user_nickname', 'user_school', 'user_class', 'user_gender', 'user_race']
+        fields = ['user_email', 'first_name', 'last_name', 'phone_number', 'sponsor_company']
+
+
+

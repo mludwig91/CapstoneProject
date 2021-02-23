@@ -1,0 +1,84 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/profile.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block body_js %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1>Edit profile</h1>
+                    <a class="btn btn-lg btn-jumbotron">Submit</a>
+                <div class="d-flex py-2">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="container profile-head">
+            <div class="row">
+                <div class="col-10">
+                    <div class="profile-name">
+                        <h3> {{ user.userinformation.first_name }} {{ user.userinformation.last_name }} </h3>
+                        <h6> {{ user.userinformation.sponsor_company }}</h6><br>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+            <div class="container profile-info">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>User ID</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>Flast</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Name</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>{{ user.userinformation.first_name }} {{ user.userinformation.last_name }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>flast@email.com</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Phone</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div id="edit" contenteditable="true">
+                        <p>{{user.userinformation.phone_number }}</p></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Address</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div id="edit" contenteditable="true">
+                        <p> {{ user.userinformation.address }} </p></div>
+                    </div>
+                </div>
+
+
+            </div>
+{% endblock %}

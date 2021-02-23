@@ -46,13 +46,13 @@ INSTALLED_APPS = [
     # Our own applications
     'accounts',
     'core',
+    'catalog',
 
     # External Plugins
     'social_django',
     'django_ace',
     'compressor',
     'crispy_forms',
-    'mathfilters'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -94,18 +94,11 @@ WSGI_APPLICATION = 'driverite_django.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-        'default': {
-        'ENGINE': 'djongo',
-        'CLIENT': {
-            'name': 'DriveRiteDB',
-            'host': 'mongodb+srv://driveriteApp:V1sx3rBAygzD8tg5@cluster0.boofi.mongodb.net/DriveRiteDB?retryWrites=true&w=majority',
-            'username': 'driveriteApp',
-            'password': 'V1sx3rBAygzD8tg5',
-            'authMechanism': 'SCRAM-SHA-1',
-            },    
-        }
-
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+}
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin
@@ -114,6 +107,13 @@ AUTHENTICATION_BACKENDS = [
     # google oauth2
     'social_core.backends.google.GoogleOAuth2',
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'driveriteinc@gmail.com'
+EMAIL_HOST_PASSWORD = 'bofbig-myqFyz-gerke4'
 
 
 # Password validation
@@ -183,3 +183,44 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+
+#Logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[{levelname}] @{asctime}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO'
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'filelog': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+        },
+    },
+}
+
+# ETSY API
+# protect key better
+ETSY_BASE_URL = 'https://openapi.etsy.com/v2'
+ETSY_API_KEY = '1a3ofydrsprc5cev28c3vb7l'
+

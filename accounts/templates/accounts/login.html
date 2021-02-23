@@ -1,17 +1,22 @@
-<!-- This is where we tentatively will have them login-->
 {% extends "core/base.html" %}
 {% load static compress %}
 
 {% block css %}
     {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
     {% endcompress %}
 {% endblock %}
 
 {% block main_content %}
-    Login Page
-    <a href="{% url 'index' %}">Home Page link</a>
-    <a href="{% url 'social:begin' 'google-oauth2' %}?next={% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'index' %}{% endif %}">
-        <input type="image" src="{% static 'images/google.png' %}" width="240"
-               height="55" alt="Sign in with Google"/>
-    </a>
+    <div class="container">
+        <div class="card w-50 mt-3 mx-auto shadow-lg rounded fadeInDown text-center">
+            <div class="card-body">
+                <h2 class="card-title mb-3">Welcome to Driverite</h2>
+                    <a href="{% url 'social:begin' 'google-oauth2' %}?next={% url 'accounts:profile' %}">
+                        <input type="image" src="{% static 'images/google.png' %}" width="240"
+                               height="55" alt="Sign in with Google"/>
+                    </a>
+            </div>
+        </div>
+    </div>
 {% endblock %}
