@@ -31,12 +31,6 @@ class SponsorCompany(models.Model):
         """
         return self.company_name
 
-   
-    def saveEdits(self, user):
-        editElem = sponsor_about_page_S.getElementById("edit")
-        userVersion = editElem.innerHTML
-        user.userinformation.sponsor_company.company_about_info = userVersion
-
 
 class UserInformation(models.Model):
     """
@@ -61,6 +55,9 @@ class UserInformation(models.Model):
     approving_user = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     is_active_account = models.BooleanField("If User Has Account Enabled", default=True)
     sponsor_company = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True)
+    points = models.IntegerField("Points", null=True, default=0)
+    address = models.CharField("Address", max_length=100, default="N/A")
+
 
     def __str__(self):
         """function __str__ is used to create a string representation of this class

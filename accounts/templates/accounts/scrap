@@ -1,0 +1,146 @@
+<!-- <input type="button" value="save my edits" onclick="saveEdits()"/>   <!-- Remove this button for Drivers -->
+
+            <div class="my-4">
+                
+                <form action="/action_page.php">
+                    <label for="fname">About:</label><br>
+                    <textarea rows="2" cols="136" placeholder= {{user.userinformation.sponsor_company.company_about_info}}></textarea><br>
+                    <input type="submit" value="Submit">
+                  </form>
+
+               
+                
+                 <!-- <div id="edit" contenteditable="true"> <!-- Remove this part for Drivers -->
+                    
+                   <!--{{ user.userinformation.sponsor_company.company_about_info }}--> 
+                    
+                 <!-- </div> -->
+                
+                <script>
+                    function saveEdits() 
+                    {
+                        //get the editable element
+                        var editElem = document.getElementById("edit");
+
+                        //get the edited element content
+                        var userVersion = editElem.innerHTML;
+
+                        //save the content to local storage
+                        localStorage.userEdits = userVersion;
+                    }
+                </script>
+
+
+                {% block main_content %}
+    <div class="jumbotron jumbotron-fluid py-5 mb-0">
+        <div class="container text-center">
+            <h1> About {{ user.userinformation.sponsor_company.company_name }} </h1>
+        </div>
+    </div>
+    <div class="container px-3 py-0">
+        <form action="{% url 'accounts:register' %}" method="POST">
+            {% csrf_token %}
+            <div class="page-section-heading my-3">
+               <h3>About </h3> 
+            </div>
+
+            
+
+
+            </div>
+            <div class="d-flex p-0 justify-content-center">
+                
+            </div>
+        </form>
+        <br>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <form action="/action_page.php">
+                    <label for="fname">About:</label><br>
+                    <textarea rows="2" cols="136" placeholder= {{user.userinformation.sponsor_company.company_about_info}}></textarea><br>
+                    <input type="submit" value="Submit">
+                  </form>
+
+
+
+
+
+
+
+
+
+                  {% extends "core/base.html" %}
+{% load static compress crispy_forms_tags crispy_forms_filters %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/register.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="jumbotron jumbotron-fluid py-5 mb-0">
+        <div class="container text-center">
+            <h1> About {{ user.userinformation.sponsor_company.company_name }} </h1>
+        </div>
+    </div>
+    <div class="container px-3 py-0">
+        <form action="{% url 'accounts:register' %}" method="POST">
+            {% csrf_token %}
+            <div class="page-section-heading my-3">
+               <h3>About </h3> 
+            </div>
+
+            <!-- <input type="button" value="save my edits" onclick="saveEdits()"/>   <!-- Remove this button for Drivers -->
+
+            <div class="my-4">
+                
+               
+
+                <form action="/updateAbout" method="post">
+                    <input type="text" name="email"></input><br><br>
+                    <input type="submit" value="Submit"></input>
+                  </form>
+                
+                 <!-- <div id="edit" contenteditable="true"> <!-- Remove this part for Drivers -->
+                    
+                   <!--{{ user.userinformation.sponsor_company.company_about_info }}--> 
+                    
+                 <!-- </div> -->
+                
+                <script>
+                    function saveEdits() 
+                    {
+                        //get the editable element
+                        var editElem = document.getElementById("edit");
+
+                        //get the edited element content
+                        var userVersion = editElem.innerHTML;
+
+                        //save the content to local storage
+                        localStorage.userEdits = userVersion;
+                    }
+                </script>
+
+
+            </div>
+            <div class="d-flex p-0 justify-content-center">
+                
+            </div>
+        </form>
+        <br>
+    </div>
+{% endblock %}

@@ -16,6 +16,7 @@ class UserInformationForm(forms.ModelForm):
     phone_number = forms.IntegerField(label='Phone Number', max_value=9999999999, min_value=1000000000)
     sponsor_company = forms.ModelChoiceField(label='Sponsor', queryset=SponsorCompany.objects.all())
 
+
     def __init__(self, *args, **kwargs):
         """function __init__ is called to instantiate the user information form
 
@@ -35,3 +36,6 @@ class UserInformationForm(forms.ModelForm):
         """
         model = UserInformation
         fields = ['user_email', 'first_name', 'last_name', 'phone_number', 'sponsor_company']
+
+
+

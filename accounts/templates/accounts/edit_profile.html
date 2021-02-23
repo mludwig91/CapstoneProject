@@ -13,10 +13,10 @@
 {% block main_content %}
     <div class="jumbotron jumbotron-fluid">
             <div class="container">
-                <h1>Profile</h1>
+                <h1>Edit profile</h1>
+                    <a class="btn btn-lg btn-jumbotron">Submit</a>
                 <div class="d-flex py-2">
-                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
-                       <a id=disable href="{% url 'accounts:disable_account' %}">Deactivate Account</a>
+                    
                 </div>
             </div>
         </div>
@@ -65,7 +65,8 @@
                         <label>Phone</label>
                     </div>
                     <div class="col-sm-6">
-                        <p>{{ user.userinformation.phone_number }}</p>
+                        <div id="edit" contenteditable="true">
+                        <p>{{user.userinformation.phone_number }}</p></div>
                     </div>
                 </div>
                 <div class="row">
@@ -73,7 +74,8 @@
                         <label>Address</label>
                     </div>
                     <div class="col-sm-6">
-                        <p> {{ user.userinformation.address }} </p>
+                        <div id="edit" contenteditable="true">
+                        <p> {{ user.userinformation.address }} </p></div>
                     </div>
                 </div>
 

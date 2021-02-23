@@ -14,30 +14,22 @@
         </div>
     </div>
     <div class="container px-3 py-0">
-        <form action="{% url 'accounts:register' %}" method="POST">
+        <form action="{% url 'accounts:sponsor_about_page_S' %}" method="POST">
             {% csrf_token %}
             <div class="page-section-heading my-3">
-               <h3>About </h3> 
+                <h3>About</h3>
             </div>
-
-            <input type="button" value="save my edits" onclick="saveEdits()"/>   <!-- Remove this button for Drivers -->
-
             <div class="my-4">
                 
-                
+                <form action="/action_page.php">
+                    <textarea rows="2" cols="136" placeholder= {{user.userinformation.sponsor_company.company_about_info}}></textarea><br>
+                  </form>
 
-               
-                
-                <div id="edit" contenteditable="true"> <!-- Remove this part for Drivers -->
-                    
-                    {{ user.userinformation.sponsor_company.company_about_info }}
-                    
-                </div>
-                
 
             </div>
             <div class="d-flex p-0 justify-content-center">
-                
+                <button type="submit" class="btn btn-success" aria-expanded="true">Confirm</button>
+                <a href="{% url 'accounts:profile' %}" class="btn btn-danger ml-2" role="button" aria-pressed="true">Cancel</a>
             </div>
         </form>
         <br>
