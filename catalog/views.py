@@ -1,6 +1,13 @@
 from django.shortcuts import render
 from django.conf import settings
 from accounts.models import CatalogItem, SponsorCatalogItem, CatalogItemImage, SponsorCompany, UserInformation
+from catalog.serializers import ItemSerializer, SponsorCatalogItemSerializer
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import ItemSerializer
+from rest_framework import generics
 import json
 import requests
 
@@ -37,7 +44,7 @@ def shop(request):
             SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).delete()
     else:
         # get all database instances for items and update all listings
-        for listing in CatalogItem.objects.all() :
+        for listing in CatalogItem.objects.all():
             url = base_url + '/listings/{}?api_key={}'.format(listing.api_item_Id, key)
             response = requests.request("GET", url)
             search_was_successful = (response.status_code == 200)
@@ -84,3 +91,21 @@ def my_catalog(request):
     images = CatalogItemImage.objects.filter(catalog_item__in=items).order_by('catalog_item')
     listings = zip(items, sponsors, images)
     return render(request, "catalog/my-catalog.html", context = {'listings' : listings})
+
+# trying to use django-restframework & django-filters 
+class Get_Items(APIView):
+    def get(self, request):
+        items = CatalogItem.objects.all()
+        serialized = ItemSerializer(items, many=True)
+        return Response(serialized.data)
+
+class Get_Sponsor_Items(APIView):
+    def get(self, request):
+        user = UserInformation.objects.get(user=request.user)
+        company = user.sponsor_company
+        sponsor_items = SponsorCatalogItem.objects.filter(sponsor_company=company)
+        serialized = SponsorCatalogItemSerializer(sponsor_items, many=True)
+        return Response(serialized.data)
+
+def listings(request):
+    return render(request, "catalog/listings.html")

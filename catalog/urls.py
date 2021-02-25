@@ -12,4 +12,7 @@ app_name = 'catalog'
 urlpatterns = [
     path('shop', views.shop, name='shop'),
     path('my-catalog', views.my_catalog, name='my-catalog'),
+    path('listings', views.listings, name='listings'),
+    path('items', views.Get_Items.as_view(), name = 'items'),
+    path('sponsor-items', views.Get_Sponsor_Items.as_view(), name = 'sponsor-items')
 ]

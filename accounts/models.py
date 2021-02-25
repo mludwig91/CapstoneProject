@@ -81,21 +81,20 @@ class CatalogItem(models.Model):
     """
     Model of a particular catalog item.
     """
-    item_name = models.CharField("Item Name", max_length=25, validators=[MinLengthValidator(1)], null=True)
-    item_description = models.CharField("First Name", max_length=256, validators=[MinLengthValidator(1)], null=True)
+    item_name = models.CharField("Item Name", max_length=256, validators=[MinLengthValidator(1)], null=True)
+    item_description = models.CharField("Item Description", max_length=256, validators=[MinLengthValidator(1)], null=True)
     retail_price = models.FloatField("Retail Price (MSRP)", null=True, validators=[MinValueValidator(0.01)])
     is_available = models.BooleanField("Item is Available From Retail", default=False)
     last_update = models.DateTimeField("DateTime of Last Update to Item", default=datetime.datetime.utcnow)
-    #URL Validator necessary for API entry?
     api_item_Id = models.CharField("API Link/Identifier", max_length=256, validators=[MinLengthValidator(1)], unique=True)
+
 
 class CatalogItemImage(models.Model):
     """
     Model of a particular image belonging to a particular catalog item.
     """
-    catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE)
+    catalog_item = models.ForeignKey(CatalogItem, related_name='images', on_delete=CASCADE)
     image_link = models.URLField("Static Image Link")
-    #filename = models.ImageField("Unique Image Filename", UniqueConstraint)
 
 class SponsorCatalogItem(models.Model):
     """
