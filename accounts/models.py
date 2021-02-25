@@ -10,7 +10,6 @@ from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields import DateTimeField
 import datetime
 
-
 class SponsorCompany(models.Model):
     """
     Model of a sponsor company to keep track of info for sponsors' companies.
@@ -32,7 +31,6 @@ class SponsorCompany(models.Model):
             str: company name
         """
         return self.company_name
-
 
 class UserInformation(models.Model):
     """
@@ -90,6 +88,7 @@ class UserInformation(models.Model):
             str: user email
         """
         return self.user.email
+
     get_user_email.short_description = 'User Email'  # Renames column head
 
 
@@ -97,22 +96,22 @@ class CatalogItem(models.Model):
     """
     Model of a particular catalog item.
     """
-    item_name = models.CharField("Item Name", max_length=25, validators=[MinLengthValidator(1)], null=True)
-    item_description = models.CharField("First Name", max_length=256, validators=[MinLengthValidator(1)], null=True)
+    item_name = models.CharField("Item Name", max_length=256, validators=[MinLengthValidator(1)], null=True)
+    item_description = models.CharField("Item Description", max_length=256, validators=[MinLengthValidator(1)],
+                                        null=True)
     retail_price = models.FloatField("Retail Price (MSRP)", null=True, validators=[MinValueValidator(0.01)])
     is_available = models.BooleanField("Item is Available From Retail", default=False)
     last_update = models.DateTimeField("DateTime of Last Update to Item", default=datetime.datetime.utcnow)
-    # URL Validator necessary for API entry?
-    api_item_Id = models.CharField("API Link/Identifier", max_length=256, validators=[MinLengthValidator(1)], unique=True)
+    api_item_Id = models.CharField("API Link/Identifier", max_length=256, validators=[MinLengthValidator(1)],
+                                   unique=True)
 
 
 class CatalogItemImage(models.Model):
     """
     Model of a particular image belonging to a particular catalog item.
     """
-    catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE)
+    catalog_item = models.ForeignKey(CatalogItem, related_name='images', on_delete=CASCADE)
     image_link = models.URLField("Static Image Link")
-    # filename = models.ImageField("Unique Image Filename", UniqueConstraint)
 
 
 class SponsorCatalogItem(models.Model):
@@ -145,8 +144,10 @@ class Order(models.Model):
     ordering_driver = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True)
     order_status = models.CharField("Order Status", max_length=25, choices=ORDER_STATUS_CHOICES)
     last_status_change = models.DateTimeField("Last DateTime of OrderStatus Update", default=datetime.datetime.utcnow)
-    retail_at_order = models.FloatField("Retail Price (MSRP) at Order Time", null=True, validators=[MinValueValidator(0.01)])
-    points_at_order = models.IntegerField("Driver Point Cost at Order Time", null=True, validators=[MinValueValidator(1)])
+    retail_at_order = models.FloatField("Retail Price (MSRP) at Order Time", null=True,
+                                        validators=[MinValueValidator(0.01)])
+    points_at_order = models.IntegerField("Driver Point Cost at Order Time", null=True,
+                                          validators=[MinValueValidator(1)])
 
 
 class AuditApplication(models.Model):
@@ -163,7 +164,8 @@ class AuditApplication(models.Model):
     # Associated to company so that any sponsor employee of company may approve/reject
     sponsor_company = models.ForeignKey(SponsorCompany, on_delete=CASCADE)
     # Approving/Rejecting Sponsor
-    sponsor = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_sponsor", blank=True)
+    sponsor = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_sponsor",
+                                blank=True)
     driver = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_driver")
     apply_status = models.CharField("Application Status", max_length=25, choices=APPLICATION_STATUS_CHOICES)
     reject_reason = models.CharField("Rejection Reason", max_length=128, blank=True)

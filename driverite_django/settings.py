@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     'django_ace',
     'compressor',
     'crispy_forms',
+    'django_apscheduler',
+    'rest_framework',
+
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -225,3 +228,8 @@ LOGGING = {
 ETSY_BASE_URL = 'https://openapi.etsy.com/v2'
 ETSY_API_KEY = '1a3ofydrsprc5cev28c3vb7l'
 
+'''
+SERIALIZATION_MODULES = {
+    'catalog_item': catalog.serializers.CatalogItemSerializer,
+}
+'''

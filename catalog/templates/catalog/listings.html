@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+
+<script src="{% static 'catalog/listings.js' %}"></script>
+
+<br>
+<div class="row" id="item"></div>
+{% endblock %}
