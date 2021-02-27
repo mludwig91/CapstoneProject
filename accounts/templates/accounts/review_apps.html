@@ -30,6 +30,12 @@
                                 <br><br>
                                 <p class="card-text" style="float: left"> <b>Application Date:</b></p><p class="card-text" style="float: right"> {{ obj.last_login | date:"F j, Y" }} </p>
                                 <br><br>
+                                <p class="card-text" style="float: left"> <b>Address:</b></p><p class="card-text" style="float: right"> {{ obj.address | safe }} </p>
+                                <br><br>
+                                <p class="card-text" style="float: left"> <b>State:</b></p><p class="card-text" style="float: right"> {{ obj.state | safe}} </p>
+                                <br><br>
+                                <p class="card-text" style="float: left"> <b>License Number:</b></p><p class="card-text" style="float: right"> {{ obj.license_number | safe }} </p>
+                                <br><br>
                                 <form action="{% url 'accounts:review_apps' %}" method="POST">
                                     {% csrf_token %}
                                     <div class="container">
