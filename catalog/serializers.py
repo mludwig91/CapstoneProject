@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from accounts.models import CatalogItem, SponsorCatalogItem, CatalogItemImage, SponsorCompany, UserInformation
+from accounts.models import SponsorCompany, UserInformation
+from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage
 
 
 class CatalogItemImageSerializer(serializers.ModelSerializer):
@@ -9,12 +10,11 @@ class CatalogItemImageSerializer(serializers.ModelSerializer):
 
 
 class ItemSerializer(serializers.ModelSerializer):
-    #sponsorcatalogitem_set = SponsorCatalogItemSerializer(many=True,read_only=True)
     images = CatalogItemImageSerializer(many=True,read_only=True)
     
     class Meta:
         model = CatalogItem
-        fields = ['item_name', 'item_description', 'retail_price', 'is_available', 'last_update', 'api_item_Id', 'images']
+        fields = ['item_name', 'item_description', 'retail_price', 'is_available', 'last_modified', 'api_item_Id', 'images']
 
 class SponsorCatalogItemSerializer(serializers.ModelSerializer):
     sponsor_company = serializers.SlugRelatedField(read_only=True, slug_field='company_name')
@@ -22,6 +22,6 @@ class SponsorCatalogItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SponsorCatalogItem
-        fields = ['sponsor_company', 'point_value', 'last_update', 'is_available_to_drivers', 'catalog_item']
+        fields = ['sponsor_company', 'point_value', 'date_added', 'is_available_to_drivers', 'catalog_item']
 
         

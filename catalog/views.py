@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.conf import settings
-from accounts.models import CatalogItem, SponsorCatalogItem, CatalogItemImage, SponsorCompany, UserInformation
+from accounts.models import SponsorCompany, UserInformation
+from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage
 from catalog.serializers import ItemSerializer, SponsorCatalogItemSerializer
+from django.contrib.auth.models import User
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import ItemSerializer
+from rest_framework import filters
 from rest_framework import generics
 import json
 import requests
@@ -93,19 +95,32 @@ def my_catalog(request):
     return render(request, "catalog/my-catalog.html", context = {'listings' : listings})
 
 # trying to use django-restframework & django-filters 
-class Get_Items(APIView):
-    def get(self, request):
-        items = CatalogItem.objects.all()
-        serialized = ItemSerializer(items, many=True)
-        return Response(serialized.data)
+class Get_Items(generics.ListAPIView):
+        queryset = CatalogItem.objects.all()
+        serializer_class = ItemSerializer
+        filter_backends = [filters.OrderingFilter]
+        ordering_fields = ['last_modified']
 
-class Get_Sponsor_Items(APIView):
-    def get(self, request):
-        user = UserInformation.objects.get(user=request.user)
-        company = user.sponsor_company
-        sponsor_items = SponsorCatalogItem.objects.filter(sponsor_company=company)
-        serialized = SponsorCatalogItemSerializer(sponsor_items, many=True)
-        return Response(serialized.data)
+
+class SponsorCompanyBackend(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        company = UserInformation.objects.filter(user=self.request.user).sponsor_company
+        return queryset.filter(sponsor_company=company)
+
+
+class Get_Sponsor_Items(generics.ListCreateAPIView):
+    queryset = SponsorCatalogItem.objects.all()
+    serializer_class = SponsorCatalogItemSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['date_added', 'point_value']
+
 
 def listings(request):
     return render(request, "catalog/listings.html")
+
+def all_items(request):
+    if request.POST:
+        if request.is_ajax():
+            print("AJAX")
+    return render(request, "catalog/all_items.html")
+
