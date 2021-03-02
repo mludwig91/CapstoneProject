@@ -52,7 +52,7 @@ class UserInformation(models.Model):
     phone_number = models.IntegerField("Phone Number", null=True, validators=[MinValueValidator(1000000000), MaxValueValidator(99999999999999)])
     last_login = models.DateTimeField("Last User Login", auto_now_add=True, blank=True)
     is_email_verified = models.BooleanField("If User Verified Email", default=False)
-    approving_user = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+    approving_user = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     is_active_account = models.BooleanField("If User Has Account Enabled", default=True)
     sponsor_company = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
     points = models.IntegerField("Points", null=True, default=0)
