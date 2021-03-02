@@ -8,8 +8,14 @@
 {% endblock %}
 
 {% block main_content %}
-    <br>
+
+<br>
+<div class="container m-3">
+<div class="row">
+    
     {% for listing, sponsor, image in listings %}
+
+<!--
         {% if forloop.first %}
             <div class="row">  
         {% endif %}
@@ -31,6 +37,22 @@
             </div>
         {% endif %}
 
-    {% endfor %}
 
+
+
+-->  
+
+    <div class="card m-2 col-sm-4" style="max-width: 18rem;"> 
+        <div class="card-body text-center">
+                <img class="m-2 mx-auto img-thumbnail" src="{{ image.image_link }}" width="auto" height="auto" />
+                <h5 class="card-title font-weight-bold" data-toggle="tooltip" title="Hooray!">{{ listing.item_name|slice:":35" }}...</h5>
+                <p class="card-text">price: ${{ listing.retail_price | floatformat:2 }}</p>
+                <a href="#" class="btn details px-auto">view details</a><br /> 
+                <a href="#" class="btn cart px-auto">ADD TO CART</a>
+        </div>
+    </div>
+
+{% endfor %}
+</div>
+</div>
 {% endblock %}

@@ -2,7 +2,8 @@ import json
 import requests
 import logging
 from django.conf import settings
-from accounts.models import CatalogItem, CatalogItemImage
+from accounts.models import SponsorCompany, UserInformation
+from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage
 from django.core.management.base import BaseCommand
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
