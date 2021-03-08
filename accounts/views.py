@@ -263,7 +263,10 @@ def review_apps(request):
             msg.send()
 
     if current_user.role_name == 'sponsor':
-        open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all()
+        if AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all().exists():
+            open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all()
+        else:
+            open_apps = None
     else:
         open_apps = AuditApplication.objects.filter(apply_status='pending').all()
     sponsor_companies = SponsorCompany.objects.all()

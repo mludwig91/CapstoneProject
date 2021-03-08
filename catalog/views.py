@@ -56,7 +56,7 @@ def shop(request):
     
 def my_catalog(request):
     user = UserInformation.objects.get(user=request.user)
-    company = user.sponsor_company
+    company = user.sponsor_company.all()[0]
     items = CatalogItem.objects.filter(sponsorcatalogitem__in=SponsorCatalogItem.objects.filter(sponsor_company=company)).order_by('pk')
     sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items).order_by('catalog_item')
     images = CatalogItemImage.objects.filter(catalog_item__in=items).order_by('catalog_item')
