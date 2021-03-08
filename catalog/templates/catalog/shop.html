@@ -3,41 +3,38 @@
 
 {% block css %}
     {% compress css %}
-        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/catalog.scss' %}" media="screen">
     {% endcompress %}
 {% endblock %}
 
 {% block main_content %}
-    <br>
-    {% for listing,  image in listings %}
-        {% if forloop.first %}
-            <div class="row">  
-        {% endif %}
-         
-        <div class="col-sm-4">
-            <img src = "{{ image.image_link }}", alt = "image not available">
-            <div>{{ listing.item_name|slice:":35" }}...</div>
-            <div>price: ${{ listing.retail_price | floatformat:2 }}</div>
-            <div>Listing ID: {{ listing.api_item_Id }}</div>
-            <form action="{% url 'catalog:shop' %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="ID" value="{{ listing.api_item_Id }}"/>
-                <input type="submit" name="change" value="Add" />
-                <input type="submit" name="change" value="Remove" />
-            </form>
 
-        </div> 
-    
-        {% if forloop.counter|divisibleby:3 %}
+<div class="row">
+    <div class="container mt-5 mb-3">
+        <h2 style="text-align:center">Manage Catalog</h2>
+        <p style="text-align:center"> Catalog Last Updated: {{last_update|date:'F j, Y g:i A'}} </p>
+
+    </div>
+</div>
+<div class="row">
+    <div class="container col-2">
+        <div class ="card ml-2 mt-2">
+                <div class="card-body">
+                <h5 class="card-title font-weight-bold">Sort By:</h5>
+                <button class="btn last_mod- my-1">Most Recent</button>
+                <button class="btn last_mod my-1">Least Recent</button>
+                <button class="btn price- my-1">Most Expensive</button> 
+                <button class="btn price my-1">Least Expensive</button> 
             </div>
-            <div class="row">
-        {% endif %}
+        </div>
+    </div>
+    <div class="container col-10">
+        <div class="row" id="item"></div>
+    </div>
 
-        {% if forloop.last %}
-            </div>
-        {% endif %}
-
-    {% endfor %}
+</div>
+{% load static %}
+<script src="{% static 'catalog/items.js' %}"></script>
 
 {% endblock %}
 
