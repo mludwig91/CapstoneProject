@@ -27,7 +27,10 @@ def shop(request):
     if request.method == 'POST':
         add_ID = json.load(request)['ID']
         user = UserInformation.objects.get(user=request.user)
-        company = user.sponsor_company
+        if user.role_name == 'sponsor':
+            company = user.sponsor_company.all()[0]
+        else:
+            company = user.sponsor_company.all()[0]
         catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
 
         # check not already in sponsor
@@ -56,7 +59,10 @@ def shop(request):
     
 def my_catalog(request):
     user = UserInformation.objects.get(user=request.user)
-    company = user.sponsor_company.all()[0]
+    if user.role_name == 'sponsor':
+        company = user.sponsor_company.all()[0]
+    else:
+        company = user.sponsor_company.all()[0]
     items = CatalogItem.objects.filter(sponsorcatalogitem__in=SponsorCatalogItem.objects.filter(sponsor_company=company)).order_by('pk')
     sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items).order_by('catalog_item')
     images = CatalogItemImage.objects.filter(catalog_item__in=items).order_by('catalog_item')
@@ -88,7 +94,10 @@ def all_items(request):
     if request.method == 'POST':
         add_ID = json.load(request)['ID']
         user = UserInformation.objects.get(user=request.user)
-        company = user.sponsor_company
+        if user.role_name == 'sponsor':
+            company = user.sponsor_company.all()[0]
+        else:
+            company = user.sponsor_company.all()[0]
         catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
         if SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
             return JsonResponse({'inSponsor' : False})

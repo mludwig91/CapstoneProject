@@ -129,7 +129,7 @@ class AuditApplication(models.Model):
 
     submission_time = models.DateTimeField("DateTime of Application Submission")
     # Associated to company so that any sponsor employee of company may approve/reject
-    sponsor_company = models.ForeignKey(SponsorCompany, on_delete=CASCADE)
+    sponsor_company = models.ForeignKey(SponsorCompany, on_delete=CASCADE, null=True)
     # Approving/Rejecting Sponsor
     sponsor = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_sponsor",
                                 blank=True)
@@ -143,7 +143,7 @@ class AuditPointChange(models.Model):
     Model of a particular point change performed against a driver being audited.
     """
     change_time = models.DateTimeField("DateTime of Point Change", default=datetime.datetime.utcnow)
-    driver = models.ForeignKey(UserInformation, on_delete=CASCADE)
+    driver = models.ForeignKey(UserInformation, on_delete=CASCADE, null=True)
     point_change = models.IntegerField("Point Change for Driver")
     change_reason = models.CharField("Point Change Reason", max_length=128)
 
@@ -153,5 +153,5 @@ class AuditLoginAttempt(models.Model):
     Model of a particular login attempt being audited.
     """
     attempt_time = models.DateTimeField("DateTime of login attempt")
-    login_user = models.ForeignKey(UserInformation, on_delete=CASCADE)
+    login_user = models.ForeignKey(UserInformation, on_delete=CASCADE, null=True)
     is_successful = models.BooleanField("Whether a login attempt is successful", null=True)

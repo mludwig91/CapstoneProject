@@ -13,7 +13,6 @@
     <div class="container mt-5 mb-3">
         <h2 style="text-align:center">Manage Catalog</h2>
         <p style="text-align:center"> Catalog Last Updated: {{last_update|date:'F j, Y g:i A'}} </p>
-        <a class="btn btn-lg btn-jumbotron" href="{% url 'catalog:my-catalog' %}">Driver View <i class="bi bi-binoculars"></i></a>
     </div>
 </div>
 <div class="row">
@@ -27,6 +26,8 @@
                 <button class="btn price my-1">Least Expensive</button> 
             </div>
         </div>
+        <br>
+        <a class="btn btn-lg btn-jumbotron" href="{% url 'catalog:my-catalog' %}">Driver View <i class="fas fa-glasses"></i></a>
     </div>
     <div class="container col-10">
         <div class="row" id="item"></div>
