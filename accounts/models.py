@@ -67,7 +67,7 @@ class UserInformation(models.Model):
     is_email_verified = models.BooleanField("If User Verified Email", default=False)
     approving_user = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     is_active_account = models.BooleanField("If User Has Account Enabled", default=True)
-    sponsor_company = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
+    sponsor_company = models.ManyToManyField(SponsorCompany, blank=True)
     points = models.IntegerField("Points", null=True, default=0)
     address = models.CharField("Address", max_length=100, default="N/A", blank=True)
     license_number = models.CharField("License", max_length=20, default="N/A", blank=True)

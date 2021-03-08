@@ -100,7 +100,10 @@ def register(request):
             msg.content_subtype = "html"
             msg.send()
 
-            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=user_info.sponsor_company,
+            print(form.cleaned_data['sponsor_company'])
+
+            sponsor = SponsorCompany.objects.get(company_name=form.cleaned_data['sponsor_company'])
+            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=sponsor,
                                          driver=user_info, apply_status='pending',
                                          reject_reason='N/A')
             audit_app.save()
@@ -190,12 +193,11 @@ def review_apps(request):
         if request.POST.get('approve') is not None:
             print("approving ", request.POST.get('user'))
             pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
-            pending_user.approving_user = current_user
             pending_user.is_email_verified = True
+            sponsor = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
+            existing_audit_app = AuditApplication.objects.get(driver=pending_user, sponsor_company=sponsor)
+            pending_user.sponsor_company.add(sponsor)
             pending_user.save()
-
-            existing_audit_app = AuditApplication.objects.get(driver=pending_user)
-            print(existing_audit_app)
 
             if current_user.role_name == 'sponsor':
                 existing_audit_app.submission_time = datetime.now()
@@ -205,6 +207,7 @@ def review_apps(request):
                 existing_audit_app.save()
             else:
                 existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.sponsor = current_user
                 existing_audit_app.apply_status = 'accepted'
                 existing_audit_app.reject_reason = request.POST.get('reason')
                 existing_audit_app.save()
@@ -226,10 +229,9 @@ def review_apps(request):
         if request.POST.get('reject') is not None:
             print("rejecting ", request.POST.get('user'))
             pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
-            pending_user.is_active_account = False
 
-            existing_audit_app = AuditApplication.objects.get(driver=pending_user)
-            print(existing_audit_app)
+            sponsor = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
+            existing_audit_app = AuditApplication.objects.get(driver=pending_user, sponsor_company=sponsor)
 
             if current_user.role_name == 'sponsor':
                 existing_audit_app.submission_time = datetime.now()
@@ -261,10 +263,9 @@ def review_apps(request):
             msg.send()
 
     if current_user.role_name == 'sponsor':
-        open_apps = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).filter(
-            is_email_verified=False).filter(is_active_account=True).all()
+        open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all()
     else:
-        open_apps = UserInformation.objects.filter(is_email_verified=False).filter(is_active_account=True).all()
+        open_apps = AuditApplication.objects.filter(apply_status='pending').all()
     sponsor_companies = SponsorCompany.objects.all()
     number_of_sponsors = len(sponsor_companies)
     return render(request, "accounts/review_apps.html", {'open_apps': open_apps, 'sponsors': sponsor_companies,
