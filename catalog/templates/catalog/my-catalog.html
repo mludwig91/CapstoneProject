@@ -3,56 +3,31 @@
 
 {% block css %}
     {% compress css %}
-        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/catalog.scss' %}" media="screen">
     {% endcompress %}
 {% endblock %}
 
 {% block main_content %}
 
-<br>
-<div class="container m-3">
+
 <div class="row">
-    
-    {% for listing, sponsor, image in listings %}
-
-<!--
-        {% if forloop.first %}
-            <div class="row">  
-        {% endif %}
-         
-        <div class="col-sm-4">
-            <img src = "{{ image.image_link }}", alt = "image not available">
-            <div>{{ listing.item_name|slice:":35" }}...</div>
-            <div>price: ${{ listing.retail_price | floatformat:2 }}</div>
-            <div>points: {{ sponsor.point_value }}</div>
-            <div>Listing ID: {{ listing.api_item_Id }}</div>
-        </div> 
-    
-        {% if forloop.counter|divisibleby:3 %}
+    <div class="container col-2">
+        <div class ="card ml-2 mt-2">
+                <div class="card-body">
+                <h5 class="card-title font-weight-bold">Sort By:</h5>
+                <button class="btn date_added- m-2">Most Recent</button>
+                <button class="btn date_added m-2">Least Recent</button> 
+                <button class="btn points- m-2">Most Expensive</button>
+                <button class="btn points m-2">Least Expensive</button>
             </div>
-            <div class="row">
-        {% endif %}
-
-        {% if forloop.last %}
-            </div>
-        {% endif %}
-
-
-
-
--->  
-
-    <div class="card m-2 col-sm-4" style="max-width: 18rem;"> 
-        <div class="card-body text-center">
-                <img class="m-2 mx-auto img-thumbnail" src="{{ image.image_link }}" width="auto" height="auto" />
-                <h5 class="card-title font-weight-bold" data-toggle="tooltip" title="Hooray!">{{ listing.item_name|slice:":35" }}...</h5>
-                <p class="card-text">price: ${{ listing.retail_price | floatformat:2 }}</p>
-                <a href="#" class="btn details px-auto">view details</a><br /> 
-                <a href="#" class="btn cart px-auto">ADD TO CART</a>
         </div>
     </div>
+    <div class="container col-10">
+        <div class="row" id="item"></div>
+    </div>
 
-{% endfor %}
 </div>
-</div>
+{% load static %}
+<script src="{% static 'catalog/sponsor_items.js' %}"></script>
+
 {% endblock %}

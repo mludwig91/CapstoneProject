@@ -6,10 +6,12 @@ from catalog.serializers import ItemSerializer, SponsorCatalogItemSerializer
 from django.contrib.auth.models import User
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import filters
 from rest_framework import generics
+from django.utils import timezone
 import json
 import requests
 
@@ -23,67 +25,34 @@ key = settings.ETSY_API_KEY
 def shop(request):
 
     if request.method == 'POST':
-        add_ID = request.POST['ID']
+        add_ID = json.load(request)['ID']
         user = UserInformation.objects.get(user=request.user)
         company = user.sponsor_company
         catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
 
-        # add to sponsor database
-        if request.POST['change'] == 'Add':
-            
-            # check not already in sponsor
-            if not SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
-                # calculate points
-                ratio = company.company_point_ratio 
-                cents = (int)(catalog_item.retail_price * 100)
-                points = (int)(cents/ratio)
+        # check not already in sponsor
+        if not SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
+            # calculate points
+            ratio = company.company_point_ratio 
+            cents = (int)(catalog_item.retail_price * 100)
+            points = (int)(cents/ratio)
 
-                # create new sponspor item and add to database
-                new_sponsor_item = SponsorCatalogItem(sponsor_company=company, catalog_item=catalog_item, point_value=points, is_available_to_drivers=True)
-                new_sponsor_item.save()
+            # create new sponspor item and add to database
+            new_sponsor_item = SponsorCatalogItem(sponsor_company=company, catalog_item=catalog_item, point_value=points, is_available_to_drivers=True)
+            new_sponsor_item.save()
 
-        elif request.POST['change'] == 'Remove':
+        else:
             SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).delete()
+            
+        return JsonResponse({'success' : 'sucess'})
+
     else:
-        # get all database instances for items and update all listings
-        for listing in CatalogItem.objects.all():
-            url = base_url + '/listings/{}?api_key={}'.format(listing.api_item_Id, key)
-            response = requests.request("GET", url)
-            search_was_successful = (response.status_code == 200)
-            data = response.json()
-            listing_data = data['results'][0]
-
-            # check if the modfied time has been changed 
-            listing.item_name = listing_data['title']
-            listing.item_description = listing_data['description']
-            # ignore foreign currency for now
-            listing.retail_price = float(listing_data['price'])
-            if listing_data['state'] == "active":
-                listing.is_available = True
-            else:
-                listing.is_available = False
-            listing.save()
-
-            # create new catalog item image instance if one doesnt exist
-            if not CatalogItemImage.objects.filter(catalog_item = listing).exists():
-                url = base_url + '/listings/{}/images?api_key={}'.format(listing.api_item_Id, key)
-                response = requests.request("GET", url)
-                search_was_successful = (response.status_code == 200)
-                image_data = response.json()
-                images = image_data['results']
-                for image in images:
-                    if image['rank'] == 1:
-                        main_image = image['url_170x135']
-                CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
-
-    # gather objects to be used in html 
-    items = CatalogItem.objects.all()
-    images = CatalogItemImage.objects.all()
-    listings = zip(items, images)
-    return render(request, "catalog/shop.html", context = {'listings' : listings})
+        most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
+        context = {'last_update' : most_recent_update}
+        
     
-# need some kind of additional inheritance so CatalogItemImage can be accessed through CatalogItem
-# zip relies on the listings always being in order which may not always be the case
+    return render(request, "catalog/shop.html", context=context)
+    
     
 def my_catalog(request):
     user = UserInformation.objects.get(user=request.user)
@@ -99,7 +68,7 @@ class Get_Items(generics.ListAPIView):
         queryset = CatalogItem.objects.all()
         serializer_class = ItemSerializer
         filter_backends = [filters.OrderingFilter]
-        ordering_fields = ['last_modified']
+        ordering_fields = ['last_modified', 'retail_price']
 
 
 class SponsorCompanyBackend(filters.BaseFilterBackend):
@@ -115,12 +84,51 @@ class Get_Sponsor_Items(generics.ListCreateAPIView):
     ordering_fields = ['date_added', 'point_value']
 
 
-def listings(request):
-    return render(request, "catalog/listings.html")
-
 def all_items(request):
-    if request.POST:
-        if request.is_ajax():
-            print("AJAX")
-    return render(request, "catalog/all_items.html")
+    if request.method == 'POST':
+        add_ID = json.load(request)['ID']
+        user = UserInformation.objects.get(user=request.user)
+        company = user.sponsor_company
+        catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
+        if SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
+            return JsonResponse({'inSponsor' : False})
+        else:
+            return JsonResponse({'inSponsor' : True})
+
+def listings(request):
+    
+    # get all database instances for items and update all listings
+    for listing in CatalogItem.objects.all():
+        url = base_url + '/listings/{}?api_key={}'.format(listing.api_item_Id, key)
+        response = requests.request("GET", url)
+        search_was_successful = (response.status_code == 200)
+        data = response.json()
+        listing_data = data['results'][0]
+
+        listing.last_updated = timezone.now()
+        listing.last_modified = listing_data['last_modified_tsz']
+        # check if the modfied time has been changed 
+        listing.item_name = listing_data['title']
+        listing.item_description = listing_data['description']
+        # ignore foreign currency for now
+        listing.retail_price = float(listing_data['price'])
+        if listing_data['state'] == "active":
+            listing.is_available = True
+        else:
+            listing.is_available = False
+        listing.save()
+
+        # create new catalog item image instance if one doesnt exist
+        if not CatalogItemImage.objects.filter(catalog_item = listing).exists():
+            url = base_url + '/listings/{}/images?api_key={}'.format(listing.api_item_Id, key)
+            response = requests.request("GET", url)
+            search_was_successful = (response.status_code == 200)
+            image_data = response.json()
+            images = image_data['results']
+            for image in images:
+                if image['rank'] == 1:
+                    main_image = image['url_170x135']
+            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
+
+    return render(request, "catalog/listings.html")
 

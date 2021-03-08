@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinLengthValidator, MinVal
 from django.db.models.constraints import UniqueConstraint
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields import DateTimeField
+from django.utils import timezone
 import datetime
 
 #import accounts.models
@@ -17,6 +18,7 @@ class CatalogItem(models.Model):
     retail_price = models.FloatField("Retail Price (MSRP)", null=True, validators=[MinValueValidator(0.01)])
     is_available = models.BooleanField("Item is Available From Retail", default=False)
     last_modified = models.IntegerField("Epoch time of Last Update to Item", validators=[MinValueValidator(1)], null=True)
+    last_updated = models.DateTimeField("DateTime of the Last Update to Item", default=timezone.now)
     api_item_Id = models.CharField("API Link/Identifier", max_length=256, validators=[MinLengthValidator(1)], unique=True)
 
 
@@ -35,5 +37,5 @@ class SponsorCatalogItem(models.Model):
     catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE)
     sponsor_company = models.ForeignKey("accounts.SponsorCompany", on_delete=CASCADE)
     point_value = models.IntegerField("Driver Point Value", validators=[MinValueValidator(1)])
-    date_added = models.DateTimeField("DateTime of Last Update to Item", default=datetime.datetime.utcnow)
+    date_added = models.DateTimeField("DateTime of the Date Added to Sponsor Catalog", default=timezone.now)
     is_available_to_drivers = models.BooleanField("Is Item Available For Driver Redemption", default=False)
