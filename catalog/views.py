@@ -17,46 +17,13 @@ import requests
 
 # Create your views here.
 
-
 base_url = settings.ETSY_BASE_URL
 key = settings.ETSY_API_KEY
 
+# Driver view
+def shop(request):      
+    return render(request, "catalog/shop.html")
 
-def shop(request):
-
-    if request.method == 'POST':
-        add_ID = json.load(request)['ID']
-        user = UserInformation.objects.get(user=request.user)
-        if user.role_name == 'sponsor':
-            company = user.sponsor_company.all()[0]
-        else:
-            company = user.sponsor_company.all()[0]
-        catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
-
-        # check not already in sponsor
-        if not SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
-            # calculate points
-            ratio = company.company_point_ratio 
-            cents = (int)(catalog_item.retail_price * 100)
-            points = (int)(cents/ratio)
-
-            # create new sponspor item and add to database
-            new_sponsor_item = SponsorCatalogItem(sponsor_company=company, catalog_item=catalog_item, point_value=points, is_available_to_drivers=True)
-            new_sponsor_item.save()
-
-        else:
-            SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).delete()
-            
-        return JsonResponse({'success' : 'sucess'})
-
-    else:
-        most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
-        context = {'last_update' : most_recent_update}
-        
-    
-    return render(request, "catalog/shop.html", context=context)
-    
-    
 def my_catalog(request):
     user = UserInformation.objects.get(user=request.user)
     if user.role_name == 'sponsor':
@@ -76,19 +43,24 @@ class Get_Items(generics.ListAPIView):
         filter_backends = [filters.OrderingFilter]
         ordering_fields = ['last_modified', 'retail_price']
 
-
 class SponsorCompanyBackend(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         company = UserInformation.objects.filter(user=self.request.user).sponsor_company
         return queryset.filter(sponsor_company=company)
 
-
 class Get_Sponsor_Items(generics.ListCreateAPIView):
-    queryset = SponsorCatalogItem.objects.all()
+    
+    def get_queryset(self):
+        user = UserInformation.objects.get(user=self.request.user)
+        if user.role_name == 'sponsor':
+            company = user.sponsor_company.all()[0]
+        else:
+            company = user.sponsor_company.all()[0]
+        return SponsorCatalogItem.objects.filter(sponsor_company=company)
+
     serializer_class = SponsorCatalogItemSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['date_added', 'point_value']
-
 
 def all_items(request):
     if request.method == 'POST':
@@ -150,4 +122,36 @@ def product_page(request, id):
     listings = zip(items, sponsors, images)
     return render(request, "catalog/product_page.html", context = {'listings' : listings})
 
+def browse(request):
 
+    if request.method == 'POST':
+        add_ID = json.load(request)['ID']
+        user = UserInformation.objects.get(user=request.user)
+        if user.role_name == 'sponsor':
+            company = user.sponsor_company.all()[0]
+        else:
+            company = user.sponsor_company.all()[0]
+        catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
+
+        # check not already in sponsor
+        if not SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
+            # calculate points
+            ratio = company.company_point_ratio 
+            cents = (int)(catalog_item.retail_price * 100)
+            points = (int)(cents/ratio)
+
+            # create new sponspor item and add to database
+            new_sponsor_item = SponsorCatalogItem(sponsor_company=company, catalog_item=catalog_item, point_value=points, is_available_to_drivers=True)
+            new_sponsor_item.save()
+
+        else:
+            SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).delete()
+            
+        return JsonResponse({'success' : 'sucess'})
+
+    else:
+        most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
+        context = {'last_update' : most_recent_update}
+        
+    
+    return render(request, "catalog/browse.html", context=context)

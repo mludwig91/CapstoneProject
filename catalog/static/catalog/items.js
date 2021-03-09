@@ -82,7 +82,7 @@ function getItemCards(items) {
             "ID": ID
         };
         var props = getProps(body);
-        fetch('/catalog/shop', props)
+        fetch('/catalog/browse', props)
         .then(function(response) {
             return response;
         })
