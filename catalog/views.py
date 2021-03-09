@@ -124,3 +124,13 @@ def all_items(request):
             print("AJAX")
     return render(request, "catalog/all_items.html")
 
+def product_page(request, id):
+    user = UserInformation.objects.get(user=request.user)
+    company = user.sponsor_company
+    items = CatalogItem.objects.filter(api_item_Id = id)
+    sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items)
+    images = CatalogItemImage.objects.filter(catalog_item__in=items)
+    listings = zip(items, sponsors, images)
+    return render(request, "catalog/product_page.html", context = {'listings' : listings})
+
+

@@ -8,36 +8,26 @@
 {% endblock %}
 
 {% block main_content %}
-    <br>
-    {% for listing,  image in listings %}
-        {% if forloop.first %}
-            <div class="row">  
-        {% endif %}
-         
-        <div class="col-sm-4">
-            <img src = "{{ image.image_link }}", alt = "image not available">
-            <div>{{ listing.item_name|slice:":35" }}...</div>
-            <div>price: ${{ listing.retail_price | floatformat:2 }}</div>
-            <div>Listing ID: {{ listing.api_item_Id }}</div>
-            <form action="{% url 'catalog:shop' %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="ID" value="{{ listing.api_item_Id }}"/>
-                <input type="submit" name="change" value="Add" />
-                <input type="submit" name="change" value="Remove" />
-            </form>
 
-        </div> 
-    
-        {% if forloop.counter|divisibleby:3 %}
+
+<div class="row">
+    <div class="container col-2">
+        <div class ="card m-2">
+                <div class="card-body">
+                <h5 class="card-title font-weight-bold">Sort By:</h5>
+                <button class="date_added- m-2">Most Recent</button>
+                <button class="date_added m-2">Least Recent</button> 
+                <button class="points- m-2">Most Expensive</button>
+                <button class="points m-2">Least Expensive</button>
             </div>
-            <div class="row">
-        {% endif %}
+        </div>
+    </div>
+    <div class="container col-10">
+        <div class="row" id="item"></div>
+    </div>
 
-        {% if forloop.last %}
-            </div>
-        {% endif %}
-
-    {% endfor %}
+</div>
+{% load static %}
+<script src="{% static 'catalog/sponsor_items.js' %}"></script>
 
 {% endblock %}
-
