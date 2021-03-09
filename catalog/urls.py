@@ -15,5 +15,6 @@ urlpatterns = [
     path('listings', views.listings, name='listings'),
     path('all_items', views.all_items, name='all_items'),
     path('items', views.Get_Items.as_view(), name = 'items'),
-    path('sponsor-items', views.Get_Sponsor_Items.as_view(), name = 'sponsor-items')
+    path('sponsor-items', views.Get_Sponsor_Items.as_view(), name = 'sponsor-items'),
+    path('<int:id>', views.product_page, name = 'product_page')
 ]

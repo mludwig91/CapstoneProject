@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+
+{% for listing, sponsor, image in listings %}
+
+ <div style = "text-align: center;"> 
+   
+            <img class="m-2 mx-auto img-thumbnail" src="{{ image.image_link }}" width="auto" height="auto" />
+            <h5 data-toggle="tooltip" title="Hooray!">{{ listing.item_name }}</h5>
+            <p>price: {{ sponsor.point_value }} points</p>
+            
+            <p> {{ listing.item_description }}</p>
+
+            <div class="d-flex py-2">
+                <a class="btn btn-lg btn-jumbotron mx-auto"  href="#">Add to cart</a>
+            </div>
+</div>
+
+{% endfor %}
+
+
+
+{% endblock %}
