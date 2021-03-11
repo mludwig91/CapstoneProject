@@ -12,6 +12,7 @@
     <title>Driverite</title>
 
     <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 
     <!-- CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
@@ -47,7 +48,9 @@
 {% block body %}
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <!-- Brand -->
-    <a class="navbar-brand" href="{% url 'index' %}">Driverite</a>
+    <a class="navbar-brand" href="{% url 'index' %}">
+        <img src='https://i.imgur.com/Sw9lIoa.png'>
+    </a>
 
     {% if user.is_authenticated %}
         {% if user.userinformation.role_name == "driver" %}

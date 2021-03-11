@@ -274,6 +274,14 @@ def review_apps(request):
     return render(request, "accounts/review_apps.html", {'open_apps': open_apps, 'sponsors': sponsor_companies,
                                                          'number_of_sponsors': number_of_sponsors})
 
+@login_required(login_url='/accounts/login/')
+def user_management(request):
+    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+    if current_user.role_name == 'admin':
+        available_users = UserInformation.objects.all()
+    else:
+        available_users = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).all()
+    return render(request, "accounts/user_management.html", {'users': available_users})
 
 @login_required(login_url='/accounts/login/')
 def disable_account(request):

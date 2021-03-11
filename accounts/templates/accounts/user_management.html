@@ -1,0 +1,126 @@
+{% extends "core/base.html" %}
+{% load static compress crispy_forms_tags crispy_forms_filters %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/disable_account.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@8.3.1/dist/handsontable.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable@8.3.1/dist/handsontable.full.min.css" rel="stylesheet" media="screen">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.24/b-1.7.0/b-colvis-1.7.0/b-html5-1.7.0/b-print-1.7.0/cr-1.5.3/date-1.0.2/sc-2.0.3/sl-1.3.2/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.24/b-1.7.0/b-colvis-1.7.0/b-html5-1.7.0/b-print-1.7.0/cr-1.5.3/date-1.0.2/sc-2.0.3/sl-1.3.2/datatables.min.js"></script>
+    
+    <div class="container">
+        <div class="card w-50 mt-3 mx-auto shadow-lg rounded text-center">
+            <div id="userHandsonTable">
+            </div>
+            <table id="hackDataTable">
+                <thead>
+                    <tr>
+                        <th>Company Name</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Driver Points</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Last Login</th>
+                        <th>Approving User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for user in users%}
+                    <tr>
+                        <td>{{user.sponsor_company.company_name | safe}}</td>
+                        <td>{{user.first_name | safe}}</td>
+                        <td>{{user.last_name | safe}}</td>
+                        <td>{{user.points | safe}}</td>
+                        <td>{{user.user.email | safe}}</td>
+                        <td>{{user.phone_number | safe}}</td>
+                        <td>{{user.last_login | safe}}</td>
+                        <td>{{user.approving_user.user.email | safe}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $( document ).ready(function() {
+            console.log( "ready!" );
+
+            $('#hackDataTable').DataTable();
+
+            var hotElement = document.querySelector('#userHandsonTable');
+            var hotElementContainer = hotElement.parentNode;
+
+            var hotSettings = {
+                data: {{ users|safe }},
+                columns: [
+                    {
+                        data: 'sponsor_company.company_name',
+                        type: 'text'
+                    },
+                    {
+                        data: 'first_name',
+                        type: 'text'
+                    },
+                    {
+                        data: 'last_name',
+                        type: 'text'
+                    },
+                    {
+                        data: 'points',
+                        type: 'numeric'
+                    },
+                    {
+                        data: 'user.email',
+                        type: 'text'
+                    },
+                    {
+                        data: 'phone_number',
+                        type: 'numeric'
+                    },
+                    {
+                        data: 'last_login',
+                        type: 'date',
+                        dateFormat: 'MM/DD/YYYY'
+                    },
+                    {
+                        data: 'approving_user.user.email',
+                        type: 'text'
+                    }
+                ],
+                stretchH: 'all',
+                width: 805,
+                autoWrapRow: true,
+                height: 487,
+                maxRows: 22,
+                rowHeaders: true,
+                colHeaders: [
+                    'Company',
+                    'First Name',
+                    'Last Name',
+                    'Driver Points',
+                    'Email',
+                    'Phone Number',
+                    'Last Login',
+                    'Approving Admin/Sponsor'
+                ],
+                filters: true,
+                dropdownMenu: true,
+                language: 'en-US',
+                licenseKey: 'non-commercial-and-evaluation'
+            };
+
+            var hotable = new Handsontable(hotElement, hotSettings);
+        });
+    </script>
+{% endblock %}
