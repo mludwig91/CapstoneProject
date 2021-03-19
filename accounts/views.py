@@ -1,6 +1,7 @@
 """
 This module contains our Django views for the "accounts" application.
 """
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -52,8 +53,12 @@ def profile(request):
 
     # Case 1: The user email exists in our user information table.
     if UserInformation.objects.filter(user=user).exists():
-        # Validate that we have a proper user information model
-        user_info = UserInformation.objects.get(user=user)
+        if request.method == 'POST':
+            user_info = UserInformation.objects.get(user=user)
+            print("::::: ", request.POST.get('newcompany'))
+            if request.POST.get('newcompany') is not None:
+                user_info.sponsor_company = SponsorCompany.objects.get(company_name=request.POST.get('newcompany'))
+                user_info.save()
         return render(request, "accounts/profile.html")
     # Case 2: The user doesn't have an entry in our user information table,
     #          we redirect to the register page
@@ -86,6 +91,13 @@ def register(request):
         if form.is_valid():
             # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
             user_info = form.save(commit=False)
+
+            if UserInformation.objects.filter(user=user).exists():
+                for obj in UserInformation.objects.get(user=user).all_companies.all():
+                    if SponsorCompany.objects.get(company_name=form.cleaned_data['sponsor_company']) == obj:
+                        # messages.error(request, "Error: You already belong to this company")
+                        error = "Error: You already applied to this company. Please choose a different company"
+                        return render(request, "accounts/register.html", {'form': form, 'error': error})
             user_info.user = user
             user_info.save()
             # Send confirmation email to new user
@@ -196,7 +208,8 @@ def review_apps(request):
             pending_user.is_email_verified = True
             sponsor = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
             existing_audit_app = AuditApplication.objects.get(driver=pending_user, sponsor_company=sponsor)
-            pending_user.sponsor_company.add(sponsor)
+            pending_user.all_companies.add(sponsor)
+            pending_user.sponsor_company = sponsor
             pending_user.save()
 
             if current_user.role_name == 'sponsor':
@@ -263,8 +276,8 @@ def review_apps(request):
             msg.send()
 
     if current_user.role_name == 'sponsor':
-        if AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all().exists():
-            open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all()
+        if AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company).all().exists():
+            open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company).all()
         else:
             open_apps = None
     else:

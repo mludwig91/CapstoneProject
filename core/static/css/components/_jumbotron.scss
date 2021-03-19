@@ -18,4 +18,15 @@
         background-color: $border-color;
         border-color: $border-color;
     }
+
+    .btn-jumbotron-alt {
+        color: $white;
+        background: $border-color;
+    }
+
+    .btn-jumbotron-alt:hover {
+        color: $border-color;
+        border-color: $border-color;
+        background: $purple;
+    }
 }

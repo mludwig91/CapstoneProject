@@ -16,20 +16,20 @@
                 <h1>Profile</h1>
                 <div class="d-flex py-2">
                     <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+                    <div class="divider"></div>
+                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:register' %}"><i class="fas fa-plus"></i> Apply To New Company</a>
                        <a id=disable href="{% url 'accounts:disable_account' %}">Deactivate Account</a>
                 </div>
             </div>
         </div>
 
-        <div class="container profile-head">
+        <div class="container profile-head page-section-heading">
             <div class="row">
                 <div class="col-10">
                     <div class="profile-name">
                         <h3> {{ user.userinformation.first_name }} {{ user.userinformation.last_name }} </h3>
                         {% if user.userinformation.is_email_verified %}
-                            {% for obj in user.userinformation.sponsor_company.all %}
-                                <h6> {{ obj }} {{ user.userinformation.role_name }}</h6>
-                            {% endfor %}
+                            <h6> {{ user.userinformation.sponsor_company }} {{ user.userinformation.role_name }}</h6>
                         {% else %}
                              <h6> Pending Approval...</h6>
                         {% endif %}
@@ -40,8 +40,8 @@
             </div>
         </div>
 
-
-            <div class="container profile-info">
+            <br>
+            <div class="container profile-info page-section-heading">
 
                 <div class="row">
                     <div class="col-sm-6">
@@ -94,4 +94,29 @@
 
 
             </div>
+
+            <div class="container profile-head">
+                <div class="row">
+                    <div class="col-10">
+                        {% if user.userinformation.all_companies.all.count > 1 %}
+                            <form action="{% url 'accounts:profile' %}" method="POST">
+                            {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="exampleFormControlSelect1">Change Current Company</label>
+                                    <select class="form-control" name="newcompany">
+                                        <option value="" selected disabled>Please select</option>
+                                        {% for obj in user.userinformation.all_companies.all %}
+                                            <option>{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            <input class="btn btn-success" type="submit" name="change" value="Change" />
+
+                            </form>
+
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+
 {% endblock %}
