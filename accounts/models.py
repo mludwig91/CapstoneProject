@@ -156,3 +156,12 @@ class AuditLoginAttempt(models.Model):
     attempt_time = models.DateTimeField("DateTime of login attempt")
     login_user = models.ForeignKey(UserInformation, on_delete=CASCADE, null=True)
     is_successful = models.BooleanField("Whether a login attempt is successful", null=True)
+
+
+class Points(models.Model):
+    """
+    Model of a Points.
+    """
+    user = models.ForeignKey(UserInformation, on_delete=models.CASCADE, null=True, blank=True, related_name="users_points")
+    sponsor = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
+    points = models.IntegerField("Phone Number", null=True, default=0)

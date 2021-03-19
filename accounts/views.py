@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
 from accounts.forms import UserInformationForm
-from accounts.models import UserInformation, AuditApplication, SponsorCompany
+from accounts.models import UserInformation, AuditApplication, SponsorCompany, Points
 
 
 def login(request):
@@ -55,9 +55,14 @@ def profile(request):
     if UserInformation.objects.filter(user=user).exists():
         if request.method == 'POST':
             user_info = UserInformation.objects.get(user=user)
-            print("::::: ", request.POST.get('newcompany'))
             if request.POST.get('newcompany') is not None:
+
+                current_points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company)
+                current_points.points = user_info.points
+                current_points.save()
+
                 user_info.sponsor_company = SponsorCompany.objects.get(company_name=request.POST.get('newcompany'))
+                user_info.points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company).points
                 user_info.save()
         return render(request, "accounts/profile.html")
     # Case 2: The user doesn't have an entry in our user information table,
@@ -82,8 +87,10 @@ def register(request):
 
     # Case 1: We have received a POST request with some data
     if request.method == 'POST':
+        current_sponsor = None
         # Check to see if we are creating a new user information entry or updating an existing one
         if UserInformation.objects.filter(user=user).exists():
+            current_sponsor = UserInformation.objects.get(user=user).sponsor_company
             form = UserInformationForm(request.POST, instance=UserInformation.objects.get(user=user))
         else:
             form = UserInformationForm(request.POST)
@@ -99,6 +106,7 @@ def register(request):
                         error = "Error: You already applied to this company. Please choose a different company"
                         return render(request, "accounts/register.html", {'form': form, 'error': error})
             user_info.user = user
+            user_info.sponsor_company = current_sponsor
             user_info.save()
             # Send confirmation email to new user
             msg = EmailMessage(
@@ -209,7 +217,15 @@ def review_apps(request):
             sponsor = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
             existing_audit_app = AuditApplication.objects.get(driver=pending_user, sponsor_company=sponsor)
             pending_user.all_companies.add(sponsor)
+            if pending_user.sponsor_company is not None:
+                print(pending_user.sponsor_company)
+                current_points = Points.objects.get(user=pending_user, sponsor=pending_user.sponsor_company)
+                current_points.points = pending_user.points
+                current_points.save()
             pending_user.sponsor_company = sponsor
+            new_points = Points(user=pending_user, points=0, sponsor=sponsor)
+            new_points.save()
+            pending_user.points = new_points.points
             pending_user.save()
 
             if current_user.role_name == 'sponsor':
