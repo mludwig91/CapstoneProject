@@ -1,0 +1,44 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+
+
+<section>
+<div class = "row">
+<table class="table table-hover table-bordered text-center">
+    <tr class="text-center">
+        <th>No.</th>
+        <th>Item</th>
+        <th>Price</th>
+    </tr>
+    {% if item_list %}
+        {% for sponsor_catalog_item in item_list %}
+            <td>{{ forloop.counter }}</td>
+            <td>
+                {{ sponsor_catalog_item.catalog_item.item_name }}
+            <span class="pull-right">
+            </span>
+            <td>{{ sponsor_catalog_items.point_value }}</td>
+
+            </td>
+            <td>{ sponsor_catalog_item.point_value }</td>
+        {% endfor %}
+    {% else %}
+    <h3>No Items currently in cart</h3>
+    {% endif %}
+
+</table>
+
+</div>
+
+</section> 
+
+
+{% endblock %}

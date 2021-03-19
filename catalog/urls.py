@@ -11,6 +11,7 @@ app_name = 'catalog'
 # URL patterns to be matched.
 urlpatterns = [
     path('shop', views.shop, name='shop'),
+    path('my_cart', views.my_cart, name='my_cart'),
     path('my-catalog', views.my_catalog, name='my-catalog'),
     path('listings', views.listings, name='listings'),
     path('all_items', views.all_items, name='all_items'),
@@ -18,4 +19,5 @@ urlpatterns = [
     path('sponsor-items', views.Get_Sponsor_Items.as_view(), name = 'sponsor-items'),
     path('browse', views.browse, name = 'browse'),
     path('<int:id>', views.product_page, name = 'product_page')
+    path('add_item/<int:id>/', views.add_item_to_cart, name = 'add_item_to_cart')
 ]

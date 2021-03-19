@@ -75,3 +75,20 @@ body {
     font-size: 1.75rem;
     font-weight: 200 !important;
 }
+
+#shopping-cart{
+    size: 550px;
+    color: $page-header-navlink-color;
+    padding-top: 7px;
+    padding-right: 5px;
+}
+
+#cart-count {
+    font-size: 10px;
+    background: #ff0000;
+    color: #fff;
+    padding: 0 5px;
+    vertical-align: top;
+    margin-left: -10px; 
+}
+
