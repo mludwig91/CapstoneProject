@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
-
+from datetime import datetime
 from accounts.forms import UserInformationForm
-from accounts.models import UserInformation
+from accounts.models import UserInformation, AuditApplication, SponsorCompany
 
 
 def login(request):
@@ -54,20 +54,10 @@ def profile(request):
     if UserInformation.objects.filter(user=user).exists():
         # Validate that we have a proper user information model
         user_info = UserInformation.objects.get(user=user)
-        try:
-            user_info.full_clean()
-
-            # Case 1a: The user information model is valid, therefore we can render the profile page.
-            request.session.set_expiry(0)
-            return render(request, "accounts/profile.html")
-        except ValidationError:
-            # Case 1b: The user information model is invalid,
-            #           we redirect to the register page
-            return redirect("/accounts/register")
+        return render(request, "accounts/profile.html")
     # Case 2: The user doesn't have an entry in our user information table,
     #          we redirect to the register page
-    else:
-        return redirect("/accounts/register")
+    return redirect("/accounts/register")
 
 
 @login_required(login_url='/accounts/login/')
@@ -110,7 +100,13 @@ def register(request):
             msg.content_subtype = "html"
             msg.send()
 
-            # Email sponsor as well
+            print(form.cleaned_data['sponsor_company'])
+
+            sponsor = SponsorCompany.objects.get(company_name=form.cleaned_data['sponsor_company'])
+            audit_app = AuditApplication(submission_time=datetime.now(), sponsor_company=sponsor,
+                                         driver=user_info, apply_status='pending',
+                                         reject_reason='N/A')
+            audit_app.save()
 
             request.session.set_expiry(0)
             return redirect("/accounts/applied")
@@ -197,9 +193,24 @@ def review_apps(request):
         if request.POST.get('approve') is not None:
             print("approving ", request.POST.get('user'))
             pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
-            pending_user.approving_user = current_user
             pending_user.is_email_verified = True
+            sponsor = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
+            existing_audit_app = AuditApplication.objects.get(driver=pending_user, sponsor_company=sponsor)
+            pending_user.sponsor_company.add(sponsor)
             pending_user.save()
+
+            if current_user.role_name == 'sponsor':
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.sponsor = current_user
+                existing_audit_app.apply_status = 'accepted'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
+            else:
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.sponsor = current_user
+                existing_audit_app.apply_status = 'accepted'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
 
             # Send Approval email to new user
             msg = EmailMessage(
@@ -218,7 +229,23 @@ def review_apps(request):
         if request.POST.get('reject') is not None:
             print("rejecting ", request.POST.get('user'))
             pending_user = UserInformation.objects.get(user=User.objects.get(email=request.POST.get('user')))
-            pending_user.delete()
+
+            sponsor = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
+            existing_audit_app = AuditApplication.objects.get(driver=pending_user, sponsor_company=sponsor)
+
+            if current_user.role_name == 'sponsor':
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.sponsor = current_user
+                existing_audit_app.apply_status = 'rejected'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
+            else:
+                existing_audit_app.submission_time = datetime.now()
+                existing_audit_app.apply_status = 'rejected'
+                existing_audit_app.reject_reason = request.POST.get('reason')
+                existing_audit_app.save()
+
+            pending_user.save()
 
             # Send Reject email to new user
             msg = EmailMessage(
@@ -235,8 +262,17 @@ def review_apps(request):
             msg.content_subtype = "html"
             msg.send()
 
-    open_apps = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).filter(is_email_verified=False).all()
-    return render(request, "accounts/review_apps.html", {'open_apps': open_apps})
+    if current_user.role_name == 'sponsor':
+        if AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all().exists():
+            open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all()
+        else:
+            open_apps = None
+    else:
+        open_apps = AuditApplication.objects.filter(apply_status='pending').all()
+    sponsor_companies = SponsorCompany.objects.all()
+    number_of_sponsors = len(sponsor_companies)
+    return render(request, "accounts/review_apps.html", {'open_apps': open_apps, 'sponsors': sponsor_companies,
+                                                         'number_of_sponsors': number_of_sponsors})
 
 
 @login_required(login_url='/accounts/login/')

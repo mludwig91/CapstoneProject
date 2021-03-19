@@ -10,7 +10,7 @@
 {% block main_content %}
     <div class="jumbotron jumbotron-fluid py-5 mb-0">
         <div class="container text-center">
-            <h1>Account Settings</h1>
+            <h1>DriveRite Application</h1>
         </div>
     </div>
     <div class="container px-3 py-0">
@@ -25,6 +25,9 @@
                 {{ form.last_name|as_crispy_field }}
                 {{ form.phone_number|as_crispy_field }}
                 {{ form.sponsor_company|as_crispy_field }}
+                {{ form.license_number|as_crispy_field }}
+                {{ form.state|as_crispy_field }}
+                {{ form.address|as_crispy_field }}
             </div>
             <div class="d-flex p-0 justify-content-center">
                 <button type="submit" class="btn btn-success" aria-expanded="true">Confirm</button>

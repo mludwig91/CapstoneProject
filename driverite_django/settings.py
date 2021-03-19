@@ -25,11 +25,12 @@ SECRET_KEY = 'j6w!slz&5v5gw5psx+2!ovcya$fmbp!emqy!q0s9!c9qg@a_2u'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#SECURITY WARNING: Allowing any hosts to connect to app
+ALLOWED_HOSTS = ['*']
 
 # client keys and secret for google auth
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '440772211828-8ou3qv9fd4ca9129sa475g5c58i2ut6g.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '-6hQKNZzkOQhcw_Ux4NLIFOT'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '62389380727-4e1mmirdkvrrfk6vdk3ftev8rpu7kpo2.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'q_EBlEy5QFttbWy-ehThvY6b'
 
 # Application definition
 
@@ -53,6 +54,10 @@ INSTALLED_APPS = [
     'django_ace',
     'compressor',
     'crispy_forms',
+    'django_apscheduler',
+    'rest_framework',
+    'django_filters'
+
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -224,3 +229,8 @@ LOGGING = {
 ETSY_BASE_URL = 'https://openapi.etsy.com/v2'
 ETSY_API_KEY = '1a3ofydrsprc5cev28c3vb7l'
 
+'''
+SERIALIZATION_MODULES = {
+    'catalog_item': catalog.serializers.CatalogItemSerializer,
+}
+'''

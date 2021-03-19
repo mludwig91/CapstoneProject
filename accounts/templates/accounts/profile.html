@@ -26,8 +26,15 @@
                 <div class="col-10">
                     <div class="profile-name">
                         <h3> {{ user.userinformation.first_name }} {{ user.userinformation.last_name }} </h3>
-                        <h6> {{ user.userinformation.sponsor_company }}</h6><br>
-                        
+                        {% if user.userinformation.is_email_verified %}
+                            {% for obj in user.userinformation.sponsor_company.all %}
+                                <h6> {{ obj }} {{ user.userinformation.role_name }}</h6>
+                            {% endfor %}
+                        {% else %}
+                             <h6> Pending Approval...</h6>
+                        {% endif %}
+
+                        <h6>Last Login: {{ user.userinformation.last_login | date:"F j, Y" }}</h6><br>
                     </div>
                 </div>
             </div>
@@ -35,14 +42,6 @@
 
 
             <div class="container profile-info">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label>User ID</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <p>Flast</p>
-                    </div>
-                </div>
 
                 <div class="row">
                     <div class="col-sm-6">
@@ -57,7 +56,7 @@
                         <label>Email</label>
                     </div>
                     <div class="col-sm-6">
-                        <p>flast@email.com</p>
+                        <p>{{ user.email }}</p>
                     </div>
                 </div>
                 <div class="row">
@@ -74,6 +73,22 @@
                     </div>
                     <div class="col-sm-6">
                         <p> {{ user.userinformation.address }} </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>License Number</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p> {{ user.userinformation.license_number }} </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>State</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <p> {{ user.userinformation.state }} </p>
                     </div>
                 </div>
 
