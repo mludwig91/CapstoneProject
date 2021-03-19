@@ -18,6 +18,6 @@ urlpatterns = [
     path('items', views.Get_Items.as_view(), name = 'items'),
     path('sponsor-items', views.Get_Sponsor_Items.as_view(), name = 'sponsor-items'),
     path('browse', views.browse, name = 'browse'),
-    path('<int:id>', views.product_page, name = 'product_page')
+    path('<int:id>', views.product_page, name = 'product_page'),
     path('add_item/<int:id>/', views.add_item_to_cart, name = 'add_item_to_cart')
 ]
