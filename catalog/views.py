@@ -155,3 +155,32 @@ def browse(request):
         
     
     return render(request, "catalog/browse.html", context=context)
+
+def add_item_to_cart(request, id):
+    
+    #get user and associate them with an order
+    user = UserInformation.objects.get(user=request.user)
+    item = CatalogItem.objects.get(api_item_Id=id)
+    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=item)
+    order,created = Order.objects.get_or_create(ordering_driver=user)
+    order.save()
+
+    #if item is in the cart already, dont add.
+    if Order.objects.filter(sponsor_catalog_item = sponsor_item, ordering_driver=user).exists():
+        messages.info(request, 'Item is already in cart!')
+        return product_page(request,id)
+
+    #else add item to order list
+    order.sponsor_catalog_item.add(sponsor_item)
+    user.item_count = user.item_count + 1
+    user.save()
+    order.save()
+    return product_page(request,id)
+
+def my_cart(request):
+    user = UserInformation.objects.get(user=request.user)
+    order = Order.objects.filter(ordering_driver=user)[0]
+    item_list = order.sponsor_catalog_item.all()
+  
+    return render(request, "catalog/my_cart.html", context = {'item_list': item_list})
+    

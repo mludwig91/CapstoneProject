@@ -15,6 +15,12 @@
             </li>
 
             <!-- Dropdown -->
+
+            <li id="shopping-cart">
+                <a class="fa fa-shopping-cart" href="{% url 'catalog:my_cart' %}" ></a>
+                <span class='badge badge-warning' id='cart-count'> {{ user.userinformation.item_count }} </span>
+                </li>
+    
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="{% url 'accounts:profile' %}" id="navbardrop" data-toggle="dropdown">
                 Profile

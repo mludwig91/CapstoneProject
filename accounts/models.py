@@ -72,6 +72,7 @@ class UserInformation(models.Model):
     address = models.CharField("Address", max_length=100, default="N/A", blank=True)
     license_number = models.CharField("License", max_length=20, default="N/A", blank=True)
     state = models.CharField("State", choices=STATES, max_length=20, blank=True)
+    item_count = models.IntegerField("Points", null=True, default=0)
 
     def __str__(self):
         """function __str__ is used to create a string representation of this class
@@ -107,6 +108,7 @@ class Order(models.Model):
         ('returned', 'Returned')
     )
 
+    sponsor_catalog_item = models.ManyToManyField("catalog.SponsorCatalogItem")
     sponsor = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
     sponsor_catalog_item = models.ForeignKey("catalog.SponsorCatalogItem", on_delete=SET_NULL, null=True)
     ordering_driver = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True)
