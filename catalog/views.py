@@ -40,8 +40,9 @@ def my_catalog(request):
 class Get_Items(generics.ListAPIView):
         queryset = CatalogItem.objects.all()
         serializer_class = ItemSerializer
-        filter_backends = [filters.OrderingFilter]
+        filter_backends = [filters.SearchFilter, filters.OrderingFilter]
         ordering_fields = ['last_modified', 'retail_price']
+        search_fields = ['item_name', 'item_description']
 
 class SponsorCompanyBackend(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):

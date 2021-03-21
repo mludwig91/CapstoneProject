@@ -61,3 +61,17 @@
     .row{
         margin-right: 0px;
     }
+
+    .nav-pills .nav-item{
+        background-color: $white;
+    }
+
+    .nav-pills a{
+        color: $gunmetal;
+        background-color: $white;
+    }
+
+    .nav-pills a:hover{
+        color: $white;
+        background-color: $purple;
+    }
