@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
-from accounts.models import SponsorCompany, UserInformation
+from accounts.models import SponsorCompany, UserInformation, Order
 from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage
 from catalog.serializers import ItemSerializer, SponsorCatalogItemSerializer
 from django.contrib.auth.models import User
@@ -171,6 +171,10 @@ def add_item_to_cart(request, id):
         messages.info(request, 'Item is already in cart!')
         return product_page(request,id)
 
+    #if order has no associated sponsor 
+    if order.sponsor is None:
+        order.sponsor.add(sponsor_item.sponsor_company)
+    
     #else add item to order list
     order.sponsor_catalog_item.add(sponsor_item)
     user.item_count = user.item_count + 1
@@ -180,8 +184,16 @@ def add_item_to_cart(request, id):
 
 def my_cart(request):
     user = UserInformation.objects.get(user=request.user)
-    order = Order.objects.filter(ordering_driver=user)[0]
-    item_list = order.sponsor_catalog_item.all()
-  
+    if Order.objects.filter(ordering_driver=user).exists():
+        order = Order.objects.filter(ordering_driver=user)[0]
+        if order.sponsor_catalog_item is not None:
+            items_list = order.sponsor_catalog_item.all()
+            for item in items_list:
+                order.points_at_order = order.points_at_order + item.sponsor_catalog_item.point_value
+                order.retail_at_order = order.retail_at_order + item.catalog_item.retail_price
+            order = order.__dict__
+            item_list = zip(items_list, order)
+        else:
+            item_list = None
+
     return render(request, "catalog/my_cart.html", context = {'item_list': item_list})
-    
