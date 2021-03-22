@@ -20,7 +20,7 @@
             <p> {{ listing.item_description }}</p>
 
             <div class="d-flex py-2">
-                <a class="btn btn-lg btn-jumbotron mx-auto"  href="#">Add to cart</a>
+                <a class="btn btn-lg btn-jumbotron mx-auto"  href="{% url 'catalog:add_item_to_cart' listing.api_item_Id %}">Add to cart</a>
             </div>
 </div>
 
