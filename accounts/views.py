@@ -1,6 +1,7 @@
 """
 This module contains our Django views for the "accounts" application.
 """
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -10,7 +11,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
 from accounts.forms import UserInformationForm
-from accounts.models import UserInformation, AuditApplication, SponsorCompany
+from accounts.models import UserInformation, AuditApplication, SponsorCompany, Points
 
 
 def login(request):
@@ -52,8 +53,17 @@ def profile(request):
 
     # Case 1: The user email exists in our user information table.
     if UserInformation.objects.filter(user=user).exists():
-        # Validate that we have a proper user information model
-        user_info = UserInformation.objects.get(user=user)
+        if request.method == 'POST':
+            user_info = UserInformation.objects.get(user=user)
+            if request.POST.get('newcompany') is not None:
+
+                current_points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company)
+                current_points.points = user_info.points
+                current_points.save()
+
+                user_info.sponsor_company = SponsorCompany.objects.get(company_name=request.POST.get('newcompany'))
+                user_info.points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company).points
+                user_info.save()
         return render(request, "accounts/profile.html")
     # Case 2: The user doesn't have an entry in our user information table,
     #          we redirect to the register page
@@ -77,8 +87,10 @@ def register(request):
 
     # Case 1: We have received a POST request with some data
     if request.method == 'POST':
+        current_sponsor = None
         # Check to see if we are creating a new user information entry or updating an existing one
         if UserInformation.objects.filter(user=user).exists():
+            current_sponsor = UserInformation.objects.get(user=user).sponsor_company
             form = UserInformationForm(request.POST, instance=UserInformation.objects.get(user=user))
         else:
             form = UserInformationForm(request.POST)
@@ -86,7 +98,15 @@ def register(request):
         if form.is_valid():
             # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
             user_info = form.save(commit=False)
+
+            if UserInformation.objects.filter(user=user).exists():
+                for obj in UserInformation.objects.get(user=user).all_companies.all():
+                    if SponsorCompany.objects.get(company_name=form.cleaned_data['sponsor_company']) == obj:
+                        # messages.error(request, "Error: You already belong to this company")
+                        error = "Error: You already applied to this company. Please choose a different company"
+                        return render(request, "accounts/register.html", {'form': form, 'error': error})
             user_info.user = user
+            user_info.sponsor_company = current_sponsor
             user_info.save()
             # Send confirmation email to new user
             msg = EmailMessage(
@@ -196,7 +216,16 @@ def review_apps(request):
             pending_user.is_email_verified = True
             sponsor = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
             existing_audit_app = AuditApplication.objects.get(driver=pending_user, sponsor_company=sponsor)
-            pending_user.sponsor_company.add(sponsor)
+            pending_user.all_companies.add(sponsor)
+            if pending_user.sponsor_company is not None:
+                print(pending_user.sponsor_company)
+                current_points = Points.objects.get(user=pending_user, sponsor=pending_user.sponsor_company)
+                current_points.points = pending_user.points
+                current_points.save()
+            pending_user.sponsor_company = sponsor
+            new_points = Points(user=pending_user, points=0, sponsor=sponsor)
+            new_points.save()
+            pending_user.points = new_points.points
             pending_user.save()
 
             if current_user.role_name == 'sponsor':
@@ -263,8 +292,8 @@ def review_apps(request):
             msg.send()
 
     if current_user.role_name == 'sponsor':
-        if AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all().exists():
-            open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company.all()[0]).all()
+        if AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company).all().exists():
+            open_apps = AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company).all()
         else:
             open_apps = None
     else:

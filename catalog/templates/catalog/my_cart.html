@@ -1,0 +1,70 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+
+
+<section>
+<div class = "row">
+<table class="table table-hover table-bordered text-center">
+    <tr class="text-center">
+    </tr>
+    <!-- List of Items in cart -->
+    {% if item_list%}
+        <th>No.</th>
+        <th>Item</th>
+        <th>Point Cost</th>
+        {% for sponsor_catalog_item in item_list %}
+            <td>{{ forloop.counter }}</td>
+            <td>{{ sponsor_catalog_item.catalog_item.item_name }}</td>
+            <td>{ sponsor_catalog_item.point_value }</td>
+        {% endfor %}
+</table>
+</div>
+</section> 
+<section>
+
+<!-- Order Summary Section -->
+<div class = "row">
+<table class="table table-bordered text-center">
+<tr class="text-center">
+</tr>
+    <th id="order_summary">Total Retail Cost</th>
+    <th id="order_summary">Total Point Cost</th>
+</table>
+</div>
+</section> 
+
+
+<div class = "row">
+    <table class="table table-bordered text-center">
+    <tr class="text-center">
+    </tr>
+    <th>{{ order.retail_at_order }}</th>
+    <th>{{ order.points_at_order }}</th>
+</table>
+<div id="thank-you">Thank you for shopping with {{ order.sponsor }}</div>
+</div>
+</section> 
+
+{% else %}
+<!-- Empty Cart -->
+<section>
+<div class = "row">
+<table class="table table-hover table-bordered text-center">
+<tr class="text-center"></tr>
+<div id="no-items">Nothing's in your cart currently</div>
+</table>
+</div>
+</section> 
+{% endif %}
+
+
+
+{% endblock %}

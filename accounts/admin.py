@@ -6,7 +6,7 @@ the model, the data will be accessible through Django's admin functionality.
 # Register your models here.
 from django.contrib import admin
 from .models import UserInformation, SponsorCompany, Order, \
-    AuditApplication, AuditPointChange, AuditLoginAttempt
+    AuditApplication, AuditPointChange, AuditLoginAttempt, Points
 
 
 class UserInformationAdmin(admin.ModelAdmin):
@@ -24,3 +24,4 @@ admin.site.register(Order)
 admin.site.register(AuditApplication)
 admin.site.register(AuditPointChange)
 admin.site.register(AuditLoginAttempt)
+admin.site.register(Points)
