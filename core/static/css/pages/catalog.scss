@@ -42,36 +42,48 @@
         transition: 0.4s;
     }
 
-    .active, .accordion:hover {
+
+    .container-fluid{
+        padding: 0;
+     }
+
+    .head {
+        background-color: $purple;
+        border-bottom: 1px solid;
+        border-bottom-color: $gunmetal;
+    }
+
+
+    .active_card {
         background-color: $purple;
         color: $white;
     }
+
 
     .text-box{
         border: 2px solid $gunmetal;
         border-radius: 4px;
     }
 
-    .btn{
+    .btn-primary{
         border-color: $gunmetal;
         background-color: $white;
         color: $gunmetal;
+    }
+
+    .btn-active {
+        border-color: $gunmetal;
+        background-color: $gunmetal;
+        color: $white;
     }
 
     .row{
         margin-right: 0px;
     }
 
-    .nav-pills .nav-item{
-        background-color: $white;
-    }
-
-    .nav-pills a{
-        color: $gunmetal;
-        background-color: $white;
-    }
-
-    .nav-pills a:hover{
-        color: $white;
+    .sidebar {
         background-color: $purple;
+        color: $white;
+        border-right: 1px solid;
+        border-right-color: $gunmetal;
     }

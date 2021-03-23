@@ -10,65 +10,118 @@
 {% block main_content %}
 
 
+
+
+    <div class="container-fluid pt-5 head">
+        <h2 style="text-align:center">Manage Catalog</h2>
+        <p style="text-align:center"> Catalog Last Updated: {{last_update|date:'F j, Y g:i A'}} </p>
+
+        <nav class="navbar navbar-expand-sm pt-3 pb-3">
+            <div class="col-4">
+                <button type="button" name="etsy" class="btn btn-primary btn-block top_group etsy">Browse Products From Etsy</button>
+            </div>
+            <div class="col-4">
+                <button type="button" name="all" class="btn btn-primary btn-block top_group all">Browse Products Other Sponsor Use</button>
+            </div>
+            <div class="col-4">    
+                <button type="button" name="manage" class="btn btn-primary btn-block top_group manage">View Your Catalog</button>
+            </div>
+        </nav>
+
+    </div>
+
+
 <!--
 <div class="jumbotron jumbotron-fluid">
 
-    <div class="container-fluid">
-        <h2 style="text-align:center">Manage Catalog</h2>
-        <p style="text-align:center"> Catalog Last Updated: {{last_update|date:'F j, Y g:i A'}} </p>
-    </div>
-
-    <ul class="nav nav-pills nav-fill">
-        <li class="nav-item">
-        <a class="nav-link" href="#">Browse Products From Etsy</a>
-        </li>
-        <li class="nav-item">
-        <a class="nav-link" href="#">Browse Products Other Sponsor Use</a>
-        </li>
-    </ul>
-
-</div>
--->
-
-<div class = "container-fluid">
-    
-<div class="row">
-    <div class="container-fluid m-5 mu-3">
-        <h2 style="text-align:center">Manage Catalog</h2>
-        <p style="text-align:center"> Catalog Last Updated: {{last_update|date:'F j, Y g:i A'}} </p>
-    </div>
-</div>
-
-<div class="row mu-3 mb-3">
-    <div class="container-fluid col-2">
-    </div>
-    <div class="container-fluid col-10 input-group">
-        <input type="search" id="searchbar" placeholder="Search" value="" class=""></input>
-        <button type="button" id="search" class="btn btn-primary">
-        <i class="fas fa-search"></i>
-        </button>
-    </div>
-</div>
+                <div class ="card ml-2 mt-2">
+                    <div class="card-body">
+                        <h5 class="card-title font-weight-bold">Sort By:</h5>
+                        <button class="btn btn-primary last_mod-">Most Recent</button>
+                        <button class="btn btn-primary last_mod">Least Recent</button>
+                        <button class="btn btn-primary price-">Most Expensive</button> 
+                        <button class="btn btn-primary price">Least Expensive</button> 
+                    </div>
+                </div>
 
 
-<div class="row">
-    <div class="container-fluid col-2">
-        <div class ="card ml-2 mt-2">
-                <div class="card-body">
-                <h5 class="card-title font-weight-bold">Sort By:</h5>
-                <button class="btn last_mod- my-1">Most Recent</button>
-                <button class="btn last_mod my-1">Least Recent</button>
-                <button class="btn price- my-1">Most Expensive</button> 
-                <button class="btn price my-1">Least Expensive</button> 
-            </div>
+<div class = "container-fluid mb-5">
+    <div class="row">
+        <div class="col-4">
+            <button type="button" name="etsy" class="btn btn-primary btn-block top_group etsy">Browse Products From Etsy</button>
+        </div>
+        <div class="col-4">
+            <button type="button" name="all" class="btn btn-primary btn-block top_group all">Browse Products Other Sponsor Use</button>
+        </div>
+        <div class="col-4">    
+            <button type="button" name="manage" class="btn btn-primary btn-block top_group manage">View Your Catalog</button>
         </div>
     </div>
-    <div class="container-fluid col-10">
-        <div class="row" id="item"></div>
+</div>
+    <button type="button" name="etsy" class="btn btn-primary top_group etsy">Browse Products From Etsy</button>
+    <button type="button" name="all" class="btn btn-primary top_group all">Browse Products Other Sponsor Use</button>
+    <button type="button" name="manage" class="btn btn-primary top_group manage">View Your Catalog</button>
+-->
+
+
+
+
+
+
+<div class = "container-fluid">
+    <div class="row">
+
+        <nav class="container-fluid col-2 sidebar">
+            <div class = "sticky-top pt-5">
+                <h5 class="font-weight-bold" style="text-align:center;">Sort By:</h5>
+                <button class="btn btn-primary btn-block last_mod-">Most Recent</button>
+                <button class="btn btn-primary btn-block last_mod">Least Recent</button>
+                <button class="btn btn-primary btn-block price-">Most Expensive</button> 
+                <button class="btn btn-primary btn-block price">Least Expensive</button> 
+            </div>
+        </nav>
+
+        <div class="container-fluid col-10">
+
+            <nav class="navbar navbar-expand-sm bg-light">
+                <form class="form-inline my-2 my-lg-0 mx-auto">
+                    <input class= "form-control mr-sm-2" type="search" id="searchbar" placeholder="Search" aria-label="Search"></input>
+                    <button class="btn btn-primary my-2 my-sm-0" type="button" id="search">Search</button>
+                </form>
+            </nav>
+
+            <div class = "sticky-top">
+
+                <div class="container-fluid bg-light">
+                    <div class="row justify-content-center">
+
+                    <div class="card bg-dark"style="color:white; width: 10rem;">
+                        <div class="row no-gutters">
+                            <div class="col-4">
+                                <div class="card-text">Sort</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="card-text">Price</div>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="item"></div>
+        </div>
+
     </div>
 </div>
 
-</div>
+
+
 {% load static %}
 <script src="{% static 'catalog/items.js' %}"></script>
 
