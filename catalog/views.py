@@ -71,9 +71,12 @@ def all_items(request):
             company = user.sponsor_company
         else:
             company = user.sponsor_company
-        catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
-        if SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
-            return JsonResponse({'inSponsor' : False})
+        if CatalogItem.objects.filter(api_item_Id=add_ID).exists():
+            catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
+            if SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
+                return JsonResponse({'inSponsor' : False})
+            else:
+                return JsonResponse({'inSponsor' : True})
         else:
             return JsonResponse({'inSponsor' : True})
 
@@ -127,6 +130,38 @@ def browse(request):
 
     if request.method == 'POST':
         add_ID = json.load(request)['ID']
+
+        #add new instance catalog item
+        if not CatalogItem.objects.filter(api_item_Id=add_ID).exists():
+            url = base_url + '/listings/{}?includes=Images:1&api_key={}'.format(add_ID, key)
+            response = requests.request("GET", url)
+            search_was_successful = (response.status_code == 200)
+            data = response.json()
+            listing_data = data['results'][0]
+            
+            listing = CatalogItem.objects.create(api_item_Id=add_ID)
+
+            
+            listing.last_updated = timezone.now()
+            listing.last_modified = listing_data['last_modified_tsz']
+            # check if the modfied time has been changed 
+            listing.item_name = listing_data['title']
+            listing.item_description = listing_data['description']
+            # ignore foreign currency for now
+            listing.retail_price = float(listing_data['price'])
+            if listing_data['state'] == "active":
+                listing.is_available = True
+            else:
+                listing.is_available = False
+            listing.save()
+
+            images = listing_data['Images']
+            for image in images:
+                if image['rank'] == 1:
+                    main_image = image['url_170x135']
+            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
+
+
         user = UserInformation.objects.get(user=request.user)
         if user.role_name == 'sponsor':
             company = user.sponsor_company
@@ -156,6 +191,7 @@ def browse(request):
         
     
     return render(request, "catalog/browse.html", context=context)
+
 
 def add_item_to_cart(request, id):
     

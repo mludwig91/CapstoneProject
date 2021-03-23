@@ -47,30 +47,106 @@ function getFilters() {
     return filter;
 }
 
+function getEtsyFilters() {
+    var filter="";
+    if (search !== "") {
+        filter = filter + "&keywords=" + search;
+    }
+    return filter;
+}
+
+var tab = "";
+
 
 function getItems() {
+    if (tab === "all") {
+        getAllItems();
+    }
+    else if(tab === "manage") {
+        getSponsorItems();
+    }
+    //etsy
+    else if (tab === "etsy"){
+        getEtsyItems();
+    }
+}
+
+function getAllItems() {
+    $('#item').empty();
+    tab = "all";
     var filter = getFilters();
-    console.log(filter);
     var endpoint = "/catalog/items" + filter;
     $.ajax({
         url : endpoint,
     })
     .done(function(response) {
-        $('#item').empty();
         getItemCards(response);
     });
-}   
+}
+
+function getEtsyItems() {
+    $('#item').empty();
+    tab = "etsy";
+    var etsy_url = "https://openapi.etsy.com/v2"
+    var etsy_key = "1a3ofydrsprc5cev28c3vb7l"
+    var filter = getEtsyFilters();
+    var endpoint = etsy_url + '/listings/active.js?' + 'limit=24&includes=Images:1' + filter + '&api_key=' + etsy_key;
+    $.ajax({
+        url: endpoint,
+        dataType: 'jsonp',
+    })
+    .done(function(response) {
+        var items = response.results;
+        getItemCards(items);
+    });
+}
+
+function getSponsorItems() {
+    $('#item').empty();
+    tab = "manage";
+    var endpoint = "/catalog/sponsor-items";
+    $.ajax({
+        url : endpoint,
+    })
+    .done(function(response) {
+        getItemCards(response);
+    });
+}
+
+function getAllSidebar() {
+    
+}
+
 
 function getItemCards(items) {
-    items.forEach(function(items) {
-        inSponsor(items.api_item_Id)
+    items.forEach(function(items) {        
+        if (tab === "all") {
+            var ID = items.api_item_Id;
+            var image = items.images[0].image_link;
+            var name = items.item_name;
+            var price = items.retail_price;
+        }
+        else if(tab === "manage") {
+            var ID = items.catalog_item.api_item_Id;
+            var image = items.catalog_item.images[0].image_link;
+            var name = items.catalog_item.item_name;
+            var price = items.catalog_item.retail_price;
+        }
+        //etsy
+        else {
+            var ID = items.listing_id;
+            var image = items.Images[0].url_170x135;
+            var name = items.title;
+            var price = parseFloat(items.price);
+        }
+        inSponsor(ID);
         $('#item').append(
-            '<div class="card m-2 col-sm-4" id="' + items.api_item_Id + '" style="max-width: 20rem;"> ' +
+            '<div class="card m-2 col-sm-4" id="' + ID + '" style="max-width: 20rem;"> ' +
             '<div class="card-body text-center">' +
-            '<img class="m-2 mx-auto img-thumbnail" src="' + items.images[0].image_link + '" width="auto" height="auto" />' +
-            '<h5 class="card-title font-weight-bold" data-toggle="tooltip" title="' + items.item_name + '">' + items.item_name.slice(0,30) + '...</h5>' +
-            '<p class="card-text">price: $' + items.retail_price.toFixed(2) + '</p>' + 
-            '<input type="button" class="btn change" name="change" id="' + items.api_item_Id + '" value="change" />' +
+            '<img class="m-2 mx-auto img-thumbnail" src="' + image + '" width="auto" height="auto" />' +
+            '<h5 class="card-title font-weight-bold" data-toggle="tooltip" title="' + name + '">' + name.slice(0,30) + '...</h5>' +
+            '<p class="card-text">price: $' + price.toFixed(2) + '</p>' + 
+            '<input type="button" class="btn btn-primary change" name="change" id="' + ID + '" value="change" />' +
             '</div></div>'
         ); 
     });
@@ -87,12 +163,12 @@ function getItemCards(items) {
         .then(function(response) { 
             if (Boolean(response.inSponsor)) {
                 $('#'+ID+'.change').val("Add to Catalog");
-                $('#'+ID+'.card').removeClass("active");
+                $('#'+ID+'.card').removeClass("active_card");
                 
             }
             else {
                 $('#'+ID+".change").val("Remove from Catalog");
-                $('#'+ID+'.card').addClass("active");
+                $('#'+ID+'.card').addClass("active_card");
                 
             }
         })
@@ -119,33 +195,57 @@ var search = "";
 var order = "";
 
 $(document).ready(function() {
-    getItems("");  
+    getAllItems("");  
 });
 
-$(".last_mod").click(function() { 
-    order = "last_modified";
-    getItems();
+function buttonActive(name) {
+    $('.top_group').removeClass("btn-active");
+    $('.'+name).addClass("btn-active");
+}
+
+$(".all").click(function() {
+    buttonActive("all");
+    getAllItems();
 });
 
-$(".last_mod-").click(function() {
-    order = "-last_modified";
-    getItems();
+$(".etsy").click(function() {
+    buttonActive("etsy");
+    getEtsyItems();
 });
 
-$(".price").click(function() { 
-    order = "retail_price";
-    getItems();
-});
-
-$(".price-").click(function() {
-    order = "-retail_price";
-    getItems();
-
+$(".manage").click(function() {
+    buttonActive("manage");
+    getSponsorItems();
 });
 
 $("#search").click(function() {
     search = $("#searchbar").focus().val();
     getItems();
 });
+
+
+$(".last_mod").click(function() { 
+    order = "last_modified";
+    getAllItems();
+});
+
+$(".last_mod-").click(function() {
+    order = "-last_modified";
+    getAllItems();
+});
+
+$(".price").click(function() { 
+    order = "retail_price";
+    getAllItems();
+});
+
+$(".price-").click(function() {
+    order = "-retail_price";
+    getAllItems();
+
+});
+
+
+
 
 
