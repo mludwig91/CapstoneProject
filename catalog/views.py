@@ -222,14 +222,22 @@ def my_cart(request):
     user = UserInformation.objects.get(user=request.user)
     if Order.objects.filter(ordering_driver=user).exists():
         order = Order.objects.filter(ordering_driver=user)[0]
-        if order.sponsor_catalog_item is not None:
-            items_list = order.sponsor_catalog_item.all()
-            for item in items_list:
-                order.points_at_order = order.points_at_order + item.sponsor_catalog_item.point_value
-                order.retail_at_order = order.retail_at_order + item.catalog_item.retail_price
-            order = order.__dict__
-            item_list = zip(items_list, order)
-        else:
-            item_list = None
+        items_list = order.sponsor_catalog_item.all()
+        for item in items_list:
+            order.points_at_order = order.points_at_order + item.sponsor_catalog_item.point_value
+            order.retail_at_order = order.retail_at_order + item.catalog_item.retail_price
+        order = order.__dict__
+        item_list = zip(items_list, order)
+    else:
+        item_list = None
 
+    return render(request, "catalog/my_cart.html", context = {'item_list': item_list})
+
+def remove_item_from_cart(request, item):
+    user = UserInformation.objects.get(user=request.user)
+    old_item = CatalogItem.objects.filter(item_name=item)
+    sponsor_item = SponsorCatalogItem.objects.filter(catalog_item=old_item)
+    order = Order.objects.filter(ordering_driver=user)[0]
+    order.sponsor_catalog_item.remove(sponsor_item)
+        
     return render(request, "catalog/my_cart.html", context = {'item_list': item_list})
