@@ -93,6 +93,7 @@ class UserInformation(models.Model):
     get_user_email.short_description = 'User Email'  # Renames column head
 
 
+
 class Order(models.Model):
     """
     Model of an order a driver may create (whether pending, completed, or otherwise).
@@ -108,8 +109,8 @@ class Order(models.Model):
         ('returned', 'Returned')
     )
 
-    sponsor_catalog_item = models.ManyToManyField("catalog.SponsorCatalogItem")
-    sponsor = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
+    sponsor_catalog_item = models.ForeignKey("catalog.SponsorCatalogItem", on_delete=SET_NULL, null=True,blank=True)
+    sponsor = models.ForeignKey(SponsorCompany, on_delete=SET_NULL, null=True, blank=True)
     ordering_driver = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True)
     order_status = models.CharField("Order Status", max_length=25, choices=ORDER_STATUS_CHOICES)
     last_status_change = models.DateTimeField("Last DateTime of OrderStatus Update", default=datetime.datetime.utcnow)
