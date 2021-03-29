@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+        <div class="page-section-heading my-3" style="padding-left: 50px;">
+            <h1>Order Report</h1>
+            <h5>Order Number: #{{ order.id }}</h5>
+            <h5>Order Status: {{ order.order_status }}</h5>
+            <h5>Last Updated: {{ order.last_status_change | date:"F j, Y" }}</h5>
+            <h5>Order Cost: {{ order.retail_at_order }} USD ({{ order.points_at_order }} Points)</h5>
+            <br>
+            <h5>Driver: {{ order.ordering_driver }}</h5>
+            <h5>Sponsor Company: {{ order.sponsor }}</h5>
+
+        </div>
+        <div class="container">
+
+            <section>
+                <div class = "row">
+                <table class="table table-hover table-bordered text-center">
+                    <tr class="text-center">
+                    </tr>
+                    <!-- List of Items in cart -->
+                        <th>No.</th>
+                        <th>Item</th>
+                        <th>Point Cost</th>
+                        {% for sponsor_catalog_item in order.sponsor_catalog_item.all %}
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ sponsor_catalog_item.catalog_item.item_name }}</td>
+                            <td>{{ sponsor_catalog_item.point_value }}</td>
+                        {% endfor %}
+                </table>
+                </div>
+                </section>
+        </div>
+{% endblock %}

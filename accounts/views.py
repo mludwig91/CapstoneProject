@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
 from accounts.forms import UserInformationForm
-from accounts.models import UserInformation, AuditApplication, SponsorCompany, Points
+from accounts.models import UserInformation, AuditApplication, SponsorCompany, Points, Order
 
 
 def login(request):
@@ -329,3 +329,71 @@ def disable_account(request):
 
     return render(request, "accounts/disable_account.html")
 
+
+@login_required(login_url='/accounts/login/')
+def sales_reports(request):
+    if request.method == 'POST':
+        print(request.POST.get('this_id'))
+        order = Order.objects.get(pk=request.POST.get('this_id'))
+        return render(request, "accounts/order.html", {'order': order})
+    sales = Order.objects.exclude(order_status='inCart').all()
+    sponsor_companies = SponsorCompany.objects.all()
+    number_of_sponsors = len(sponsor_companies)
+
+    total_dollars = 0
+    total_sales = 0
+    sales_per = []
+    for company in sponsor_companies:
+        count = 0
+        dollars = 0
+        for order in sales:
+            if company == order.sponsor:
+                count += 1
+                total_sales += 1
+                dollars += order.retail_at_order
+                total_dollars += order.retail_at_order
+        sales_per.append([company, count, dollars])
+
+    return render(request, "accounts/sales_reports.html", {'sales': sales,
+                                                      'sponsors': sponsor_companies,
+                                                      'number_of_sponsors': number_of_sponsors,
+                                                      'sales_per': sales_per,
+                                                      'total_dollars': total_dollars,
+                                                      'total_sales': total_sales})
+
+
+@login_required(login_url='/accounts/login/')
+def driver_sales(request):
+    if request.method == 'POST':
+        print(request.POST.get('this_id'))
+        order = Order.objects.get(pk=request.POST.get('this_id'))
+        return render(request, "accounts/order.html", {'order': order})
+    sales = Order.objects.exclude(order_status='inCart').all()
+    drivers = UserInformation.objects.filter(role_name='driver').all()
+    number_of_drivers = len(drivers)
+
+    total_dollars = 0
+    total_sales = 0
+    sales_per = []
+    for driver in drivers:
+        count = 0
+        dollars = 0
+        for order in sales:
+            if driver == order.ordering_driver:
+                count += 1
+                total_sales += 1
+                dollars += order.retail_at_order
+                total_dollars += order.retail_at_order
+        sales_per.append([driver, count, dollars])
+
+    return render(request, "accounts/driver_sales.html", {'sales': sales,
+                                                      'drivers': drivers,
+                                                      'number_of_drivers': number_of_drivers,
+                                                      'sales_per': sales_per,
+                                                      'total_dollars': total_dollars,
+                                                      'total_sales': total_sales})
+
+
+@login_required(login_url='/accounts/login/')
+def order(request):
+    return render(request, "accounts/order.html")
