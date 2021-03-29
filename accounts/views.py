@@ -363,5 +363,37 @@ def sales_reports(request):
 
 
 @login_required(login_url='/accounts/login/')
+def driver_sales(request):
+    if request.method == 'POST':
+        print(request.POST.get('this_id'))
+        order = Order.objects.get(pk=request.POST.get('this_id'))
+        return render(request, "accounts/order.html", {'order': order})
+    sales = Order.objects.exclude(order_status='inCart').all()
+    drivers = UserInformation.objects.filter(role_name='driver').all()
+    number_of_drivers = len(drivers)
+
+    total_dollars = 0
+    total_sales = 0
+    sales_per = []
+    for driver in drivers:
+        count = 0
+        dollars = 0
+        for order in sales:
+            if driver == order.ordering_driver:
+                count += 1
+                total_sales += 1
+                dollars += order.retail_at_order
+                total_dollars += order.retail_at_order
+        sales_per.append([driver, count, dollars])
+
+    return render(request, "accounts/driver_sales.html", {'sales': sales,
+                                                      'drivers': drivers,
+                                                      'number_of_drivers': number_of_drivers,
+                                                      'sales_per': sales_per,
+                                                      'total_dollars': total_dollars,
+                                                      'total_sales': total_sales})
+
+
+@login_required(login_url='/accounts/login/')
 def order(request):
     return render(request, "accounts/order.html")

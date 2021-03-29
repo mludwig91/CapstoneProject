@@ -11,7 +11,13 @@
         <div class="page-section-heading my-3" style="padding-left: 50px;">
             <h1>Order Report</h1>
             <h5>Order Number: #{{ order.id }}</h5>
+            <h5>Order Status: {{ order.order_status }}</h5>
+            <h5>Last Updated: {{ order.last_status_change | date:"F j, Y" }}</h5>
             <h5>Order Cost: {{ order.retail_at_order }} USD ({{ order.points_at_order }} Points)</h5>
+            <br>
+            <h5>Driver: {{ order.ordering_driver }}</h5>
+            <h5>Sponsor Company: {{ order.sponsor }}</h5>
+
         </div>
         <div class="container">
 
@@ -30,30 +36,6 @@
                             <td>{{ sponsor_catalog_item.point_value }}</td>
                         {% endfor %}
                 </table>
-                </div>
-                </section>
-                <section>
-
-                <!-- Order Summary Section -->
-                <div class = "row">
-                <table class="table table-bordered text-center">
-                <tr class="text-center">
-                </tr>
-                    <th id="order_summary">Total Retail Cost</th>
-                    <th id="order_summary">Total Point Cost</th>
-                </table>
-                </div>
-                </section>
-
-
-                <div class = "row">
-                    <table class="table table-bordered text-center">
-                    <tr class="text-center">
-                    </tr>
-                    <th>{{ order.retail_at_order }}</th>
-                    <th>{{ order.points_at_order }}</th>
-                </table>
-                <div id="thank-you">Thank you for shopping with {{ order.sponsor }}</div>
                 </div>
                 </section>
         </div>
