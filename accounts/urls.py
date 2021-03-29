@@ -21,5 +21,7 @@ urlpatterns = [
     path('sponsor_about_page_D', views.sponsor_about_page_D, name='sponsor_about_page_D'),
     path('sponsor_about_page_S', views.sponsor_about_page_S, name='sponsor_about_page_S'),
     path('edit_profile', views.edit_profile, name='edit_profile'),
-    path('user_management', views.user_management, name='user_management')
+    path('user_management', views.user_management, name='user_management'),
+    path('sales_reports', views.sales_reports, name='sales_reports'),
+    path('order', views.order, name='order')
 ]
