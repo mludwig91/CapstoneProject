@@ -186,11 +186,12 @@ def browse(request):
         return JsonResponse({'success' : 'sucess'})
 
     else:
-        most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
-        context = {'last_update' : most_recent_update}
-        
-    
-    return render(request, "catalog/browse.html", context=context)
+        if CatalogItem.objects.all().exists():
+            most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
+            context = {'last_update' : most_recent_update}
+            return render(request, "catalog/browse.html", context=context)
+        #else
+        return render(request, "catalog/browse.html")
 
 
 def add_item_to_cart(request, id):
