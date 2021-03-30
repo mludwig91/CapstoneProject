@@ -26,7 +26,7 @@
             <tr>
             <!-- <th id="rows">{{ forloop.counter }}</th> -->
             <th><img id="itemPic" src="{{ images.image_link }}" width="auto" height="auto"/></th>
-            <th id="rows"> <a href="% url 'catalog:product_page' items.catalog_item.api_item_Id %}">{{ items.catalog_item.item_name }}</a></th>
+            <th id="rows"> <a href="{% url 'catalog:product_page' items.catalog_item.api_item_Id %}">{{ items.catalog_item.item_name }}</a></th>
             <th id="rows">{{ items.point_value }}</th>
             <th id="rows"><a id="remove" href="{% url 'catalog:remove_item_from_cart' items.catalog_item.api_item_Id %}">-</a></th> <th id="rows">{{ items.qty_in_cart }} </th> <th id="rows"><a id="add" href="{% url 'catalog:add_item_from_cart_page' items.catalog_item.api_item_Id %}">+</a></th>
 
