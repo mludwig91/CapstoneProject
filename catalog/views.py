@@ -241,3 +241,11 @@ def remove_item_from_cart(request, item):
     order.sponsor_catalog_item.remove(sponsor_item)
         
     return render(request, "catalog/my_cart.html", context = {'item_list': item_list})
+
+def driver_cart(request, driver):
+    adminUser = UserInformation.objects.get(user=request.user)
+    driverUser = UserInformation.objects.get(user=driver)
+
+    shopping_cart = Order.objects.filter(ordering_driver=driverUser, order_status='inCart')
+
+    return render(request, "catalog/driver_cart.html", context = {'shopping_cart': shopping_cart})
