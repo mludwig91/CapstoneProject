@@ -1,0 +1,76 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+
+    {% if user.userinformation.role_name == 'admin' %}
+        <div class="page-section-heading my-3" style="padding-left: 50px;">
+            <h1>Sales Reports</h1>
+            <h5>Total Dollars Sold: {{ total_dollars }} USD</h5>
+            <h5>Total Order Quantity: {{ total_sales }}</h5>
+        </div>
+        <div class="container">
+            {% for obj in sales_per %}
+
+                <button class=" accordion" style="width: 100%">{{obj.0}} <div class="float-right">Total Order Quantity: {{ obj.1 }} &emsp; Total Dollars Sold: {{ obj.2 }} USD</div></button>
+                <div class="panel" style="display: none">
+                    {% for order in sales %}
+                    {% if obj.0 == order.sponsor %}
+                        <div class="card w-50 mt-3 mx-auto shadow-lg rounded text-center">
+                            <div class="card-body">
+                                <p class="card-text" style="float: left"> <b>Order Id:</b></p><p class="card-text" style="float: right"> {{ order.id | safe }} </p>
+                                <br><br>
+                                <p class="card-text" style="float: left"> <b>Name:</b></p><p class="card-text" style="float: right"> {{ order.ordering_driver | safe }} </p>
+                                <br><br>
+                                <p class="card-text" style="float: left"> <b>Status:</b></p><p class="card-text" style="float: right"> {{ order.order_status | safe }} </p>
+                                <br><br>
+                                <p class="card-text" style="float: left"> <b>Cost:</b></p><p class="card-text" style="float: right"> {{ order.retail_at_order | safe }} USD ({{ order.points_at_order | safe }} Points) </p>
+                                <br><br>
+                                <p class="card-text" style="float: left"> <b>Last Updated:</b></p><p class="card-text" style="float: right"> {{ order.last_status_change | date:"F j, Y" }} </p>
+                                <form action="{% url 'accounts:sales_reports' %}" method="POST">
+                                    {% csrf_token %}
+                                        <br><br>
+                                    <div class="row">
+                                        <div class="col text-center">
+                                            <input type="hidden" name="this_id" value="{{ order.id }}"/>
+                                            <input class="btn btn-success" style="width: 40%;" type="submit" name="approve" value="View Order" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <br>
+                    {% endif %}
+
+                {% endfor %}
+                </div>
+
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+<script>
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            }
+            else {
+                panel.style.display = "block";
+            }
+        });
+    }
+</script>
+{% endblock %}

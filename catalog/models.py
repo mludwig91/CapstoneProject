@@ -39,3 +39,4 @@ class SponsorCatalogItem(models.Model):
     point_value = models.IntegerField("Driver Point Value", validators=[MinValueValidator(1)])
     date_added = models.DateTimeField("DateTime of the Date Added to Sponsor Catalog", default=timezone.now)
     is_available_to_drivers = models.BooleanField("Is Item Available For Driver Redemption", default=False)
+    qty_in_cart = models.IntegerField("Number of  in users Cart", null=True, default=0)

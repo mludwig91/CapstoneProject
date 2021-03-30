@@ -3,68 +3,64 @@
 
 {% block css %}
     {% compress css %}
-        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/order_summary.scss' %}" media="screen">
     {% endcompress %}
 {% endblock %}
 
 {% block main_content %}
-
-
-<section>
-<div class = "row">
-<table class="table table-hover table-bordered text-center">
-    <tr class="text-center">
-    </tr>
     <!-- List of Items in cart -->
-    {% if item_list%}
-        <th>No.</th>
-        <th>Item</th>
-        <th>Point Cost</th>
-        {% for sponsor_catalog_item in item_list %}
-            <td>{{ forloop.counter }}</td>
-            <td>{{ sponsor_catalog_item.catalog_item.item_name }}</td>
-            <td>{ sponsor_catalog_item.point_value }</td>
+    <table class="order_table">
+    {% if item_list %}
+        <h5>  </h5>
+        <tr>
+        <!-- <th id="rows">No.</th> -->
+        <th id="rows">Item</th>
+        <th id="rows">Name</th>
+        <th id="rows">Points</th>
+        <th id="rows"></th>
+        <th id="rows">QTY</th>
+        <th id="rows"></th>
+        </tr>
+
+        {% for items, images in item_list %}
+            <tr>
+            <!-- <th id="rows">{{ forloop.counter }}</th> -->
+            <th><img id="itemPic" src="{{ images.image_link }}" width="auto" height="auto"/></th>
+            <th id="rows"> <a href="{% url 'catalog:product_page' items.catalog_item.api_item_Id %}">{{ items.catalog_item.item_name }}</a></th>
+            <th id="rows">{{ items.point_value }}</th>
+            <th id="rows"><a id="remove" href="{% url 'catalog:remove_item_from_cart' items.catalog_item.api_item_Id %}">-</a></th> <th id="rows">{{ items.qty_in_cart }} </th> <th id="rows"><a id="add" href="{% url 'catalog:add_item_from_cart_page' items.catalog_item.api_item_Id %}">+</a></th>
+
+            </tr>
         {% endfor %}
-</table>
-</div>
-</section> 
-<section>
-
+    </table>
 <!-- Order Summary Section -->
-<div class = "row">
-<table class="table table-bordered text-center">
-<tr class="text-center">
-</tr>
-    <th id="order_summary">Total Retail Cost</th>
-    <th id="order_summary">Total Point Cost</th>
-</table>
-</div>
-</section> 
+    <table id = "totals">
+        <h3> </h3>
+        <h3> </h3>
+        <h3> <th> <u>Order Totals</u></Order></th></h3>
+        <tr><th>Total Retail Cost :     </th>
+        <th>{{ totals_dic.retail }}</th></tr>
+        <tr><th>Total Point Cost :      </th>
+        <th>{{ totals_dic.points }}</th></tr>
+
+  
+    </table>
+
+        {% if user.userinformation.points > totals_dic.points %}
+        <div class="d-flex py-2">
+            <a class="btn default" href="#">Checkout</a>
+        </div>
+        {% else %}
+        <h3> <th> <u>Not enough points to place this order!!</u></Order></th></h3>
+        {% endif %}
+
+    {% else %}
+    <!-- Empty Cart -->
+    <div id="no_items">No items in your cart</div>
+    {% endif %}
 
 
-<div class = "row">
-    <table class="table table-bordered text-center">
-    <tr class="text-center">
-    </tr>
-    <th>{{ order.retail_at_order }}</th>
-    <th>{{ order.points_at_order }}</th>
-</table>
-<div id="thank-you">Thank you for shopping with {{ order.sponsor }}</div>
-</div>
-</section> 
+    {% load static %}
+    <!-- <script src="{% static 'catalog/sponsor_items.js' %}"></script>  -->
 
-{% else %}
-<!-- Empty Cart -->
-<section>
-<div class = "row">
-<table class="table table-hover table-bordered text-center">
-<tr class="text-center"></tr>
-<div id="no-items">Nothing's in your cart currently</div>
-</table>
-</div>
-</section> 
-{% endif %}
-
-
-
-{% endblock %}
+    {% endblock %}

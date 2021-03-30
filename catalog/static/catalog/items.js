@@ -52,12 +52,16 @@ function getEtsyFilters() {
     if (search !== "") {
         filter = filter + "&keywords=" + search;
     }
+    if (etsysort !== "") {
+        filter = filter + "&sort_on=" + etsysort;
+        filter = filter + "&sort_order=" + etsysortorder;
+    }
     return filter;
 }
 
 var tab = "";
 
-
+//get items
 function getItems() {
     if (tab === "all") {
         getAllItems();
@@ -111,10 +115,6 @@ function getSponsorItems() {
     .done(function(response) {
         getItemCards(response);
     });
-}
-
-function getAllSidebar() {
-    
 }
 
 
@@ -191,31 +191,91 @@ function getItemCards(items) {
     })
 }
 
+
+//get sidebars
+//all and sponsor
+function getAllSidebar() {
+    $('#sidebar').empty();
+    $('#sidebar').append(
+    '<h5 class="font-weight-bold" style="text-align:center;">Sort By:</h5>' +
+    '<button class="btn btn-primary btn-block side_group last_mod-">Most Recent</button>' +
+    '<button class="btn btn-primary btn-block side_group last_mod">Least Recent</button> '+
+    '<button class="btn btn-primary btn-block side_group price-">Most Expensive</button>'  +
+    '<button class="btn btn-primary btn-block side_group price">Least Expensive</button>'
+    );
+    
+    function buttonActiveSide(name) {
+        $('.side_group').removeClass("btn-active");
+        $('.'+name).addClass("btn-active");
+    }
+
+    $(".last_mod").click(function() { 
+        buttonActiveSide("last_mod");
+        order = "last_modified";
+        etsysort = "created";
+        etsysortorder = "up";
+        getItems();
+    });
+
+    $(".last_mod-").click(function() {
+        buttonActiveSide("last_mod-");
+        etsysort = "created";
+        etsysortorder = "down";
+        order = "-last_modified";
+        getItems();
+    });
+
+    $(".price").click(function() { 
+        buttonActiveSide("price");
+        order = "retail_price";
+        etsysort = "price";
+        etsysortorder = "up";
+        getItems();
+    });
+
+    $(".price-").click(function() {
+        buttonActiveSide("price-");
+        order = "-retail_price";
+        etsysort = "price";
+        etsysortorder = "down";
+        getItems();
+    });
+
+}
+
+
 var search = "";
 var order = "";
+var etsysort = "";
+var etsysortorder = "";
+
 
 $(document).ready(function() {
-    getAllItems("");  
+    getAllItems(); 
+    getAllSidebar();
 });
 
-function buttonActive(name) {
+function buttonActiveTop(name) {
     $('.top_group').removeClass("btn-active");
     $('.'+name).addClass("btn-active");
 }
 
 $(".all").click(function() {
-    buttonActive("all");
+    buttonActiveTop("all");
     getAllItems();
+    getAllSidebar();  
 });
 
 $(".etsy").click(function() {
-    buttonActive("etsy");
+    buttonActiveTop("etsy");
     getEtsyItems();
+    getAllSidebar();
 });
 
 $(".manage").click(function() {
-    buttonActive("manage");
+    buttonActiveTop("manage");
     getSponsorItems();
+    getAllSidebar();
 });
 
 $("#search").click(function() {
@@ -223,26 +283,9 @@ $("#search").click(function() {
     getItems();
 });
 
-
-$(".last_mod").click(function() { 
-    order = "last_modified";
-    getAllItems();
-});
-
-$(".last_mod-").click(function() {
-    order = "-last_modified";
-    getAllItems();
-});
-
-$(".price").click(function() { 
-    order = "retail_price";
-    getAllItems();
-});
-
-$(".price-").click(function() {
-    order = "-retail_price";
-    getAllItems();
-
+$("#clearsearch").click(function() {
+    search = "";
+    getItems();
 });
 
 

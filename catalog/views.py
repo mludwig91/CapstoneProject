@@ -186,11 +186,12 @@ def browse(request):
         return JsonResponse({'success' : 'sucess'})
 
     else:
-        most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
-        context = {'last_update' : most_recent_update}
-        
-    
-    return render(request, "catalog/browse.html", context=context)
+        if CatalogItem.objects.all().exists():
+            most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
+            context = {'last_update' : most_recent_update}
+            return render(request, "catalog/browse.html", context=context)
+        #else
+        return render(request, "catalog/browse.html")
 
 
 def add_item_to_cart(request, id):
@@ -199,48 +200,91 @@ def add_item_to_cart(request, id):
     user = UserInformation.objects.get(user=request.user)
     item = CatalogItem.objects.get(api_item_Id=id)
     sponsor_item = SponsorCatalogItem.objects.get(catalog_item=item)
-    order,created = Order.objects.get_or_create(ordering_driver=user)
-    order.save()
+    sponsor = sponsor_item.sponsor_company
 
-    #if item is in the cart already, dont add.
-    if Order.objects.filter(sponsor_catalog_item = sponsor_item, ordering_driver=user).exists():
-        messages.info(request, 'Item is already in cart!')
+    #if item is in the cart already, change qty
+    if Order.objects.filter(sponsor_catalog_item = sponsor_item, ordering_driver = user, sponsor = sponsor).exists():
+        user.item_count = user.item_count + 1
+        sponsor_item.qty_in_cart = sponsor_item.qty_in_cart + 1
+        user.save()
+        sponsor_item.save()
         return product_page(request,id)
-
-    #if order has no associated sponsor 
-    if order.sponsor is None:
-        order.sponsor.add(sponsor_item.sponsor_company)
+    
     
     #else add item to order list
-    order.sponsor_catalog_item.add(sponsor_item)
+    order,created = Order.objects.get_or_create(ordering_driver=user, sponsor_catalog_item = sponsor_item, sponsor = sponsor, order_status='inCart')
+    sponsor_item.qty_in_cart = 1
     user.item_count = user.item_count + 1
     user.save()
+    sponsor_item.save()
     order.save()
+    
     return product_page(request,id)
 
 def my_cart(request):
     user = UserInformation.objects.get(user=request.user)
     if Order.objects.filter(ordering_driver=user).exists():
-        order = Order.objects.filter(ordering_driver=user)[0]
-        items_list = order.sponsor_catalog_item.all()
-        for item in items_list:
-            order.points_at_order = order.points_at_order + item.sponsor_catalog_item.point_value
-            order.retail_at_order = order.retail_at_order + item.catalog_item.retail_price
-        order = order.__dict__
-        item_list = zip(items_list, order)
+        orders = Order.objects.filter(ordering_driver=user)
+        items = []
+        order = []
+        images = []
+        totals_dic = {
+            "points": 0,
+            "retail": 0
+        }
+        for obj in orders.iterator():
+            items.append(obj.sponsor_catalog_item)
+            numitems = obj.sponsor_catalog_item.qty_in_cart
+            obj.points_at_order = obj.sponsor_catalog_item.point_value
+            obj.retail_at_order =  obj.sponsor_catalog_item.catalog_item.retail_price
+            image = CatalogItemImage.objects.get(catalog_item=obj.sponsor_catalog_item.catalog_item)
+            obj.save()
+            order.append(obj)
+            images.append(image)
+            for i in range(numitems):
+                totals_dic["points"] += obj.points_at_order
+                totals_dic["retail"] += obj.retail_at_order                        
+        item_list = zip(items, images)
     else:
         item_list = None
+        order = None
+        totals_dic = None
 
-    return render(request, "catalog/my_cart.html", context = {'item_list': item_list})
+    return render(request, "catalog/my_cart.html", context = {'item_list': item_list, 'order': order, 'totals_dic': totals_dic})
 
-def remove_item_from_cart(request, item):
+def remove_item_from_cart(request, id):
+
     user = UserInformation.objects.get(user=request.user)
-    old_item = CatalogItem.objects.filter(item_name=item)
-    sponsor_item = SponsorCatalogItem.objects.filter(catalog_item=old_item)
-    order = Order.objects.filter(ordering_driver=user)[0]
-    order.sponsor_catalog_item.remove(sponsor_item)
-        
-    return render(request, "catalog/my_cart.html", context = {'item_list': item_list})
+    old_item = CatalogItem.objects.get(api_item_Id=id)
+    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item)
+    order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item)
+    if order.sponsor_catalog_item.qty_in_cart > 1:
+        user.item_count = user.item_count-1
+        order.sponsor_catalog_item.qty_in_cart = order.sponsor_catalog_item.qty_in_cart - 1
+        order.sponsor_catalog_item.save()
+        user.save()
+    else:
+        user.item_count = user.item_count-1
+        order.sponsor_catalog_item.qty_in_cart = order.sponsor_catalog_item.qty_in_cart-1
+        order.sponsor_catalog_item.delete()
+        order.sponsor_catalog_item.save()
+        order.delete()
+        user.save()
+    
+    return my_cart(request)
+
+def add_item_from_cart_page(request, id):
+
+    user = UserInformation.objects.get(user=request.user)
+    old_item = CatalogItem.objects.get(api_item_Id=id)
+    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item)
+    order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item)
+    user.item_count = user.item_count + 1
+    order.sponsor_catalog_item.qty_in_cart = order.sponsor_catalog_item.qty_in_cart + 1
+    user.save()
+    order.sponsor_catalog_item.save()
+
+    return my_cart(request)
 
 def driver_cart(request, driver):
     adminUser = UserInformation.objects.get(user=request.user)
