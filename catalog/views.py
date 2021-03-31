@@ -186,11 +186,12 @@ def browse(request):
         return JsonResponse({'success' : 'sucess'})
 
     else:
-        most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
-        context = {'last_update' : most_recent_update}
-        
-    
-    return render(request, "catalog/browse.html", context=context)
+        if CatalogItem.objects.all().exists():
+            most_recent_update = CatalogItem.objects.order_by('last_updated').first().last_updated
+            context = {'last_update' : most_recent_update}
+            return render(request, "catalog/browse.html", context=context)
+        #else
+        return render(request, "catalog/browse.html")
 
 
 def add_item_to_cart(request, id):
@@ -285,3 +286,10 @@ def add_item_from_cart_page(request, id):
 
     return my_cart(request)
 
+def driver_cart(request, driver):
+    adminUser = UserInformation.objects.get(user=request.user)
+    driverUser = UserInformation.objects.get(user=driver)
+
+    shopping_cart = Order.objects.filter(ordering_driver=driverUser, order_status='inCart')
+
+    return render(request, "catalog/driver_cart.html", context = {'shopping_cart': shopping_cart})
