@@ -24,5 +24,5 @@ urlpatterns = [
     path('user_management', views.user_management, name='user_management'),
     path('sales_reports', views.sales_reports, name='sales_reports'),
     path('driver_sales', views.driver_sales, name='driver_sales'),
-    path('order', views.order, name='order')
+    path('order/<int:id>', views.order, name='order')
 ]

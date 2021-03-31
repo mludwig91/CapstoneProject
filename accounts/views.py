@@ -332,10 +332,6 @@ def disable_account(request):
 
 @login_required(login_url='/accounts/login/')
 def sales_reports(request):
-    if request.method == 'POST':
-        print(request.POST.get('this_id'))
-        order = Order.objects.get(pk=request.POST.get('this_id'))
-        return render(request, "accounts/order.html", {'order': order})
     sales = Order.objects.exclude(order_status='inCart').all()
     sponsor_companies = SponsorCompany.objects.all()
     number_of_sponsors = len(sponsor_companies)
@@ -354,20 +350,22 @@ def sales_reports(request):
                 total_dollars += order.retail_at_order
         sales_per.append([company, count, dollars])
 
+    newest_first = Order.objects.exclude(order_status='inCart').all().order_by('last_status_change')
+    oldest_first = Order.objects.exclude(order_status='inCart').all().order_by('-last_status_change')
+    print(oldest_first)
+
     return render(request, "accounts/sales_reports.html", {'sales': sales,
-                                                      'sponsors': sponsor_companies,
-                                                      'number_of_sponsors': number_of_sponsors,
-                                                      'sales_per': sales_per,
-                                                      'total_dollars': total_dollars,
-                                                      'total_sales': total_sales})
+                                                          'sponsors': sponsor_companies,
+                                                          'number_of_sponsors': number_of_sponsors,
+                                                          'sales_per': sales_per,
+                                                          'total_dollars': total_dollars,
+                                                          'total_sales': total_sales,
+                                                           'oldest_first': oldest_first,
+                                                           'newest_first': newest_first})
 
 
 @login_required(login_url='/accounts/login/')
 def driver_sales(request):
-    if request.method == 'POST':
-        print(request.POST.get('this_id'))
-        order = Order.objects.get(pk=request.POST.get('this_id'))
-        return render(request, "accounts/order.html", {'order': order})
     sales = Order.objects.exclude(order_status='inCart').all()
     drivers = UserInformation.objects.filter(role_name='driver').all()
     number_of_drivers = len(drivers)
@@ -386,14 +384,20 @@ def driver_sales(request):
                 total_dollars += order.retail_at_order
         sales_per.append([driver, count, dollars])
 
+    newest_first = Order.objects.exclude(order_status='inCart').all().order_by('last_status_change')
+    oldest_first = Order.objects.exclude(order_status='inCart').all().order_by('-last_status_change')
+
     return render(request, "accounts/driver_sales.html", {'sales': sales,
                                                       'drivers': drivers,
                                                       'number_of_drivers': number_of_drivers,
                                                       'sales_per': sales_per,
                                                       'total_dollars': total_dollars,
-                                                      'total_sales': total_sales})
+                                                      'total_sales': total_sales,
+                                                           'oldest_first': oldest_first,
+                                                           'newest_first': newest_first})
 
 
 @login_required(login_url='/accounts/login/')
-def order(request):
-    return render(request, "accounts/order.html")
+def order(request, id):
+    order = Order.objects.get(pk=id)
+    return render(request, "accounts/order.html", {'order': order})
