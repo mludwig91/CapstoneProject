@@ -193,13 +193,13 @@ def browse(request):
         #else
         return render(request, "catalog/browse.html")
 
-
 def add_item_to_cart(request, id):
     
     #get user and associate them with an order
     user = UserInformation.objects.get(user=request.user)
     item = CatalogItem.objects.get(api_item_Id=id)
     sponsor_item = SponsorCatalogItem.objects.get(catalog_item=item)
+    #edit: I don't think this is necessarily the users sponsor company
     sponsor = sponsor_item.sponsor_company
 
     #if item is in the cart already, change qty
@@ -223,8 +223,8 @@ def add_item_to_cart(request, id):
 
 def my_cart(request):
     user = UserInformation.objects.get(user=request.user)
-    if Order.objects.filter(ordering_driver=user).exists():
-        orders = Order.objects.filter(ordering_driver=user)
+    if Order.objects.filter(ordering_driver=user, order_status='inCart').exists():
+        orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
         items = []
         order = []
         images = []
@@ -293,3 +293,58 @@ def driver_cart(request, driver):
     shopping_cart = Order.objects.filter(ordering_driver=driverUser, order_status='inCart')
 
     return render(request, "catalog/driver_cart.html", context = {'shopping_cart': shopping_cart})
+
+def checkout(request):
+    user = UserInformation.objects.get(user=request.user)
+    orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
+    for order in orders:
+        order.order_status = 'shipped'
+        order.last_status_change = timezone.now()
+        order.save()
+        user.points -= order.points_at_order
+        user.item_count -= 1
+        user.save()
+    return my_cart(request)
+
+def order_history(request):
+    user = UserInformation.objects.get(user=request.user)
+    orders = Order.objects.filter(ordering_driver=user).exclude(order_status='inCart').order_by('-last_status_change')
+    sponsors = SponsorCatalogItem.objects.filter(order__in=orders).order_by('order')
+    items = CatalogItem.objects.filter(sponsorcatalogitem__in=sponsors).order_by('sponsorcatalogitem')
+    data = zip(orders, sponsors, items)
+    context = {'data' : data}
+    return render(request, "catalog/order_history.html", context = context)
+
+def update_item(id):
+    listing = CatalogItem.objects.filter(api_item_Id=id)
+    url = base_url + '/listings/{}?api_key={}'.format(listing.api_item_Id, key)
+    response = requests.request("GET", url)
+    search_was_successful = (response.status_code == 200)
+    data = response.json()
+    listing_data = data['results'][0]
+
+    listing.last_updated = timezone.now()
+    if not (listing_data['last_modified_tsz'] == listing.last_modified):
+        listing.last_modified = listing_data['last_modified_tsz']
+        # check if the modfied time has been changed 
+        listing.item_name = listing_data['title']
+        listing.item_description = listing_data['description']
+        # ignore foreign currency for now
+        listing.retail_price = float(listing_data['price'])
+        if listing_data['state'] == "active":
+            listing.is_available = True
+        else:
+            listing.is_available = False
+        listing.save()
+
+        # create new catalog item image instance if one doesnt exist
+        if not CatalogItemImage.objects.filter(catalog_item = listing).exists():
+            url = base_url + '/listings/{}/images?api_key={}'.format(listing.api_item_Id, key)
+            response = requests.request("GET", url)
+            search_was_successful = (response.status_code == 200)
+            image_data = response.json()
+            images = image_data['results']
+            for image in images:
+                if image['rank'] == 1:
+                    main_image = image['url_170x135']
+            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
