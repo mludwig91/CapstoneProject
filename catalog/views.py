@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.conf import settings
 from accounts.models import SponsorCompany, UserInformation, Order
-from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage
+from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage, ItemReview
 from catalog.serializers import ItemSerializer, SponsorCatalogItemSerializer
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
@@ -12,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import filters
 from rest_framework import generics
 from django.utils import timezone
+from.forms import ItemReviewForm
 import json
 import requests
 
@@ -117,14 +120,46 @@ def listings(request):
 
     return render(request, "catalog/listings.html")
 
+@login_required(login_url='/accounts/login')
 def product_page(request, id):
     user = UserInformation.objects.get(user=request.user)
-    company = user.sponsor_company
+    item = CatalogItem.objects.get(api_item_Id = id)
+    
+    #If user hasn't left a review for this item before
+    if not ItemReview.objects.filter(catalog_item=item, reviewer=user).exists():
+        #If user is submitting review
+        if request.method == 'POST':
+            r = ItemReview.objects.create(catalog_item=item,reviewer=user)
+            r.save()
+            form = ItemReviewForm(request.POST)
+            if form.is_valid():
+                r.title = form.cleaned_data['title']
+                r.review = form.cleaned_data['review']
+                r.has_reviewed = True
+                r.is_approved = False
+                r.save()
+                return HttpResponseRedirect("")
+        #otherwise display review form
+        else:
+            form = ItemReviewForm()
+    else:
+        form = None
+
+    #Get associated product information
     items = CatalogItem.objects.filter(api_item_Id = id)
     sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items)
     images = CatalogItemImage.objects.filter(catalog_item__in=items)
+    item = CatalogItem.objects.get(api_item_Id=id)
+    reviews = ItemReview.objects.filter(catalog_item=item, is_approved=True)    
+    reviewlist = []
+
+    #creating list of review objects    
+    for review in reviews.iterator():
+        reviewlist.append(review)
+
     listings = zip(items, sponsors, images)
-    return render(request, "catalog/product_page.html", context = {'listings' : listings})
+    return render(request, "catalog/product_page.html", context = {'listings' : listings,'reviewlist': reviewlist, 'form': form})    
+        
 
 def browse(request):
 
@@ -193,6 +228,7 @@ def browse(request):
         #else
         return render(request, "catalog/browse.html")
 
+@login_required(login_url='/accounts/login/')
 def add_item_to_cart(request, id):
     
     #get user and associate them with an order
@@ -221,7 +257,9 @@ def add_item_to_cart(request, id):
     
     return product_page(request,id)
 
+@login_required(login_url='/accounts/login/')
 def my_cart(request):
+    #Get user and order information
     user = UserInformation.objects.get(user=request.user)
     if Order.objects.filter(ordering_driver=user, order_status='inCart').exists():
         orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
@@ -232,6 +270,8 @@ def my_cart(request):
             "points": 0,
             "retail": 0
         }
+
+        #Add active orders/images to list and calculate totals
         for obj in orders.iterator():
             items.append(obj.sponsor_catalog_item)
             numitems = obj.sponsor_catalog_item.qty_in_cart
@@ -285,6 +325,36 @@ def add_item_from_cart_page(request, id):
     order.sponsor_catalog_item.save()
 
     return my_cart(request)
+
+@login_required(login_url="/accounts/login")
+def browse_pending_product_reviews(request,id):
+    user = UserInformation.objects.get(user=request.user)
+    item = CatalogItem.objects.get(api_item_Id= id)
+    if ItemReview.objects.filter(catalog_item=item, is_approved=False).exists():
+        pending_reviews = ItemReview.objects.filter(catalog_item=item, is_approved=False)
+        review_list = []
+        for review in pending_reviews.iterator():
+            review_list.append(review)
+    else:
+        review_list = None
+
+    return render(request, "catalog/browse_pending_product_reviews.html", context = {'review_list': review_list})
+
+@login_required(login_url="/accounts/login")
+def approve_pending_product_reviews(request,id, first, last):
+   
+    if request.method == 'POST':
+        item = CatalogItem.objects.get(api_item_Id= id)
+        pending_reviewer = UserInformation.objects.get(first_name=first, last_name=last)
+        review = ItemReview.objects.get(catalog_item=item, reviewer=pending_reviewer)
+        if request.POST.get('approve') is not None:
+            review.is_approved = True
+            review.save()
+        if request.POST.get('reject') is not None:
+            review.delete()
+    return browse_pending_product_reviews(request,id)
+
+
 
 def driver_cart(request, driver):
     adminUser = UserInformation.objects.get(user=request.user)

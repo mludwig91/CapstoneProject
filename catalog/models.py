@@ -40,3 +40,18 @@ class SponsorCatalogItem(models.Model):
     date_added = models.DateTimeField("DateTime of the Date Added to Sponsor Catalog", default=timezone.now)
     is_available_to_drivers = models.BooleanField("Is Item Available For Driver Redemption", default=False)
     qty_in_cart = models.IntegerField("Number of  in users Cart", null=True, default=0)
+
+
+class ItemReview(models.Model):
+    """
+    Model of an item review
+    """
+    catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE, null=True)
+    reviewer = models.ForeignKey("accounts.UserInformation", on_delete=SET_NULL, null=True)
+    title = models.CharField("Title of the review", max_length=100,validators=[MinLengthValidator(3)], null=True)
+    review = models.TextField("Text for review", validators=[MinLengthValidator(25)], null=True)
+    likes =  models.PositiveIntegerField("Number of likes for a review", null=True, default=0)
+    dislikes =  models.PositiveIntegerField("Number of dislikes for a review", null=True, default=0)
+    when = DateTimeField("time post was created", auto_now_add=True)
+    is_approved = models.BooleanField("Review has been approved by sponsor", default=False)
+    has_reviewed = models.BooleanField("This field should probably be deleted", default=False)
