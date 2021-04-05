@@ -48,7 +48,8 @@
 
         {% if user.userinformation.points > totals_dic.points %}
         <div class="d-flex py-2">
-            <a class="btn default" href="#">Checkout</a>
+            {% csrf_token %}
+            <a class="btn default" href="{% url 'catalog:checkout' %}" id = "checkout">Checkout</a>
         </div>
         {% else %}
         <h3> <th> <u>Not enough points to place this order!!</u></Order></th></h3>
