@@ -285,6 +285,7 @@ $("#search").click(function() {
 });
 
 $("#clearsearch").click(function() {
+    $("#searchbar").focus().val('');
     search = "";
     getItems();
 });

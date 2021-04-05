@@ -51,6 +51,20 @@
         border: 2px solid $gunmetal;
         border-radius: 4px;
     }
+    .spButton:hover{
+        background-color: $purple;
+        color: $white;
+    }
+
+    .nButton:hover{
+        background-color: $purple;
+        color: $white;
+    }
+
+    .oButton:hover{
+        background-color: $purple;
+        color: $white;
+    }
 
 #reviews {
 
@@ -58,3 +72,4 @@ padding-top: 15px;
 text-align: center;
 
 }
+    

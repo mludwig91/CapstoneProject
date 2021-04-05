@@ -4,6 +4,7 @@
 {% block css %}
     {% compress css %}
         <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/order_summary.scss' %}" media="screen">
     {% endcompress %}
 {% endblock %}
 
@@ -21,22 +22,25 @@
         </div>
         <div class="container">
 
-            <section>
-                <div class = "row">
-                <table class="table table-hover table-bordered text-center">
-                    <tr class="text-center">
-                    </tr>
-                    <!-- List of Items in cart -->
-                        <th>No.</th>
-                        <th>Item</th>
-                        <th>Point Cost</th>
-                        {% for sponsor_catalog_item in order.sponsor_catalog_item.all %}
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ sponsor_catalog_item.catalog_item.item_name }}</td>
-                            <td>{{ sponsor_catalog_item.point_value }}</td>
-                        {% endfor %}
-                </table>
-                </div>
-                </section>
+        <table class="order_table">
+    {% if order.sponsor_catalog_item %}
+        <h5>  </h5>
+        <tr>
+        <!-- <th id="rows">No.</th> -->
+        <th id="rows">Item</th>
+        <th id="rows">Name</th>
+        <th id="rows">Cost Points</th>
+        <th id="rows">Cost USD</th>
+        </tr>
+
+            <tr>
+            <th id="rows">1</th>
+            <th id="rows">{{ order.sponsor_catalog_item.catalog_item.item_name }}</th>
+            <th id="rows">{{ order.points_at_order }}</th>
+            <th id="rows">{{ order.retail_at_order }}</th>
+
+            </tr>
+    {% endif %}
+    </table>
         </div>
 {% endblock %}

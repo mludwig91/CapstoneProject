@@ -32,74 +32,73 @@
                 <div class="row" id="sponsor" style="display: block;">
                     {% for obj in sales_per %}
 
-                        <button class=" accordion" style="width: 100%">{{obj.0}} <div class="float-right">Total Order Quantity: {{ obj.1 }} &emsp; Total Dollars Sold: {{ obj.2 }} USD</div></button>
+                        <button class=" accordion" style="width: 100%">{{obj.0}}</button>
                         <div class="panel" style="display: none">
-                            {% for order in sales %}
-                            {% if obj.0 == order.sponsor %}
                                 <div class="card mt-3 mx-auto shadow-lg rounded text-center " style="width: 75vw;">
                                     <div class="card-body">
-                                        <p class="card-text" style="float: left"> <b>Order Id:</b></p><p class="card-text" style="float: right"> {{ order.id | safe }} </p>
+                                        <p class="card-text" style="float: left"> <b>Total Dollars of Purchases:</b></p><p class="card-text" style="float: right"> {{ obj.2 }} USD </p>
                                         <br><br>
-                                        <p class="card-text" style="float: left"> <b>Name:</b></p><p class="card-text" style="float: right"> {{ order.ordering_driver | safe }} </p>
+                                        <p class="card-text" style="float: left"> <b>Total Points Spent:</b></p><p class="card-text" style="float: right"> {{ obj.4 }} Points </p>
                                         <br><br>
-                                        <p class="card-text" style="float: left"> <b>Status:</b></p><p class="card-text" style="float: right"> {{ order.order_status | safe }} </p>
+                                        <p class="card-text" style="float: left"> <b>Total Fee Owed (1%):</b></p><p class="card-text" style="float: right"> {{ obj.3 }} USD </p>
                                         <br><br>
-                                        <p class="card-text" style="float: left"> <b>Cost:</b></p><p class="card-text" style="float: right"> {{ order.retail_at_order | safe }} USD ({{ order.points_at_order | safe }} Points) </p>
+                                        <p class="card-text" style="float: left"> <b>Last Updated:</b></p><p class="card-text" style="float: right"> {{ obj.5 | date:"F j, Y" }} </p>
                                         <br><br>
-                                        <p class="card-text" style="float: left"> <b>Last Updated:</b></p><p class="card-text" style="float: right"> {{ order.last_status_change | date:"F j, Y" }} </p>
-                                        <br><br>
-                                        <a class="btn btn-success" href="{% url 'accounts:order' order.id %}">View Order</a>
+                                        <a class="btn btn-success" href="{% url 'accounts:invoice' obj.0.id %}">View Invoice</a>
                                     </div>
                                 </div>
                                 <br>
-                            {% endif %}
-
-                        {% endfor %}
                         </div>
 
                     {% endfor %}
                 </div>
 
-            <div class="container" id="newest" style="display: none;">
+            <div class="row" id="newest" style="display: none;">
                     {% for obj in newest_first %}
-                                <div class="card mt-3 mx-auto shadow-lg rounded text-center"style="width: 50vw;">
-                                    <div class="card-body">
-                                        <p class="card-text" style="float: left"> <b>Order Id:</b></p><p class="card-text" style="float: right"> {{ obj.id | safe }} </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Name:</b></p><p class="card-text" style="float: right"> {{ obj.ordering_driver | safe }} </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Status:</b></p><p class="card-text" style="float: right"> {{ obj.order_status | safe }} </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Cost:</b></p><p class="card-text" style="float: right"> {{ obj.retail_at_order | safe }} USD ({{ obj.points_at_order | safe }} Points) </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Last Updated:</b></p><p class="card-text" style="float: right"> {{ obj.last_status_change | date:"F j, Y" }} </p>
 
-                                        <a class="btn btn-success" href="{% url 'accounts:order' obj.id %}">View Order</a>
+                        <div class="panel" style="">
+                                <div class="card mt-3 mx-auto shadow-lg rounded text-center " style="width: 75vw;">
+                                    <div class="card-body">
+                                        <p class="card-text" style="float: left"> <b>Sponsor Company:</b></p><p class="card-text" style="float: right"> {{ obj.0 }} USD </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Total Dollars of Purchases:</b></p><p class="card-text" style="float: right"> {{ obj.2 }} USD </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Total Points Spent:</b></p><p class="card-text" style="float: right"> {{ obj.4 }} Points </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Total Fee Owed (1%):</b></p><p class="card-text" style="float: right"> {{ obj.3 }} USD </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Last Updated:</b></p><p class="card-text" style="float: right"> {{ obj.5 | date:"F j, Y" }} </p>
+                                        <br><br>
+                                        <a class="btn btn-success" href="{% url 'accounts:invoice' obj.0.id %}">View Invoice</a>
                                     </div>
                                 </div>
                                 <br>
+                        </div>
 
                     {% endfor %}
                 </div>
 
-                <div class="container" id="oldest" style="display: none;">
+                <div class="row" id="oldest" style="display: none;">
                     {% for obj in oldest_first %}
-                                <div class="card mt-3 mx-auto shadow-lg rounded text-center"style="width: 50vw;">
-                                    <div class="card-body">
-                                        <p class="card-text" style="float: left"> <b>Order Id:</b></p><p class="card-text" style="float: right"> {{ obj.id | safe }} </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Name:</b></p><p class="card-text" style="float: right"> {{ obj.ordering_driver | safe }} </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Status:</b></p><p class="card-text" style="float: right"> {{ obj.order_status | safe }} </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Cost:</b></p><p class="card-text" style="float: right"> {{ obj.retail_at_order | safe }} USD ({{ obj.points_at_order | safe }} Points) </p>
-                                        <br><br>
-                                        <p class="card-text" style="float: left"> <b>Last Updated:</b></p><p class="card-text" style="float: right"> {{ obj.last_status_change | date:"F j, Y" }} </p>
 
-                                        <a class="btn btn-success" href="{% url 'accounts:order' obj.id %}">View Order</a>
+                        <div class="panel" style="">
+                                <div class="card mt-3 mx-auto shadow-lg rounded text-center " style="width: 75vw;">
+                                    <div class="card-body">
+                                        <p class="card-text" style="float: left"> <b>Sponsor Company:</b></p><p class="card-text" style="float: right"> {{ obj.0 }} USD </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Total Dollars of Purchases:</b></p><p class="card-text" style="float: right"> {{ obj.2 }} USD </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Total Points Spent:</b></p><p class="card-text" style="float: right"> {{ obj.4 }} Points </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Total Fee Owed (1%):</b></p><p class="card-text" style="float: right"> {{ obj.3 }} USD </p>
+                                        <br><br>
+                                        <p class="card-text" style="float: left"> <b>Last Updated:</b></p><p class="card-text" style="float: right"> {{ obj.5 | date:"F j, Y" }} </p>
+                                        <br><br>
+                                        <a class="btn btn-success" href="{% url 'accounts:invoice' obj.0.id %}">View Invoice</a>
                                     </div>
                                 </div>
                                 <br>
+                        </div>
 
                     {% endfor %}
                 </div>

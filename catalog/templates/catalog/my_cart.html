@@ -40,7 +40,7 @@
     <table id = "totals">
         <h3> </h3>
         <h3> </h3>
-        <h3> <u>Order Totals</u></Order></h3>
+        <h3> <th> <u>Order Totals</u></th></h3>
         <tr><th>Total Retail Cost :     </th>
         <th>{{ totals_dic.retail }}</th></tr>
         <tr><th>Total Point Cost :      </th>
@@ -51,7 +51,8 @@
 
         {% if user.userinformation.points > totals_dic.points %}
         <div class="d-flex py-2">
-            <a class="btn default" href="#">Checkout</a>
+            {% csrf_token %}
+            <a class="btn default" href="{% url 'catalog:checkout' %}" id = "checkout">Checkout</a>
         </div>
         {% else %}
         <div style="text-align: center;">
