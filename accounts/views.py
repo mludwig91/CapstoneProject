@@ -12,7 +12,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
 from accounts.forms import UserInformationForm
-from accounts.models import UserInformation, AuditApplication, SponsorCompany, Points, Order
+from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order
 
 
 def login(request):
@@ -54,8 +54,8 @@ def profile(request):
 
     # Case 1: The user email exists in our user information table.
     if UserInformation.objects.filter(user=user).exists():
+        user_info = UserInformation.objects.get(user=user)
         if request.method == 'POST':
-            user_info = UserInformation.objects.get(user=user)
             if request.POST.get('newcompany') is not None:
 
                 current_points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company)
@@ -64,8 +64,12 @@ def profile(request):
 
                 user_info.sponsor_company = SponsorCompany.objects.get(company_name=request.POST.get('newcompany'))
                 user_info.points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company).points
-                user_info.last_login = datetime.now()
-                user_info.save()
+
+        user_info.last_login = datetime.now()
+        user_info.save()
+
+        login_entry = AuditLoginAttempt(attempt_time=datetime.now(), login_user=user_info, is_successful=True)
+        login_entry.save()
         return render(request, "accounts/profile.html")
     # Case 2: The user doesn't have an entry in our user information table,
     #          we redirect to the register page
