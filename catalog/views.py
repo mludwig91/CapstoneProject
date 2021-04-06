@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.conf import settings
 from accounts.models import SponsorCompany, UserInformation, Order
-from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage
+from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage, ItemReview
 from catalog.serializers import ItemSerializer, SponsorCatalogItemSerializer
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
@@ -12,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import filters
 from rest_framework import generics
 from django.utils import timezone
+from.forms import ItemReviewForm
 import json
 import requests
 
@@ -117,14 +120,46 @@ def listings(request):
 
     return render(request, "catalog/listings.html")
 
+@login_required(login_url='/accounts/login')
 def product_page(request, id):
     user = UserInformation.objects.get(user=request.user)
-    company = user.sponsor_company
+    item = CatalogItem.objects.get(api_item_Id = id)
+    
+    #If user hasn't left a review for this item before
+    if not ItemReview.objects.filter(catalog_item=item, reviewer=user).exists():
+        #If user is submitting review
+        if request.method == 'POST':
+            r = ItemReview.objects.create(catalog_item=item,reviewer=user)
+            r.save()
+            form = ItemReviewForm(request.POST)
+            if form.is_valid():
+                r.title = form.cleaned_data['title']
+                r.review = form.cleaned_data['review']
+                r.has_reviewed = True
+                r.is_approved = False
+                r.save()
+                return HttpResponseRedirect("")
+        #otherwise display review form
+        else:
+            form = ItemReviewForm()
+    else:
+        form = None
+
+    #Get associated product information
     items = CatalogItem.objects.filter(api_item_Id = id)
     sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items)
     images = CatalogItemImage.objects.filter(catalog_item__in=items)
+    item = CatalogItem.objects.get(api_item_Id=id)
+    reviews = ItemReview.objects.filter(catalog_item=item, is_approved=True)    
+    reviewlist = []
+
+    #creating list of review objects    
+    for review in reviews.iterator():
+        reviewlist.append(review)
+
     listings = zip(items, sponsors, images)
-    return render(request, "catalog/product_page.html", context = {'listings' : listings})
+    return render(request, "catalog/product_page.html", context = {'listings' : listings,'reviewlist': reviewlist, 'form': form})    
+        
 
 def browse(request):
 
@@ -193,13 +228,14 @@ def browse(request):
         #else
         return render(request, "catalog/browse.html")
 
-
+@login_required(login_url='/accounts/login/')
 def add_item_to_cart(request, id):
     
     #get user and associate them with an order
     user = UserInformation.objects.get(user=request.user)
     item = CatalogItem.objects.get(api_item_Id=id)
     sponsor_item = SponsorCatalogItem.objects.get(catalog_item=item)
+    #edit: I don't think this is necessarily the users sponsor company
     sponsor = sponsor_item.sponsor_company
 
     #if item is in the cart already, change qty
@@ -221,10 +257,12 @@ def add_item_to_cart(request, id):
     
     return product_page(request,id)
 
+@login_required(login_url='/accounts/login/')
 def my_cart(request):
+    #Get user and order information
     user = UserInformation.objects.get(user=request.user)
-    if Order.objects.filter(ordering_driver=user).exists():
-        orders = Order.objects.filter(ordering_driver=user)
+    if Order.objects.filter(ordering_driver=user, order_status='inCart').exists():
+        orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
         items = []
         order = []
         images = []
@@ -232,6 +270,8 @@ def my_cart(request):
             "points": 0,
             "retail": 0
         }
+
+        #Add active orders/images to list and calculate totals
         for obj in orders.iterator():
             items.append(obj.sponsor_catalog_item)
             numitems = obj.sponsor_catalog_item.qty_in_cart
@@ -286,6 +326,34 @@ def add_item_from_cart_page(request, id):
 
     return my_cart(request)
 
+@login_required(login_url="/accounts/login")
+def browse_pending_product_reviews(request,id):
+    user = UserInformation.objects.get(user=request.user)
+    item = CatalogItem.objects.get(api_item_Id= id)
+    if ItemReview.objects.filter(catalog_item=item, is_approved=False).exists():
+        pending_reviews = ItemReview.objects.filter(catalog_item=item, is_approved=False)
+        review_list = []
+        for review in pending_reviews.iterator():
+            review_list.append(review)
+    else:
+        review_list = None
+
+    return render(request, "catalog/browse_pending_product_reviews.html", context = {'review_list': review_list})
+
+@login_required(login_url="/accounts/login")
+def approve_pending_product_reviews(request,id, first, last):
+   
+    if request.method == 'POST':
+        item = CatalogItem.objects.get(api_item_Id= id)
+        pending_reviewer = UserInformation.objects.get(first_name=first, last_name=last)
+        review = ItemReview.objects.get(catalog_item=item, reviewer=pending_reviewer)
+        if request.POST.get('approve') is not None:
+            review.is_approved = True
+            review.save()
+        if request.POST.get('reject') is not None:
+            review.delete()
+    return browse_pending_product_reviews(request,id)
+
 def driver_cart(request, value):
     adminUser = UserInformation.objects.get(user=request.user)
     driverUser = UserInformation.objects.get(user=value)
@@ -293,3 +361,58 @@ def driver_cart(request, value):
     shopping_cart = Order.objects.filter(ordering_driver=driverUser, order_status='inCart')
 
     return render(request, "catalog/driver_cart.html", context = {'shopping_cart': shopping_cart})
+
+def checkout(request):
+    user = UserInformation.objects.get(user=request.user)
+    orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
+    for order in orders:
+        order.order_status = 'shipped'
+        order.last_status_change = timezone.now()
+        order.save()
+        user.points -= order.points_at_order
+        user.item_count -= 1
+        user.save()
+    return my_cart(request)
+
+def order_history(request):
+    user = UserInformation.objects.get(user=request.user)
+    orders = Order.objects.filter(ordering_driver=user).exclude(order_status='inCart').order_by('-last_status_change')
+    sponsors = SponsorCatalogItem.objects.filter(order__in=orders).order_by('order')
+    items = CatalogItem.objects.filter(sponsorcatalogitem__in=sponsors).order_by('sponsorcatalogitem')
+    data = zip(orders, sponsors, items)
+    context = {'data' : data}
+    return render(request, "catalog/order_history.html", context = context)
+
+def update_item(id):
+    listing = CatalogItem.objects.filter(api_item_Id=id)
+    url = base_url + '/listings/{}?api_key={}'.format(listing.api_item_Id, key)
+    response = requests.request("GET", url)
+    search_was_successful = (response.status_code == 200)
+    data = response.json()
+    listing_data = data['results'][0]
+
+    listing.last_updated = timezone.now()
+    if not (listing_data['last_modified_tsz'] == listing.last_modified):
+        listing.last_modified = listing_data['last_modified_tsz']
+        # check if the modfied time has been changed 
+        listing.item_name = listing_data['title']
+        listing.item_description = listing_data['description']
+        # ignore foreign currency for now
+        listing.retail_price = float(listing_data['price'])
+        if listing_data['state'] == "active":
+            listing.is_available = True
+        else:
+            listing.is_available = False
+        listing.save()
+
+        # create new catalog item image instance if one doesnt exist
+        if not CatalogItemImage.objects.filter(catalog_item = listing).exists():
+            url = base_url + '/listings/{}/images?api_key={}'.format(listing.api_item_Id, key)
+            response = requests.request("GET", url)
+            search_was_successful = (response.status_code == 200)
+            image_data = response.json()
+            images = image_data['results']
+            for image in images:
+                if image['rank'] == 1:
+                    main_image = image['url_170x135']
+            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)

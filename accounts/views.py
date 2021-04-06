@@ -1,6 +1,7 @@
 """
 This module contains our Django views for the "accounts" application.
 """
+import pytz
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
@@ -402,3 +403,77 @@ def driver_sales(request):
 def order(request, id):
     order = Order.objects.get(pk=id)
     return render(request, "accounts/order.html", {'order': order})
+
+
+@login_required(login_url='/accounts/login/')
+def all_invoices(request):
+
+    def Sort_Tuple(tup):
+
+        # reverse = None (Sorts in Ascending order)
+        # key is set to sort using second element of
+        # sublist lambda has been used
+        tup.sort(key=lambda x: x[5])
+        return tup
+
+    sales = Order.objects.exclude(order_status='inCart').all()
+    sponsor_companies = SponsorCompany.objects.all()
+    number_of_sponsors = len(sponsor_companies)
+
+    total_dollars = 0
+    total_sales = 0
+    sales_per = []
+    utc = pytz.UTC
+    for company in sponsor_companies:
+        count = 0
+        dollars = 0
+        points = 0
+        last_update = utc.localize(datetime(2000, 1, 1))
+        for order in sales:
+            if company == order.sponsor:
+                count += 1
+                total_sales += 1
+                dollars += order.retail_at_order
+                total_dollars += order.retail_at_order
+                points += order.points_at_order
+                if last_update < order.last_status_change:
+                    last_update = order.last_status_change
+        sales_per.append([company, count, dollars, dollars*.01, points, last_update])
+
+    newest_first = list(reversed(Sort_Tuple(sales_per)))
+    oldest_first = Sort_Tuple(sales_per)
+
+    return render(request, "accounts/all_invoices.html", {'sales': sales,
+                                                           'sponsors': sponsor_companies,
+                                                           'number_of_sponsors': number_of_sponsors,
+                                                           'sales_per': sales_per,
+                                                           'total_dollars': total_dollars,
+                                                           'total_sales': total_sales,
+                                                           'oldest_first': oldest_first,
+                                                           'newest_first': newest_first})
+
+
+@login_required(login_url='/accounts/login/')
+def invoice(request, name):
+    company = SponsorCompany.objects.filter(company_name=name)
+
+    count = 0
+    dollars = 0
+    points = 0
+    sales_per = []
+    utc = pytz.UTC
+    last_update = utc.localize(datetime(2000, 1, 1))
+    print(name)
+    sponsor = SponsorCompany.objects.get(pk=name)
+    sales = Order.objects.exclude(order_status='inCart').filter(sponsor=sponsor).all()
+    print(sales)
+
+    for order in sales:
+        count += 1
+        dollars += order.retail_at_order
+        points += order.points_at_order
+        if last_update < order.last_status_change:
+            last_update = order.last_status_change
+    sales_per.append([count, dollars, dollars * .01, points, last_update])
+
+    return render(request, "accounts/invoice.html", {'company': sponsor, 'sales': sales, 'count': count, 'last': last_update, 'dollars': dollars, 'points': points, 'due': dollars*.01})

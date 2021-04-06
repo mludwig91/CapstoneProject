@@ -147,6 +147,7 @@ function getItemCards(items) {
             '<h5 class="card-title font-weight-bold" data-toggle="tooltip" title="' + name + '">' + name.slice(0,30) + '...</h5>' +
             '<p class="card-text">price: $' + price.toFixed(2) + '</p>' + 
             '<input type="button" class="btn btn-primary change" name="change" id="' + ID + '" value="change" />' +
+            '<br><a href="/catalog/browse_pending_product_reviews/' + ID + ' " class="btn default">Pending product reviews</a>' +
             '</div></div>'
         ); 
     });
@@ -284,6 +285,7 @@ $("#search").click(function() {
 });
 
 $("#clearsearch").click(function() {
+    $("#searchbar").focus().val('');
     search = "";
     getItems();
 });

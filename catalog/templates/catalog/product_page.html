@@ -24,8 +24,37 @@
             </div>
 </div>
 
+
+    <!-- Display past reviews -->
+    <br><br>
+    <h5 id="reviews">Item Reviews</h5>
+    <hr>
+    {% for review in reviewlist %}
+        {% if review.is_approved %}
+        <p id="reviews">{{ review.reviewer.first_name }} {{ review.reviewer.last_name }}<br>
+        {{ review.title }}<br> {{ review.reviewer.first_name }}'s thoughts: <br>
+        {{ review.review }}</p><hr>
+        {% endif %}
+    {% endfor %}
+
+
+
+    <!-- Product Reviews Section -->
+    <!-- If user has not wrote review already, display -->
+    {% if form %}
+        <h5 id="reviews">Leave a review!</h5>
+        <form action="{% url 'catalog:product_page' listing.api_item_Id %}" method="post">
+        {% csrf_token %}
+        <p style="text-align: center;">
+        Title<br/>
+        {{ form.title }}<br/><br/>
+        Review<br/>
+        {{ form.review }}<br/>
+        <input type="submit" value="Submit"></p>
+        </form>
+    {% else %}
+    <h5 id="reviews">You've reviewed this item already!</h5> 
+    {% endif %}
+
 {% endfor %}
-
-
-
 {% endblock %}

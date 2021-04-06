@@ -25,14 +25,17 @@
         {% for items, images in item_list %}
             <tr>
             <!-- <th id="rows">{{ forloop.counter }}</th> -->
-            <th><img id="itemPic" src="{{ images.image_link }}" width="auto" height="auto"/></th>
-            <th id="rows"> <a href="{% url 'catalog:product_page' items.catalog_item.api_item_Id %}">{{ items.catalog_item.item_name }}</a></th>
-            <th id="rows">{{ items.point_value }}</th>
-            <th id="rows"><a id="remove" href="{% url 'catalog:remove_item_from_cart' items.catalog_item.api_item_Id %}">-</a></th> <th id="rows">{{ items.qty_in_cart }} </th> <th id="rows"><a id="add" href="{% url 'catalog:add_item_from_cart_page' items.catalog_item.api_item_Id %}">+</a></th>
-
+            <td><img id="itemPic" src="{{ images.image_link }}" width="auto" height="auto"/></td>
+            <td id="rows"> <a href="{% url 'catalog:product_page' items.catalog_item.api_item_Id %}">{{ items.catalog_item.item_name }}</a></td>
+            <td id="rows">{{ items.point_value }}</td>
+            <td id="rows"><a id="remove" href="{% url 'catalog:remove_item_from_cart' items.catalog_item.api_item_Id %}">-</a></td> 
+            <td id="rows">{{ items.qty_in_cart }} </td> 
+            <td id="rows"><a id="add" href="{% url 'catalog:add_item_from_cart_page' items.catalog_item.api_item_Id %}">+</a></td>
             </tr>
         {% endfor %}
     </table>
+
+
 <!-- Order Summary Section -->
     <table id = "totals">
         <h3> </h3>
@@ -48,10 +51,13 @@
 
         {% if user.userinformation.points > totals_dic.points %}
         <div class="d-flex py-2">
-            <a class="btn default" href="#">Checkout</a>
+            {% csrf_token %}
+            <a class="btn default" href="{% url 'catalog:checkout' %}" id = "checkout">Checkout</a>
         </div>
         {% else %}
-        <h3> <th> <u>Not enough points to place this order!!</u></Order></th></h3>
+        <div style="text-align: center;">
+        <h3> <u>Not enough points to place this order!!</u></Order></h3>
+        </div>
         {% endif %}
 
     {% else %}

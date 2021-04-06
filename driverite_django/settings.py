@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_apscheduler',
     'rest_framework',
-    'django_filters'
+    'django_filters',
+    'mathfilters'
 
 ]
 

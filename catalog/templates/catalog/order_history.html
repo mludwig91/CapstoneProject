@@ -1,0 +1,24 @@
+{% extends "core/base.html" %}
+{% load static compress %}
+
+{% block css %}
+    {% compress css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+    {% endcompress %}
+{% endblock %}
+
+{% block main_content %}
+
+<h3 class = "m-5" style = "text-align: center;">Order History</h3>
+
+{% for orders, sponsors, items in data %}
+
+    <div>For Order On: {{orders.last_status_change}}</div>
+    <div>Status: {{orders.order_status}} </div>
+    <div>{{items.item_name}}</div>
+    <div>Points: {{orders.points_at_order}}</div>
+    <div>Order ID: {{orders.pk}}</div>
+    <br><br>
+
+{% endfor %}
+{% endblock %}
