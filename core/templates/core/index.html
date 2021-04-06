@@ -15,7 +15,7 @@
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
             <h1>Hello, {{ user.username }}</h1>
-            <a class="btn btn-lg btn-jumbotron" role="button"
+            <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:profile'%}" role="button"
                aria-pressed="true">Get Started</a>
         </div>
     </div>

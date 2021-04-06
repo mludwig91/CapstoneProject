@@ -286,9 +286,9 @@ def add_item_from_cart_page(request, id):
 
     return my_cart(request)
 
-def driver_cart(request, driver):
+def driver_cart(request, value):
     adminUser = UserInformation.objects.get(user=request.user)
-    driverUser = UserInformation.objects.get(user=driver)
+    driverUser = UserInformation.objects.get(user=value)
 
     shopping_cart = Order.objects.filter(ordering_driver=driverUser, order_status='inCart')
 

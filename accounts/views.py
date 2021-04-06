@@ -63,6 +63,7 @@ def profile(request):
 
                 user_info.sponsor_company = SponsorCompany.objects.get(company_name=request.POST.get('newcompany'))
                 user_info.points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company).points
+                user_info.last_login = datetime.now()
                 user_info.save()
         return render(request, "accounts/profile.html")
     # Case 2: The user doesn't have an entry in our user information table,
