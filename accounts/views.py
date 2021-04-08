@@ -481,3 +481,10 @@ def invoice(request, name):
     sales_per.append([count, dollars, dollars * .01, points, last_update])
 
     return render(request, "accounts/invoice.html", {'company': sponsor, 'sales': sales, 'count': count, 'last': last_update, 'dollars': dollars, 'points': points, 'due': dollars*.01})
+
+@login_required(login_url='/accounts/login/')
+def edit_user(request, value):
+    adminUser = UserInformation.objects.get(user=request.user)
+    driverUser = UserInformation.objects.get(user=value)
+
+    return render(request, "catalog/edit_user.html", context = {'driver_user': driverUser})
