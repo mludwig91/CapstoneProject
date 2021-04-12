@@ -115,7 +115,7 @@
                                             <td>{{info.user.last_name | safe}}</td>
                                             <td>
                                                 {% if info.user.role_name == 'driver' %} 
-                                                    {{user.points | safe}}
+                                                    {{info.points | safe}}
                                                 {% else %}
                                                     <b>N/A</b>
                                                 {% endif %}

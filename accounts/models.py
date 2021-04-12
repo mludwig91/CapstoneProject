@@ -166,4 +166,4 @@ class Points(models.Model):
     """
     user = models.ForeignKey(UserInformation, on_delete=models.CASCADE, null=True, blank=True, related_name="users_points")
     sponsor = models.ForeignKey(SponsorCompany, on_delete=models.CASCADE, null=True, blank=True)
-    points = models.IntegerField("Phone Number", null=True, default=0)
+    points = models.IntegerField("Driver Points", null=True, default=0)
