@@ -109,7 +109,7 @@
                                     <tbody>
                                         {%for info in drivers%}
                                         <tr>
-                                            <td>{{info.user.sponsor_company.company_name | safe}}</td>
+                                            <td>{{info.sponsor.company_name | safe}}</td>
                                             <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=info.user.id%}">Edit</a></td>
                                             <td>{{info.user.first_name | safe}}</td>
                                             <td>{{info.user.last_name | safe}}</td>

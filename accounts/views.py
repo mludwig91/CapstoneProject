@@ -66,6 +66,7 @@ def profile(request):
                 user_info.points = Points.objects.get(user=user_info, sponsor=user_info.sponsor_company).points
 
         user_info.last_login = datetime.now()
+        user_info.is_active = True
         user_info.save()
 
         login_entry = AuditLoginAttempt(attempt_time=datetime.now(), login_user=user_info, is_successful=True)
