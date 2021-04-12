@@ -313,10 +313,14 @@ def review_apps(request):
 def user_management(request):
     current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
     if current_user.role_name == 'admin':
-        available_users = UserInformation.objects.all()
+        admin_users = UserInformation.objects.filter(role_name='admin').all()
+        sponsor_users = UserInformation.objects.filter(role_name='sponsor').all()
+        driver_users = Points.objects.all()
     else:
-        available_users = UserInformation.objects.filter(sponsor_company=current_user.sponsor_company).all()
-    return render(request, "accounts/user_management.html", {'users': available_users})
+        admin_users = UserInformation.objects.filter(role_name='admin').all()
+        sponsor_users = UserInformation.objects.filter(role_name='sponsor').filter(sponsor_company=current_user.sponsor_company).all()
+        driver_users = Points.objects.filter(sponsor=current_user.sponsor_company).all()
+    return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
 
 @login_required(login_url='/accounts/login/')
 def disable_account(request):

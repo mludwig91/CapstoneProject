@@ -12,65 +12,144 @@
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.24/b-1.7.0/b-colvis-1.7.0/b-html5-1.7.0/b-print-1.7.0/cr-1.5.3/date-1.0.2/sc-2.0.3/sl-1.3.2/datatables.min.css"/>
     
-    <div class="container">
-        <div class="card mt-3 mx-auto shadow-lg rounded text-center">
-            <table id="hackDataTable" class="table table-striped table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Company Name</th>
-                        <th>Edit User</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Driver Points</th>
-                        <th>Email</th>
-                        <th>Phone Number</th>
-                        <th>Last Login</th>
-                        <th>Approving User</th>
-                        <th>View Shopping Cart</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {%for user in users%}
-                    <tr>
-                        <td>{{user.sponsor_company.company_name | safe}}</td>
-                        <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=user.id%}">Edit</a></td>
-                        <td>{{user.first_name | safe}}</td>
-                        <td>{{user.last_name | safe}}</td>
-                        <td>
-                            {% if user.role_name == 'driver' %} 
-                                {{user.points | safe}}
-                            {% else %}
-                                <b>N/A</b>
-                            {% endif %}
-                        </td>
-                        <td>{{user.user.email | safe}}</td>
-                        <td>{{user.phone_number | safe}}</td>
-                        <td>{{user.last_login | safe}}</td>
-                        <td>{{user.approving_user.user.email | safe}}</td>
-                        <td>
-                            {% if user.role_name == 'driver' %}
-                                <a class="btn btn-success" href="{% url 'catalog:driver_cart' value=user.id%}">View Cart</a>
-                            {% else %}
-                                <p style="text-center"><b>N/A</b></p>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    {% if current_user.role_name == 'admin'%}
+    <button class=" accordion accordion-flush" style="width: 100%">Admin Users</button>
+                <div class="panel" style="display: none">
+                        <div class="container">
+                            <div class="card mt-3 mx-auto shadow-lg rounded text-center">
+                                <table id="adminTable" class="table table-striped table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Edit User</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                            <th>Phone Number</th>
+                                            <th>Last Login</th>
+                                            <th>Approving User</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%for admin in admins%}
+                                        <tr>
+                                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=admin.id%}">Edit</a></td>
+                                            <td>{{admin.first_name | safe}}</td>
+                                            <td>{{admin.last_name | safe}}</td>
+                                            <td>{{admin.user.email | safe}}</td>
+                                            <td>{{admin.phone_number | safe}}</td>
+                                            <td>{{admin.last_login | safe}}</td>
+                                            <td>{{admin.approving_user.user.email | safe}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+                        </div>
+                </div>
+    {% endif %}
+
+    <button class=" accordion accordion-flush" style="width: 100%">Sponsor Users</button>
+                <div class="panel" style="display: none">
+                        <div class="container">
+                            <div class="card mt-3 mx-auto shadow-lg rounded text-center">
+                                <table id="adminTable" class="table table-striped table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Company Name</th>
+                                            <th>Edit User</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                            <th>Phone Number</th>
+                                            <th>Last Login</th>
+                                            <th>Approving User</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%for sponsor in sponsors%}
+                                        <tr>
+                                            <td>{{sponsor.sponsor_company.company_name | safe}}</td>
+                                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=sponsor.id%}">Edit</a></td>
+                                            <td>{{sponsor.first_name | safe}}</td>
+                                            <td>{{sponsor.last_name | safe}}</td>
+                                            <td>{{sponsor.user.email | safe}}</td>
+                                            <td>{{sponsor.phone_number | safe}}</td>
+                                            <td>{{sponsor.last_login | safe}}</td>
+                                            <td>{{sponsor.approving_user.user.email | safe}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <br/>
+                            </div>
+                            <br>
+                        </div>
+                </div>
+
+    <button class=" accordion accordion-flush" style="width: 100%">Driver Users</button>
+                <div class="panel" style="display: none">
+                       <div class="container">
+                            <div class="card mt-3 mx-auto shadow-lg rounded text-center">
+                                <table id="driverTable" class="table table-striped table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Company Name</th>
+                                            <th>Edit User</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Driver Points</th>
+                                            <th>Email</th>
+                                            <th>Phone Number</th>
+                                            <th>Last Login</th>
+                                            <th>Approving User</th>
+                                            <th>View Shopping Cart</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%for info in drivers%}
+                                        <tr>
+                                            <td>{{info.user.sponsor_company.company_name | safe}}</td>
+                                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=info.user.id%}">Edit</a></td>
+                                            <td>{{info.user.first_name | safe}}</td>
+                                            <td>{{info.user.last_name | safe}}</td>
+                                            <td>
+                                                {% if info.user.role_name == 'driver' %} 
+                                                    {{user.points | safe}}
+                                                {% else %}
+                                                    <b>N/A</b>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{info.user.user.email | safe}}</td>
+                                            <td>{{info.user.phone_number | safe}}</td>
+                                            <td>{{info.user.last_login | safe}}</td>
+                                            <td>{{info.user.approving_user.user.email | safe}}</td>
+                                            <td>
+                                                {% if info.user.role_name == 'driver' %}
+                                                    <a class="btn btn-success" href="{% url 'catalog:driver_cart' value=info.user.id%}">View Cart</a>
+                                                {% else %}
+                                                    <p style="text-center"><b>N/A</b></p>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+                        </div>
+                </div>
 
     <script>
         $( document ).ready(function() {
             console.log( "ready!" );
 
-            $('#hackDataTable').DataTable();
+            /*$('#hackDataTable').DataTable();
 
             var hotElement = document.querySelector('#userHandsonTable');
             var hotElementContainer = hotElement.parentNode;
 
-            /*var hotSettings = {
+            var hotSettings = {
                 data: {{ users|safe }},
                 columns: [
                     {
@@ -131,5 +210,21 @@
 
             var hotable = new Handsontable(hotElement, hotSettings);*/
         });
+
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                }
+                else {
+                    panel.style.display = "block";
+                }
+            });
+        }
     </script>
 {% endblock %}
