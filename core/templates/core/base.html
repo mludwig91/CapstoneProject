@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     {% block css %}
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/index.scss' %}" media="screen">
     {% endblock %}
 
     <!-- JavaScript -->
@@ -62,13 +63,29 @@
         {% endif %}
     {% endif %}
 </nav>
+
 {% endblock body %}  
 
 <!-- Main Content Block -->
     <main id="page-content" class="flex-shrink-0" role="main">
         {% block main_content %}
+
         {% endblock %}
-        
+        {% if user.userinformation.role_name == "sponsor" and not user.userinformation.viewing %}
+            <form action="{% url 'accounts:swap_type' %}" method="POST">
+                {% csrf_token %}
+                <div class="container">
+                    <input id="top" type="submit" name="swapToDriver" value="View as Driver" title="Swap View"></input>
+                </div>
+            </form>
+        {% elif user.userinformation.role_name == "driver" and user.userinformation.viewing and user.userinformation.type_to_revert_to == "sponsor" %}
+            <form action="{% url 'accounts:swap_type' %}" method="POST">
+                {% csrf_token %}
+                <div class="container">
+                    <input id="top" type="submit" name="swapBack" value="View as Yourself" title="Swap View"></input>
+                </div>
+            </form>
+        {% endif %}
     </main>
 </body>
 

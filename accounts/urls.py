@@ -28,4 +28,5 @@ urlpatterns = [
     path('all_invoices', views.all_invoices, name='all_invoices'),
     path('invoice/<int:name>', views.invoice, name='invoice'),
     path('edit_user/<int:value>', views.edit_user, name='edit_user'),
+    path('swap_type', views.swap_type, name = 'swap_type'),
 ]

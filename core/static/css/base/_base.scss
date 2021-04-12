@@ -33,6 +33,12 @@ body {
         color: $page-header-navlink-hover-color;
     }
 
+    .nav-view-button {
+        font-size: 1rem;
+        color: $page-header-navlink-color;
+        border-color: $page-content-bg-color-light;
+    }
+
     // Navbar Brand
     .navbar-brand {
         color: $page-header-navbrand-color;
@@ -98,4 +104,23 @@ font-family: $body-font;
 font: bolder;
 font-size: 50px;
 }
+
+#top {
+    position: fixed;
+    right: 30px;
+    bottom: 20px;
+    z-index: 99;
+    padding: 15px;
+    font-size: 18px;
+    color: $purple;
+    cursor: pointer;
+    background-color: $gunmetal;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    }
+
+    #top:hover {
+        background-color: $purple;
+    }
 

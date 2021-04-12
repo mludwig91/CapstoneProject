@@ -4,6 +4,7 @@ This module contains our Django views for the "accounts" application.
 import pytz
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -487,9 +488,30 @@ def invoice(request, name):
 
     return render(request, "accounts/invoice.html", {'company': sponsor, 'sales': sales, 'count': count, 'last': last_update, 'dollars': dollars, 'points': points, 'due': dollars*.01})
 
+
 @login_required(login_url='/accounts/login/')
 def edit_user(request, value):
     adminUser = UserInformation.objects.get(user=request.user)
     driverUser = UserInformation.objects.get(user=value)
 
     return render(request, "catalog/edit_user.html", context = {'driver_user': driverUser})
+
+
+@login_required(login_url='/accounts/login/')
+def swap_type(request):
+    if request.POST.get('swapToDriver'):
+        user_info = UserInformation.objects.get(user=request.user)
+        user_info.viewing = True
+        user_info.type_to_revert_to = user_info.role_name
+        user_info.role_name = 'driver'
+        user_info.points = 1000
+        user_info.save()
+    elif request.POST.get('swapBack'):
+        user_info = UserInformation.objects.get(user=request.user)
+        user_info.viewing = False
+        user_info.role_name = user_info.type_to_revert_to
+        user_info.type_to_revert_to = ''
+        user_info.points = 0
+        user_info.save()
+
+    return redirect("/accounts/profile")

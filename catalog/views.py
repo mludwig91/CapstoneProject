@@ -365,13 +365,14 @@ def driver_cart(request, value):
 def checkout(request):
     user = UserInformation.objects.get(user=request.user)
     orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
-    for order in orders:
-        order.order_status = 'shipped'
-        order.last_status_change = timezone.now()
-        order.save()
-        user.points -= order.points_at_order
-        user.item_count -= 1
-        user.save()
+    if user.role_name is not 'sponsor' or user.type_to_revert_to is not 'sponsor':
+        for order in orders:
+            order.order_status = 'shipped'
+            order.last_status_change = timezone.now()
+            order.save()
+            user.points -= order.points_at_order
+            user.item_count -= 1
+            user.save()
     return my_cart(request)
 
 def order_history(request):
