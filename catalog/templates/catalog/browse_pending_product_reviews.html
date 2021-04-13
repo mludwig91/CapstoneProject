@@ -18,7 +18,7 @@
         <h2>Review Title: {{ review.title }}</h2><br>
         <h2>Review Body: {{ review.review }}</h2><br>
 
-        <form action="{% url 'catalog:approve_pending_product_reviews' review.catalog_item.api_item_Id review.reviewer.first_name review.reviewer.last_name %}" method="POST">
+        <form action="{% url 'catalog:approve_pending_product_reviews' review.catalog_item.api_item_Id review.reviewer.id %}" method="POST">
             {% csrf_token %}
             <input class="btn default" type="submit" name="approve" value="Approve"></a>
             <input class="btn default" type="submit" name="reject" value="Reject"></a>

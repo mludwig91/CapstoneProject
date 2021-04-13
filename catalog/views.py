@@ -341,11 +341,11 @@ def browse_pending_product_reviews(request,id):
     return render(request, "catalog/browse_pending_product_reviews.html", context = {'review_list': review_list})
 
 @login_required(login_url="/accounts/login")
-def approve_pending_product_reviews(request,id, first, last):
+def approve_pending_product_reviews(request, id, user):
    
     if request.method == 'POST':
-        item = CatalogItem.objects.get(api_item_Id= id)
-        pending_reviewer = UserInformation.objects.get(first_name=first, last_name=last)
+        item = CatalogItem.objects.get(api_item_Id = id)
+        pending_reviewer = UserInformation.objects.get(id = user)
         review = ItemReview.objects.get(catalog_item=item, reviewer=pending_reviewer)
         if request.POST.get('approve') is not None:
             review.is_approved = True

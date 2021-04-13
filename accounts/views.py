@@ -515,3 +515,15 @@ def swap_type(request):
         user_info.save()
 
     return redirect("/accounts/profile")
+
+
+@login_required(login_url='/accounts/login/')
+def company_management(request):
+    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+    if current_user.role_name == 'admin':
+        companies = SponsorCompany.objects.all()
+    else:
+        companies = SponsorCompany.objects.filter(id=current_user.sponsor_company).first()
+
+    return render(request, "accounts/company_management.html", {'current_user' : current_user, 'companies': companies})
