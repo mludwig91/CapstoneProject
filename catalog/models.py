@@ -55,3 +55,10 @@ class ItemReview(models.Model):
     when = DateTimeField("time post was created", auto_now_add=True)
     is_approved = models.BooleanField("Review has been approved by sponsor", default=False)
     has_reviewed = models.BooleanField("This field should probably be deleted", default=False)
+
+class CatalogFavorites(models.Model):
+    """
+    Model of a favorited catalog item
+    """
+    catalog_item = catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE, null=True)
+    user = models.ForeignKey("accounts.UserInformation", on_delete=CASCADE, null=True)
