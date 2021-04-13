@@ -33,7 +33,7 @@
         {% if review.is_approved %}
         <p id="reviews">{{ review.reviewer.first_name }} {{ review.reviewer.last_name }}<br>
         {{ review.title }}<br> {{ review.reviewer.first_name }}'s thoughts: <br>
-        {{ review.review }}</p><hr>
+        {{ review.review }}</p>
         {% endif %}
     {% endfor %}
 
