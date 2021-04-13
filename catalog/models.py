@@ -56,7 +56,7 @@ class ItemReview(models.Model):
     is_approved = models.BooleanField("Review has been approved by sponsor", default=False)
     has_reviewed = models.BooleanField("This field should probably be deleted", default=False)
 
-class CatalogFavorites(models.Model):
+class CatalogFavorite(models.Model):
     """
     Model of a favorited catalog item
     """
