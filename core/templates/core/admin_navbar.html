@@ -14,10 +14,20 @@
                 Reports & Audits
                 </a>
                 <div class="dropdown-menu">
-                <a class="dropdown-item" href="{% url 'accounts:driver_sales' %}">Driver Sales</a>
-                <a class="dropdown-item" href="{% url 'accounts:sales_reports' %}">Sponsor Sales</a>
-                <a class="dropdown-item" href="{% url 'accounts:all_invoices' %}">Invoices</a>
-                <a class="dropdown-item" href="#">Audit Logs</a>
+                    <a class="dropdown-item" href="{% url 'accounts:driver_sales' %}">Driver Sales</a>
+                    <a class="dropdown-item" href="{% url 'accounts:sales_reports' %}">Sponsor Sales</a>
+                    <a class="dropdown-item" href="{% url 'accounts:all_invoices' %}">Invoices</a>
+                    <a class="dropdown-item" href="#">Audit Logs</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                Manage
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'accounts:user_management' %}">Manage Users</a>
+                    <a class="dropdown-item" href="{% url 'accounts:company_management' %}">Manage Companies</a>
                 </div>
             </li>
 
@@ -26,9 +36,6 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:user_management' %}">All Users</a>
             </li>
             <li class="nav-item">
                 {% if user.is_authenticated %}
