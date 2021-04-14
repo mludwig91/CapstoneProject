@@ -20,23 +20,19 @@
                         <tr>
                             <th>Edit Company</th>
                             <th>Name</th>
-                            <th>Last Name</th>
-                            <th>Email</th>
                             <th>Phone Number</th>
-                            <th>Last Login</th>
-                            <th>Approving User</th>
+                            <th>Address</th>
+                            <th>US Cent To Point Ratio</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {%for admin in admins%}
+                        {%for company in companies%}
                         <tr>
-                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=admin.id%}">Edit</a></td>
-                            <td>{{admin.first_name | safe}}</td>
-                            <td>{{admin.last_name | safe}}</td>
-                            <td>{{admin.user.email | safe}}</td>
-                            <td>{{admin.phone_number | safe}}</td>
-                            <td>{{admin.last_login | safe}}</td>
-                            <td>{{admin.approving_user.user.email | safe}}</td>
+                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_company' value=company.id%}">Edit</a></td>
+                            <td>{{company.company_name | safe}}</td>
+                            <td>{{company.company_phone_number | safe}}</td>
+                            <td>{{company.company_street_address | safe}}, {{company.company_city}}, {{company.company_state}} {{company.company_zipcode}}</td>
+                            <td>{{company.company_point_ratio | safe}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -49,7 +45,7 @@
     {% if current_user.role_name == 'sponsor'%}
         <div class="jumbotron jumbotron-fluid py-5 mb-0">
             <div class="container text-center">
-                <h1> About {{ user.userinformation.sponsor_company.company_name }} </h1>
+                <h1> About {{ companies.company_name }} </h1>
             </div>
         </div>
         <div class="container px-3 py-0">

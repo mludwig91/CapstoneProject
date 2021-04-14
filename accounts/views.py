@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
-from accounts.forms import UserInformationForm
+from accounts.forms import UserInformationForm, SponsorCompanyForm
 from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order
 
 
@@ -494,7 +494,7 @@ def edit_user(request, value):
     adminUser = UserInformation.objects.get(user=request.user)
     driverUser = UserInformation.objects.get(user=value)
 
-    return render(request, "catalog/edit_user.html", context = {'driver_user': driverUser})
+    return render(request, "accounts/edit_user.html", context = {'driver_user': driverUser})
 
 
 @login_required(login_url='/accounts/login/')
@@ -527,3 +527,27 @@ def company_management(request):
         companies = SponsorCompany.objects.filter(id=current_user.sponsor_company).first()
 
     return render(request, "accounts/company_management.html", {'current_user' : current_user, 'companies': companies})
+
+@login_required(login_url='/accounts/login/')
+@csrf_protect
+def edit_company(request, value):
+
+    #if request.method == 'POST':
+
+    #    company_management(request)
+    #else: 
+        
+        # Case 2a: The company exists in our sponsor company table.
+        #if SponsorCompany.objects.filter(id=value).exists():
+        #    form = SponsorCompanyForm(instance=SponsorCompany.objects.get(id=value))
+        # Case 2b: The user email doesn't exist in our user information table.
+        #else:
+    form = SponsorCompanyForm()
+
+        #request.session.set_expiry(0)
+        
+    adminUser = UserInformation.objects.get(user=request.user)
+    company = SponsorCompany.objects.get(id=value)
+
+    request.session.set_expiry(0)
+    return render(request, "accounts/edit_company.html", {'company': company, 'form': form})

@@ -52,5 +52,38 @@ class UserInformationForm(forms.ModelForm):
         model = UserInformation
         fields = ['user_email', 'first_name', 'last_name', 'phone_number', 'sponsor_company', 'address', 'license_number', 'state']
 
+class SponsorCompanyForm(forms.ModelForm):
+    """
+    This form creates an instance of a SponsorCompanyForm model and collects its fields
+    """
 
+    # Fields that will need to be completed in this form
+    company_name = forms.CharField(label="Company Name", max_length=25)
+    company_phone_number = forms.IntegerField(label="Phone Number", max_value=9999999999, min_value=1000000000)
+    company_street_address = forms.CharField(label="Company Street Address", max_length=32)
+    company_city = forms.CharField(label="Company City", max_length=25)
+    company_state = forms.CharField(label="Company State", max_length=25)
+    company_zipcode = forms.IntegerField(label="Zip Code", max_value=99999, min_value=500)
+    company_point_ratio = forms.IntegerField(label="US Cents to Catalog Points Ratio")
+    company_about_info = forms.CharField(label="About Sponsor", max_length=1000000)
+
+    def __init__(self, *args, **kwargs):
+        """function __init__ is called to instantiate the sponsor company form
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
+        super(SponsorCompanyForm, self).__init__(*args, **kwargs)
+
+        # Validator that makes sure all the fields have been filled in
+        for _field_name, field in self.fields.items():
+            field.required = True
+
+    class Meta:
+        """
+        A class that stores the meta information about this form
+        """
+        model = SponsorCompany
+        fields = ['company_name', 'company_phone_number', 'company_street_address', 'company_city', 'company_state', 'company_zipcode', 'company_point_ratio', 'company_about_info']
 
