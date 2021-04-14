@@ -83,42 +83,6 @@ def all_items(request):
         else:
             return JsonResponse({'inSponsor' : True})
 
-def listings(request):
-    
-    # get all database instances for items and update all listings
-    for listing in CatalogItem.objects.all():
-        url = base_url + '/listings/{}?api_key={}'.format(listing.api_item_Id, key)
-        response = requests.request("GET", url)
-        search_was_successful = (response.status_code == 200)
-        data = response.json()
-        listing_data = data['results'][0]
-
-        listing.last_updated = timezone.now()
-        listing.last_modified = listing_data['last_modified_tsz']
-        # check if the modfied time has been changed 
-        listing.item_name = listing_data['title']
-        listing.item_description = listing_data['description']
-        # ignore foreign currency for now
-        listing.retail_price = float(listing_data['price'])
-        if listing_data['state'] == "active":
-            listing.is_available = True
-        else:
-            listing.is_available = False
-        listing.save()
-
-        # create new catalog item image instance if one doesnt exist
-        if not CatalogItemImage.objects.filter(catalog_item = listing).exists():
-            url = base_url + '/listings/{}/images?api_key={}'.format(listing.api_item_Id, key)
-            response = requests.request("GET", url)
-            search_was_successful = (response.status_code == 200)
-            image_data = response.json()
-            images = image_data['results']
-            for image in images:
-                if image['rank'] == 1:
-                    main_image = image['url_170x135']
-            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
-
-    return render(request, "catalog/listings.html")
 
 @login_required(login_url='/accounts/login')
 def product_page(request, id):
