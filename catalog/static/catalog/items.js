@@ -254,6 +254,7 @@ var etsysortorder = "";
 $(document).ready(function() {
     getAllItems(); 
     getAllSidebar();
+    buttonActiveTop("all");
 });
 
 function buttonActiveTop(name) {
