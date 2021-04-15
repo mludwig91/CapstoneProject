@@ -532,22 +532,36 @@ def company_management(request):
 @csrf_protect
 def edit_company(request, value):
 
-    #if request.method == 'POST':
-
-    #    company_management(request)
-    #else: 
-        
-        # Case 2a: The company exists in our sponsor company table.
-        #if SponsorCompany.objects.filter(id=value).exists():
-        #    form = SponsorCompanyForm(instance=SponsorCompany.objects.get(id=value))
-        # Case 2b: The user email doesn't exist in our user information table.
-        #else:
-    form = SponsorCompanyForm()
-
-        #request.session.set_expiry(0)
-        
     adminUser = UserInformation.objects.get(user=request.user)
     company = SponsorCompany.objects.get(id=value)
 
-    request.session.set_expiry(0)
-    return render(request, "accounts/edit_company.html", {'company': company, 'form': form})
+    if request.method == 'POST':
+        # Check to see if we are creating a new sponsor company entry or updating an existing one
+        if SponsorCompany.objects.filter(id=value).exists():
+            form = SponsorCompanyForm(request.POST, instance=SponsorCompany.objects.get(id=value))
+        else:
+            form = SponsorCompanyForm(request.POST)
+
+        # Case 1a: A valid company profile form
+        if form.is_valid():
+            company_info = form.save(commit=False)
+                
+            company_info.save()
+
+            request.session.set_expiry(0)
+            return company_management(request)
+        # Case 1b: Not a valid company profile form, render the edit page with the current form
+        else:
+            return render(request, "accounts/edit_company.html", {'form': form})
+    
+    else: 
+        # Case 2a: The company exists in our sponsor company table.
+        if SponsorCompany.objects.filter(id=value).exists():
+            form = SponsorCompanyForm(instance=SponsorCompany.objects.get(id=value))
+
+        # Case 2b: The company doesn't exist in our sponsor company table.
+        else:
+            form = SponsorCompanyForm()
+        
+        request.session.set_expiry(0)
+        return render(request, "accounts/edit_company.html", {'company': company, 'form': form})
