@@ -220,15 +220,10 @@ def point_change_logs(request):
 
 @login_required(login_url='/accounts/login/')
 def login_logs(request):
-    """function logout This function handles the view for the logout page of the application.
+    
+    logins = AuditLoginAttempt.objects.all()
 
-    Args:
-        request (HTTPRequest): A http request object created automatically by Django.
-
-    Returns:
-        HttpResponse: A generated http response object to the request.
-    """
-    return render(request, "accounts/login_logs.html")
+    return render(request, "accounts/login_logs.html" , {'logins' : logins})
 
 
 @login_required(login_url='/accounts/login/')
