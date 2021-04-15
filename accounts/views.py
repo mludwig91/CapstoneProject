@@ -626,6 +626,7 @@ def swap_type(request):
         sponsorToBecome = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
         user_info = UserInformation.objects.get(user=request.user)
         user_info.viewing = True
+        user_info.is_admin = True
         user_info.type_to_revert_to = user_info.role_name
         user_info.sponsor_company = sponsorToBecome
         user_info.all_companies.add(sponsorToBecome)
