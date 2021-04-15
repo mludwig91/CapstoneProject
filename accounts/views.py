@@ -532,8 +532,10 @@ def company_management(request):
 @csrf_protect
 def edit_company(request, value):
 
-    adminUser = UserInformation.objects.get(user=request.user)
-    company = SponsorCompany.objects.get(id=value)
+    if SponsorCompany.objects.filter(id=value).exists():
+        company = SponsorCompany.objects.get(id=value)
+    else:
+        company = None
 
     if request.method == 'POST':
         # Check to see if we are creating a new sponsor company entry or updating an existing one
@@ -549,7 +551,15 @@ def edit_company(request, value):
             company_info.save()
 
             request.session.set_expiry(0)
-            return company_management(request)
+
+            current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+            if current_user.role_name == 'admin':
+                companies = SponsorCompany.objects.all()
+            else:
+                companies = SponsorCompany.objects.filter(id=current_user.sponsor_company).first()
+
+            return render(request, "accounts/company_management.html", {'current_user' : current_user, 'companies': companies})
         # Case 1b: Not a valid company profile form, render the edit page with the current form
         else:
             return render(request, "accounts/edit_company.html", {'form': form})
@@ -565,3 +575,20 @@ def edit_company(request, value):
         
         request.session.set_expiry(0)
         return render(request, "accounts/edit_company.html", {'company': company, 'form': form})
+
+@login_required(login_url='/accounts/login/')
+def delete_company(request, value):
+
+    if (SponsorCompany.objects.filter(id=value).exists()):
+        company = SponsorCompany.objects.get(id=value)
+        company.delete()
+
+    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+    if current_user.role_name == 'admin':
+        companies = SponsorCompany.objects.all()
+    else:
+        companies = SponsorCompany.objects.filter(id=current_user.sponsor_company).first()
+
+    return render(request, "accounts/company_management.html", {'current_user' : current_user, 'companies': companies})
+
