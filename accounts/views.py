@@ -492,8 +492,13 @@ def user_management(request):
 
 @login_required(login_url='/accounts/login/')
 def edit_user(request, value):
+
     adminUser = UserInformation.objects.get(user=request.user)
-    driverUser = UserInformation.objects.get(user=value)
+    if UserInformation.objects.filter(user=value).exists():
+        driverUser = UserInformation.objects.get(user=value)
+    else:
+        driverUser = None
+        coreUser = User()
 
     # Case 1: We have received a POST request with some data
     if request.method == 'POST':
@@ -512,6 +517,7 @@ def edit_user(request, value):
             user_info.user = driverUser.user
             user_info.sponsor_company = current_sponsor
             user_info.save()
+            form.save_m2m()
 
             sponsor = SponsorCompany.objects.get(company_name=form.cleaned_data['sponsor_company'])
 
@@ -539,7 +545,7 @@ def edit_user(request, value):
                                        initial={'user_email': request.user.email})
         # Case 2b: The user email doesn't exist in our user information table.
         else:
-            form = UserInformationForm(initial={'user_email': request.user.email, 'first_name': driverUser.first_name})
+            form = UserInformationForm(initial={'user_email': request.user.email})
 
         request.session.set_expiry(0)
         return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': driverUser})
