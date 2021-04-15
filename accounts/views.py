@@ -571,6 +571,8 @@ def swap_type(request):
         user_info = UserInformation.objects.get(user=request.user)
         user_info.viewing = True
         user_info.type_to_revert_to = user_info.role_name
+        if user_info.role_name == "admin":
+            user_info.is_admin = True
         user_info.role_name = 'driver'
         user_info.points = 1000
         user_info.save()
@@ -578,8 +580,20 @@ def swap_type(request):
         user_info = UserInformation.objects.get(user=request.user)
         user_info.viewing = False
         user_info.role_name = user_info.type_to_revert_to
-        user_info.type_to_revert_to = ''
         user_info.points = 0
+        if user_info.is_admin:
+            user_info.role_name = 'admin'
+            user_info.sponsor_company = None
+            user_info.all_companies.clear()
+        user_info.save()
+    elif request.POST.get('swapToSponsor'):
+        sponsorToBecome = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
+        user_info = UserInformation.objects.get(user=request.user)
+        user_info.viewing = True
+        user_info.type_to_revert_to = user_info.role_name
+        user_info.sponsor_company = sponsorToBecome
+        user_info.all_companies.add(sponsorToBecome)
+        user_info.role_name = 'sponsor'
         user_info.save()
 
     return redirect("/accounts/profile")

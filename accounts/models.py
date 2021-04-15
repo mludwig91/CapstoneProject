@@ -76,6 +76,7 @@ class UserInformation(models.Model):
     viewing = models.BooleanField("Viewing Other User", default=False)
     type_to_revert_to = models.CharField("Type To Revert To", max_length=25, choices=ROLE_NAME_CHOICES, default="sponsor",
                                  validators=[MinLengthValidator(1)])
+    is_admin = models.BooleanField("Is an Admin", default=False)
 
     def __str__(self):
         """function __str__ is used to create a string representation of this class

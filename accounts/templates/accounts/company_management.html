@@ -22,6 +22,7 @@
                     <thead class="thead-dark">
                         <tr>
                             <th>Edit Company</th>
+                            <th>View as Sponsor</th>
                             <th>Name</th>
                             <th>Phone Number</th>
                             <th>Address</th>
@@ -32,6 +33,15 @@
                         {%for company in companies%}
                         <tr>
                             <td><a class="btn btn-primary" href="{% url 'accounts:edit_company' value=company.id%}">Edit</a></td>
+                            <td>
+                                <form action="{% url 'accounts:swap_type' %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="container">
+                                        <input type="hidden" name="sponsor" value="{{ company.company_name }}"/>
+                                        <input class="btn btn-primary" type="submit" name="swapToSponsor" value="View" title="Swap View"></input>
+                                    </div>
+                                </form>
+                            </td>
                             <td>{{company.company_name | safe}}</td>
                             <td>{{company.company_phone_number | safe}}</td>
                             <td>{{company.company_street_address | safe}}, {{company.company_city}}, {{company.company_state}} {{company.company_zipcode}}</td>

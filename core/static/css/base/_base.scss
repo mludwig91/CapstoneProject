@@ -122,5 +122,26 @@ font-size: 50px;
 
     #top:hover {
         background-color: $purple;
+        color: $gunmetal;
+    }
+
+#second {
+    position: fixed;
+    right: 30px;
+    bottom: 80px;
+    z-index: 99;
+    padding: 15px;
+    font-size: 18px;
+    color: $purple;
+    cursor: pointer;
+    background-color: $gunmetal;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    }
+
+    #second:hover {
+        background-color: $purple;
+        color: $gunmetal;
     }
 
