@@ -108,6 +108,7 @@ class Order(models.Model):
         ('shipping', 'Shipping'),
         ('fulfilled', 'Fulfilled'),
         ('canceled', 'Canceled'),
+        ('delivered', 'Delivered'),
         ('returnRequest', 'Return In-Progress'),
         ('returned', 'Returned')
     )

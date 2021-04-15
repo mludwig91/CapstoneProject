@@ -12,17 +12,45 @@
 {% for listing, sponsor, image in listings %}
 
  <div style = "text-align: center;"> 
-   
-            <img class="m-2 mx-auto img-thumbnail" src="{{ image.image_link }}" width="auto" height="auto" />
-            <h5 data-toggle="tooltip" title="Hooray!">{{ listing.item_name }}</h5>
-            <p>price: {{ sponsor.point_value }} points</p>
-            
-            <p> {{ listing.item_description }}</p>
-
-            <div class="d-flex py-2">
-                <a class="btn btn-lg btn-jumbotron mx-auto"  href="{% url 'catalog:add_item_to_cart' listing.api_item_Id %}">Add to cart</a>
-            </div>
+    <img class="m-2 mx-auto img-thumbnail" src="{{ image.image_link }}" width="auto" height="auto" />
+    <h4 >{{ listing.item_name|safe }}</h4>
+    <p>price: {{ sponsor.point_value }} points</p>
 </div>
+<div class= "container">
+    <h5> description: </h5>
+    <p> {{ listing.item_description }}</p>
+</div>
+
+<div class="d-flex py-2">
+    <!-- <a class="btn btn-lg btn-jumbotron mx-auto"  href="{% url 'catalog:add_item_to_cart' listing.api_item_Id %}">Add to cart</a> -->
+    <!-- <a class="btn btn-lg btn-jumbotron mx-auto add-modal">Add to cart</a> -->
+    <!-- add modal -->
+    <button type="button" class="btn btn-lg btn-jumbotron mx-auto " data-toggle="modal" data-target=".bd-example-modal-sm">Add to cart</button>
+
+    {% if points > sponsor.point_value %}
+        <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content p-3">
+                    <img class="m-2 mx-auto img-thumbnail" src="{{ image.image_link }}" width="auto" height="auto"/>
+                    <h5 class="font-weight-bold">{{ listing.item_name }} </h5> 
+                    <p> price: {{ sponsor.point_value }} points </p>
+                    <a class="btn btn-lg btn-jumbotron mx-auto"  href="{% url 'catalog:add_item_to_cart' listing.api_item_Id %}">Confirm</a>
+
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content p-3" style = "text-align: center;">
+                    <h5 class="font-weight-bold"> Sorry! </h5> 
+                    <p> You do not have enough points to purchase this product </p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
 
 
     <!-- Display past reviews -->
@@ -57,4 +85,12 @@
     {% endif %}
 
 {% endfor %}
+
+
+
+
+
+{% load static %}
+<script src="{% static 'catalog/add_modal.js' %}"></script>
+
 {% endblock %}

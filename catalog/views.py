@@ -83,42 +83,6 @@ def all_items(request):
         else:
             return JsonResponse({'inSponsor' : True})
 
-def listings(request):
-    
-    # get all database instances for items and update all listings
-    for listing in CatalogItem.objects.all():
-        url = base_url + '/listings/{}?api_key={}'.format(listing.api_item_Id, key)
-        response = requests.request("GET", url)
-        search_was_successful = (response.status_code == 200)
-        data = response.json()
-        listing_data = data['results'][0]
-
-        listing.last_updated = timezone.now()
-        listing.last_modified = listing_data['last_modified_tsz']
-        # check if the modfied time has been changed 
-        listing.item_name = listing_data['title']
-        listing.item_description = listing_data['description']
-        # ignore foreign currency for now
-        listing.retail_price = float(listing_data['price'])
-        if listing_data['state'] == "active":
-            listing.is_available = True
-        else:
-            listing.is_available = False
-        listing.save()
-
-        # create new catalog item image instance if one doesnt exist
-        if not CatalogItemImage.objects.filter(catalog_item = listing).exists():
-            url = base_url + '/listings/{}/images?api_key={}'.format(listing.api_item_Id, key)
-            response = requests.request("GET", url)
-            search_was_successful = (response.status_code == 200)
-            image_data = response.json()
-            images = image_data['results']
-            for image in images:
-                if image['rank'] == 1:
-                    main_image = image['url_170x135']
-            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
-
-    return render(request, "catalog/listings.html")
 
 @login_required(login_url='/accounts/login')
 def product_page(request, id):
@@ -138,7 +102,8 @@ def product_page(request, id):
                 r.has_reviewed = True
                 r.is_approved = False
                 r.save()
-                return HttpResponseRedirect("")
+                form = None
+                #return HttpResponseRedirect("")
         #otherwise display review form
         else:
             form = ItemReviewForm()
@@ -156,9 +121,9 @@ def product_page(request, id):
     #creating list of review objects    
     for review in reviews.iterator():
         reviewlist.append(review)
-
+    points = user.points
     listings = zip(items, sponsors, images)
-    return render(request, "catalog/product_page.html", context = {'listings' : listings,'reviewlist': reviewlist, 'form': form})    
+    return render(request, "catalog/product_page.html", context = {'listings' : listings, 'points': points, 'reviewlist': reviewlist, 'form': form})    
         
 
 def browse(request):
@@ -233,29 +198,34 @@ def add_item_to_cart(request, id):
     
     #get user and associate them with an order
     user = UserInformation.objects.get(user=request.user)
+    sponsor = user.sponsor_company
     item = CatalogItem.objects.get(api_item_Id=id)
-    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=item)
-    #edit: I don't think this is necessarily the users sponsor company
-    sponsor = sponsor_item.sponsor_company
+    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=item, sponsor_company = sponsor)
+    if (sponsor_item.point_value < user.points):
+        #edit: I don't think this is necessarily the users sponsor company
+        
 
-    #if item is in the cart already, change qty
-    if Order.objects.filter(sponsor_catalog_item = sponsor_item, ordering_driver = user, sponsor = sponsor).exists():
+        #if item is in the cart already, change qty
+        if Order.objects.filter(sponsor_catalog_item = sponsor_item, ordering_driver = user, sponsor = sponsor, order_status='inCart').exists():
+            user.item_count = user.item_count + 1
+            sponsor_item.qty_in_cart = sponsor_item.qty_in_cart + 1
+            user.save()
+            sponsor_item.save()
+            return product_page(request,id)
+        
+        
+        #else add item to order list
+        order,created = Order.objects.get_or_create(ordering_driver=user, sponsor_catalog_item = sponsor_item, sponsor = sponsor, order_status='inCart')
+        sponsor_item.qty_in_cart = 1
         user.item_count = user.item_count + 1
-        sponsor_item.qty_in_cart = sponsor_item.qty_in_cart + 1
         user.save()
         sponsor_item.save()
-        return product_page(request,id)
-    
-    
-    #else add item to order list
-    order,created = Order.objects.get_or_create(ordering_driver=user, sponsor_catalog_item = sponsor_item, sponsor = sponsor, order_status='inCart')
-    sponsor_item.qty_in_cart = 1
-    user.item_count = user.item_count + 1
-    user.save()
-    sponsor_item.save()
-    order.save()
-    
+        order.save()
+
+
     return product_page(request,id)
+
+
 
 @login_required(login_url='/accounts/login/')
 def my_cart(request):
@@ -270,7 +240,6 @@ def my_cart(request):
             "points": 0,
             "retail": 0
         }
-
         #Add active orders/images to list and calculate totals
         for obj in orders.iterator():
             items.append(obj.sponsor_catalog_item)
@@ -324,6 +293,7 @@ def add_item_from_cart_page(request, id):
     user.save()
     order.sponsor_catalog_item.save()
 
+
     return my_cart(request)
 
 @login_required(login_url="/accounts/login")
@@ -364,15 +334,25 @@ def driver_cart(request, value):
 
 def checkout(request):
     user = UserInformation.objects.get(user=request.user)
-    orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
     if user.role_name is not 'sponsor' or user.type_to_revert_to is not 'sponsor':
+        sponsor = user.sponsor_company
+        orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
+        sponsor_items = SponsorCatalogItem.objects.filter(order__in = orders)
+        for items in sponsor_items:
+            items.qty_in_cart = 0
+            items.save()
+        
+        
         for order in orders:
-            order.order_status = 'shipped'
+            #simulate shipping process
+            order.order_status = 'delivered'
             order.last_status_change = timezone.now()
             order.save()
             user.points -= order.points_at_order
             user.item_count -= 1
-            user.save()
+        user.item_count = 0  
+        user.save()
+        
     return my_cart(request)
 
 def order_history(request):
