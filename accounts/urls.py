@@ -22,6 +22,7 @@ urlpatterns = [
     path('sponsor_about_page_S', views.sponsor_about_page_S, name='sponsor_about_page_S'),
     path('edit_profile', views.edit_profile, name='edit_profile'),
     path('user_management', views.user_management, name='user_management'),
+    path('delete_user/<int:value>', views.delete_user, name='delete_user'),
     path('sales_reports', views.sales_reports, name='sales_reports'),
     path('driver_sales', views.driver_sales, name='driver_sales'),
     path('order/<int:id>', views.order, name='order'),

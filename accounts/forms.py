@@ -2,6 +2,7 @@
 This module contains custom forms used to collect the information needed to create a model.
 """
 from django import forms
+from django.db.models.query import QuerySet
 from .models import UserInformation, SponsorCompany
 
 
@@ -32,6 +33,8 @@ class UserInformationForm(forms.ModelForm):
     license_number = forms.CharField(label='License', max_length=20)
     state = forms.ChoiceField(label='State', choices=states)
 
+    all_companies = forms.ModelMultipleChoiceField(label="All Driver's Companies", queryset=SponsorCompany.objects.all())
+
     def __init__(self, *args, **kwargs):
         """function __init__ is called to instantiate the user information form
 
@@ -50,7 +53,7 @@ class UserInformationForm(forms.ModelForm):
         A class that stores the meta information about this form
         """
         model = UserInformation
-        fields = ['user_email', 'first_name', 'last_name', 'phone_number', 'sponsor_company', 'address', 'license_number', 'state']
+        fields = ['user_email', 'first_name', 'last_name', 'phone_number', 'sponsor_company', 'address', 'license_number', 'state', 'all_companies']
 
 class SponsorCompanyForm(forms.ModelForm):
     """

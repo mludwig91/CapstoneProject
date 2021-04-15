@@ -495,7 +495,54 @@ def edit_user(request, value):
     adminUser = UserInformation.objects.get(user=request.user)
     driverUser = UserInformation.objects.get(user=value)
 
-    return render(request, "accounts/edit_user.html", context = {'driver_user': driverUser})
+    # Case 1: We have received a POST request with some data
+    if request.method == 'POST':
+        current_sponsor = None
+        # Check to see if we are creating a new user information entry or updating an existing one
+        if UserInformation.objects.filter(user=value).exists():
+            current_sponsor = UserInformation.objects.get(user=value).sponsor_company
+            form = UserInformationForm(request.POST, instance=UserInformation.objects.get(user=value))
+        else:
+            form = UserInformationForm(request.POST)
+        # Case 1a: A valid user profile form
+        if form.is_valid():
+            # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
+            user_info = form.save(commit=False)
+
+            user_info.user = driverUser.user
+            user_info.sponsor_company = current_sponsor
+            user_info.save()
+
+            sponsor = SponsorCompany.objects.get(company_name=form.cleaned_data['sponsor_company'])
+
+            request.session.set_expiry(0)
+            current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+            if current_user.role_name == 'admin':
+                admin_users = UserInformation.objects.filter(role_name='admin').all()
+                sponsor_users = UserInformation.objects.filter(role_name='sponsor').all()
+                driver_users = Points.objects.all()
+            else:
+                admin_users = UserInformation.objects.filter(role_name='admin').all()
+                sponsor_users = UserInformation.objects.filter(role_name='sponsor').filter(sponsor_company=current_user.sponsor_company).all()
+                driver_users = Points.objects.filter(sponsor=current_user.sponsor_company).all()
+
+            return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
+        # Case 1b: Not a valid user profile form, render the register page with the current form
+        else:
+            return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': driverUser})
+    # Case 2: We have received something other than a POST request
+    else:
+        # Case 2a: The user exists in our user information table.
+        if UserInformation.objects.filter(user=value).exists():
+            form = UserInformationForm(instance=UserInformation.objects.get(user=value),
+                                       initial={'user_email': request.user.email})
+        # Case 2b: The user email doesn't exist in our user information table.
+        else:
+            form = UserInformationForm(initial={'user_email': request.user.email, 'first_name': driverUser.first_name})
+
+        request.session.set_expiry(0)
+        return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': driverUser})
 
 @login_required(login_url='/accounts/login/')
 def delete_user(request, value):
