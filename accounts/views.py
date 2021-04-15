@@ -233,15 +233,11 @@ def login_logs(request):
 
 @login_required(login_url='/accounts/login/')
 def application_logs(request):
-    """function logout This function handles the view for the logout page of the application.
+    
+    applications = AuditApplication.objects.all()
 
-    Args:
-        request (HTTPRequest): A http request object created automatically by Django.
 
-    Returns:
-        HttpResponse: A generated http response object to the request.
-    """
-    return render(request, "accounts/application_logs.html")
+    return render(request, "accounts/application_logs.html" , {'applications' : applications})
 
 
 @login_required(login_url='/accounts/login/')
