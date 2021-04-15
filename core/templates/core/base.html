@@ -86,6 +86,24 @@
                 </div>
             </form>
         {% endif %}
+
+
+        {% if user.userinformation.role_name == "sponsor" and user.userinformation.viewing and user.userinformation.is_admin %}
+            <form action="{% url 'accounts:swap_type' %}" method="POST">
+                {% csrf_token %}
+                <div class="container">
+                    <input id="top" type="submit" name="swapBack" value="View as Yourself" title="Swap View"></input>
+                    <input id="second" type="submit" name="swapToDriver" value="View as Driver" title="Swap View"></input>
+                </div>
+            </form>
+        {% elif user.userinformation.role_name == "driver" and user.userinformation.viewing and user.userinformation.type_to_revert_to == "admin" %}
+            <form action="{% url 'accounts:swap_type' %}" method="POST">
+                {% csrf_token %}
+                <div class="container">
+                    <input id="top" type="submit" name="swapBack" value="View as Yourself" title="Swap View"></input>
+                </div>
+            </form>
+        {% endif %}
     </main>
 </body>
 

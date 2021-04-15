@@ -334,7 +334,7 @@ def driver_cart(request, value):
 
 def checkout(request):
     user = UserInformation.objects.get(user=request.user)
-    if user.role_name is not 'sponsor' or user.type_to_revert_to is not 'sponsor':
+    if user.role_name != 'sponsor' and user.type_to_revert_to != 'sponsor' and not user.is_admin:
         sponsor = user.sponsor_company
         orders = Order.objects.filter(ordering_driver=user, order_status='inCart')
         sponsor_items = SponsorCatalogItem.objects.filter(order__in = orders)

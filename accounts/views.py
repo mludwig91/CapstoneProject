@@ -206,6 +206,36 @@ def edit_profile(request):
 
 
 @login_required(login_url='/accounts/login/')
+def point_change_logs(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/point_change_logs.html")
+
+
+@login_required(login_url='/accounts/login/')
+def login_logs(request):
+    
+    logins = AuditLoginAttempt.objects.all()
+
+    return render(request, "accounts/login_logs.html" , {'logins' : logins})
+
+
+@login_required(login_url='/accounts/login/')
+def application_logs(request):
+    
+    applications = AuditApplication.objects.all()
+
+
+    return render(request, "accounts/application_logs.html" , {'applications' : applications})
+
+
+@login_required(login_url='/accounts/login/')
 def review_apps(request):
     """function logout This function handles the view for the logout page of the application.
 
@@ -577,6 +607,8 @@ def swap_type(request):
         user_info = UserInformation.objects.get(user=request.user)
         user_info.viewing = True
         user_info.type_to_revert_to = user_info.role_name
+        if user_info.role_name == "admin":
+            user_info.is_admin = True
         user_info.role_name = 'driver'
         user_info.points = 1000
         user_info.save()
@@ -584,8 +616,20 @@ def swap_type(request):
         user_info = UserInformation.objects.get(user=request.user)
         user_info.viewing = False
         user_info.role_name = user_info.type_to_revert_to
-        user_info.type_to_revert_to = ''
         user_info.points = 0
+        if user_info.is_admin:
+            user_info.role_name = 'admin'
+            user_info.sponsor_company = None
+            user_info.all_companies.clear()
+        user_info.save()
+    elif request.POST.get('swapToSponsor'):
+        sponsorToBecome = SponsorCompany.objects.get(company_name=request.POST.get('sponsor'))
+        user_info = UserInformation.objects.get(user=request.user)
+        user_info.viewing = True
+        user_info.type_to_revert_to = user_info.role_name
+        user_info.sponsor_company = sponsorToBecome
+        user_info.all_companies.add(sponsorToBecome)
+        user_info.role_name = 'sponsor'
         user_info.save()
 
     return redirect("/accounts/profile")

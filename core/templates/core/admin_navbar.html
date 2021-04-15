@@ -11,13 +11,24 @@
             <!-- Dropdown -->
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                Reports & Audits
+                Reports
                 </a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{% url 'accounts:driver_sales' %}">Driver Sales</a>
                     <a class="dropdown-item" href="{% url 'accounts:sales_reports' %}">Sponsor Sales</a>
                     <a class="dropdown-item" href="{% url 'accounts:all_invoices' %}">Invoices</a>
-                    <a class="dropdown-item" href="#">Audit Logs</a>
+                </div>
+            </li>
+
+            <!-- Dropdown -->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                Audit Logs
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'accounts:application_logs' %}">Driver Applications</a>
+                    <a class="dropdown-item" href="{% url 'accounts:point_change_logs' %}">Point Changes</a>
+                    <a class="dropdown-item" href="{% url 'accounts:login_logs' %}">Login Attempts</a>
                 </div>
             </li>
 
