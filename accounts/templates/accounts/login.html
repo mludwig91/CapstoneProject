@@ -9,13 +9,25 @@
 
 {% block main_content %}
     <div class="container">
-        <div class="card w-100 mt-3 mx-auto shadow-lg rounded fadeInDown text-center">
-            <div class="card-body">
-                <h2 class="card-title mb-3">Welcome to Driverite</h2>
-                    <a href="{% url 'social:begin' 'google-oauth2' %}?next={% url 'accounts:profile' %}">
-                        <input type="image" src="{% static 'images/google.png' %}" width="240vw"
-                               height="55vw" alt="Sign in with Google"/>
-                    </a> 
+        <div class="card w-100 mx-auto shadow-lg rounded fadeInDown text-center">
+            <div class="p-5 text-center bg-image" 
+            style="background-image: url('https://i.imgur.com/YSz5i1K.jpg'); 
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;">
+                <div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="text-white">
+                            <br>
+                            <h1 class="mb-3">Welcome to DriveRite</h1>
+                            <h4 class="mb-3">Drive Right, Earn Smart.</h4>
+                            <a href="{% url 'social:begin' 'google-oauth2' %}?next={% url 'accounts:profile' %}">
+                                    <input type="image" src="{% static 'images/google.png' %}" width="240vw"
+                                        height="55vw" alt="Sign in with Google"/>
+                            </a> 
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
