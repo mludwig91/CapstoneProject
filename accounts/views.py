@@ -206,6 +206,45 @@ def edit_profile(request):
 
 
 @login_required(login_url='/accounts/login/')
+def point_change_logs(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/point_change_logs.html")
+
+
+@login_required(login_url='/accounts/login/')
+def login_logs(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/login_logs.html")
+
+
+@login_required(login_url='/accounts/login/')
+def application_logs(request):
+    """function logout This function handles the view for the logout page of the application.
+
+    Args:
+        request (HTTPRequest): A http request object created automatically by Django.
+
+    Returns:
+        HttpResponse: A generated http response object to the request.
+    """
+    return render(request, "accounts/application_logs.html")
+
+
+@login_required(login_url='/accounts/login/')
 def review_apps(request):
     """function logout This function handles the view for the logout page of the application.
 

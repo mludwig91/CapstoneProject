@@ -33,4 +33,7 @@ urlpatterns = [
     path('company_management', views.company_management, name='company_management'),
     path('edit_company/<int:value>', views.edit_company, name='edit_company'),
     path('delete_company/<int:value>', views.delete_company, name='delete_company'),
+    path('point_change_logs', views.point_change_logs, name='point_change_logs'),
+    path('login_logs', views.login_logs, name='login_logs'),
+    path('application_logs', views.application_logs, name='application_logs'),
 ]
