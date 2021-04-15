@@ -312,19 +312,6 @@ def review_apps(request):
                                                          'number_of_sponsors': number_of_sponsors})
 
 @login_required(login_url='/accounts/login/')
-def user_management(request):
-    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
-    if current_user.role_name == 'admin':
-        admin_users = UserInformation.objects.filter(role_name='admin').all()
-        sponsor_users = UserInformation.objects.filter(role_name='sponsor').all()
-        driver_users = Points.objects.all()
-    else:
-        admin_users = UserInformation.objects.filter(role_name='admin').all()
-        sponsor_users = UserInformation.objects.filter(role_name='sponsor').filter(sponsor_company=current_user.sponsor_company).all()
-        driver_users = Points.objects.filter(sponsor=current_user.sponsor_company).all()
-    return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
-
-@login_required(login_url='/accounts/login/')
 def disable_account(request):
 
     if request.method == 'POST':
@@ -488,6 +475,20 @@ def invoice(request, name):
 
     return render(request, "accounts/invoice.html", {'company': sponsor, 'sales': sales, 'count': count, 'last': last_update, 'dollars': dollars, 'points': points, 'due': dollars*.01})
 
+@login_required(login_url='/accounts/login/')
+def user_management(request):
+    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+    if current_user.role_name == 'admin':
+        admin_users = UserInformation.objects.filter(role_name='admin').all()
+        sponsor_users = UserInformation.objects.filter(role_name='sponsor').all()
+        driver_users = Points.objects.all()
+    else:
+        admin_users = UserInformation.objects.filter(role_name='admin').all()
+        sponsor_users = UserInformation.objects.filter(role_name='sponsor').filter(sponsor_company=current_user.sponsor_company).all()
+        driver_users = Points.objects.filter(sponsor=current_user.sponsor_company).all()
+
+    return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
 
 @login_required(login_url='/accounts/login/')
 def edit_user(request, value):
@@ -495,6 +496,26 @@ def edit_user(request, value):
     driverUser = UserInformation.objects.get(user=value)
 
     return render(request, "accounts/edit_user.html", context = {'driver_user': driverUser})
+
+@login_required(login_url='/accounts/login/')
+def delete_user(request, value):
+
+    if (UserInformation.objects.filter(id=value).exists()):
+        user = UserInformation.objects.get(id=value)
+        user.delete()
+
+    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+    if current_user.role_name == 'admin':
+        admin_users = UserInformation.objects.filter(role_name='admin').all()
+        sponsor_users = UserInformation.objects.filter(role_name='sponsor').all()
+        driver_users = Points.objects.all()
+    else:
+        admin_users = UserInformation.objects.filter(role_name='admin').all()
+        sponsor_users = UserInformation.objects.filter(role_name='sponsor').filter(sponsor_company=current_user.sponsor_company).all()
+        driver_users = Points.objects.filter(sponsor=current_user.sponsor_company).all()
+
+    return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
 
 
 @login_required(login_url='/accounts/login/')
