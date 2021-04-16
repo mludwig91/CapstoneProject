@@ -51,9 +51,13 @@
     {% endif %}
 </div>
 
-
-
-    <!-- Display past reviews -->
+{% if fave is None%}
+    <div style = "text-align: center; padding-top: 20px;"><a class="fa fa-heart-o" href="{% url 'catalog:favorite_item' listing.api_item_Id %}">Add to Favorites</a></div>
+{% else %}
+    <div style = "text-align: center; padding-top: 20px;"><a class="fa fa-heart-o" href="{% url 'catalog:favorite_item' listing.api_item_Id %}">Remove from Favorites</a></div>
+{% endif %}
+ 
+<!-- Display past reviews -->
     <br><br>
     <h5 id="reviews">Item Reviews</h5>
     <hr>
