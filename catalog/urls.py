@@ -25,5 +25,7 @@ urlpatterns = [
     path('approve_pending_product_reviews/<int:id>/<int:user>', views.approve_pending_product_reviews, name= 'approve_pending_product_reviews'),
     path('checkout', views.checkout, name = 'checkout'),
     path('order-history', views.order_history, name = 'order_history'),
+    path('favorite_item/<int:id>/', views.favorite_item, name = 'favorite_item'),
+    path('browse_favorites', views.browse_favorites, name = 'browse_favorites'),
 
 ]
