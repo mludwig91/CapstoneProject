@@ -210,6 +210,7 @@ def edit_profile(request):
 @login_required(login_url='/accounts/login/')
 def point_change_logs(request):
      
+
     pointChange = AuditPointChange.objects.all().order_by('-change_time')
 
     return render(request, "accounts/point_change_logs.html" , {'pointChange' : pointChange})
