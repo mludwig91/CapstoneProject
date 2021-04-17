@@ -615,7 +615,7 @@ def swap_type(request):
         if user_info.role_name == "admin":
             user_info.is_admin = True
         user_info.role_name = 'driver'
-        user_info.points = 1000
+        user_info.points = 99999
         user_info.save()
     elif request.POST.get('swapBack'):
         user_info = UserInformation.objects.get(user=request.user)
