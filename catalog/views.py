@@ -345,8 +345,6 @@ def checkout(request):
         for items in sponsor_items:
             items.qty_in_cart = 0
             items.save()
-        
-        
         for order in orders:
             #simulate shipping process
             order.order_status = 'delivered'
@@ -354,6 +352,7 @@ def checkout(request):
             order.save()
             user.points -= order.points_at_order
             user.item_count -= 1
+            user.save()
         user.item_count = 0  
         user.save()
         
@@ -361,10 +360,22 @@ def checkout(request):
 
 def order_history(request):
     user = UserInformation.objects.get(user=request.user)
-    orders = Order.objects.filter(ordering_driver=user).exclude(order_status='inCart').order_by('-last_status_change')
-    sponsors = SponsorCatalogItem.objects.filter(order__in=orders).order_by('order')
-    items = CatalogItem.objects.filter(sponsorcatalogitem__in=sponsors).order_by('sponsorcatalogitem')
-    data = zip(orders, sponsors, items)
+    if Order.objects.filter(ordering_driver=user).exclude(order_status='inCart').exists():
+        orders = Order.objects.filter(ordering_driver=user).exclude(order_status='inCart').order_by('-last_status_change')
+        sponsors = SponsorCatalogItem.objects.filter(order__in=orders).order_by('-order__last_status_change')
+        items = []
+        images = []
+        for sponsor in sponsors:
+            item = sponsor.catalog_item
+            items.append(item)
+            image = CatalogItemImage.objects.filter(catalog_item=item).first()
+            print(image)
+            images.append(image)
+
+        data = zip(orders, sponsors, items, images)
+
+    else:
+        data = None
     context = {'data' : data}
     return render(request, "catalog/order_history.html", context = context)
 
