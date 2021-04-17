@@ -16,7 +16,7 @@
             <div class="container">
                 <h1>Profile</h1>
                 <div class="d-flex py-2">
-                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_user' user.userinformation.id %}">Edit Profile</a>
                     <div class="divider"></div>
                     <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:register' %}"><i class="fas fa-plus"></i> Apply To New Company</a>
                        <a id=disable href="{% url 'accounts:disable_account' %}">Deactivate Account</a>
