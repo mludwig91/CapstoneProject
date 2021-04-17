@@ -56,6 +56,8 @@ def profile(request):
     # Case 1: The user email exists in our user information table.
     if UserInformation.objects.filter(user=user).exists():
         user_info = UserInformation.objects.get(user=user)
+        all_apps = AuditApplication.objects.filter(driver=user_info)
+        print(all_apps)
         if request.method == 'POST':
             if request.POST.get('newcompany') is not None:
 
@@ -72,7 +74,7 @@ def profile(request):
 
         login_entry = AuditLoginAttempt(attempt_time=datetime.now(), login_user=user_info, is_successful=True)
         login_entry.save()
-        return render(request, "accounts/profile.html")
+        return render(request, "accounts/profile.html", {"apps": all_apps})
     # Case 2: The user doesn't have an entry in our user information table,
     #          we redirect to the register page
     return redirect("/accounts/register")

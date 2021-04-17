@@ -29,16 +29,14 @@
                 <div class="col-10">
                     <div class="profile-name">
                         <h3> {{ user.userinformation.first_name }} {{ user.userinformation.last_name }} </h3>
-                        {% if user.userinformation.is_email_verified %}
-                            <h6>
-                                {% if user.userinformation.role_name != "admin" %}
-                                    {{ user.userinformation.sponsor_company }}
-                                {% endif %}
-                                {{ user.userinformation.role_name }}
-                            </h6>
-                        {% else %}
-                             <h6> Pending Approval...</h6>
-                        {% endif %}
+
+                        {% for app in apps %}
+                            {% if app.apply_status == 'pending' %}
+                                {{ app.sponsor_company }} {{ user.userinformation.role_name}}: {{ app.apply_status }}
+                            {% elif app.apply_status == 'accepted' %}
+                                {{ app.sponsor_company }} {{ user.userinformation.role_name}}
+                            {% endif %}
+                        {% endfor %}
 
                         <h6>Last Login: {{ user.userinformation.last_login | date:"F j, Y" }}</h6><br>
                     </div>
