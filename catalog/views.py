@@ -438,9 +438,9 @@ def browse_favorites(request):
         items = []
         images = []
         # for all favorited items get the image
-        for item in favorite_items.iterator():
+        for item in favorite_items:
             items.append(item.catalog_item)
-            image = CatalogItemImage.objects.get(catalog_item=item.catalog_item)
+            image = CatalogItemImage.objects.filter(catalog_item=item.catalog_item).first()
             images.append(image)
         item_list = zip(items, images)
     else:
