@@ -151,6 +151,8 @@ class AuditPointChange(models.Model):
     Model of a particular point change performed against a driver being audited.
     """
     change_time = models.DateTimeField("DateTime of Point Change", default=datetime.datetime.utcnow)
+    # Approving/Rejecting Sponsor
+    sponsor = models.ForeignKey(UserInformation, on_delete=SET_NULL, null=True, related_name="%(class)s_sponsor", blank=True)
     driver = models.ForeignKey(UserInformation, on_delete=CASCADE, null=True)
     point_change = models.IntegerField("Point Change for Driver")
     change_reason = models.CharField("Point Change Reason", max_length=128)
