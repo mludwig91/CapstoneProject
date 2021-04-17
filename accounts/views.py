@@ -543,6 +543,7 @@ def edit_user(request, value):
         if form.is_valid():
             # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
             user_info = form.save(commit=False)
+            print(form)
 
             user_info.user = driverUser.user
             user_info.sponsor_company = current_sponsor
