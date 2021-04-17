@@ -13,7 +13,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
 from accounts.forms import UserInformationForm, EditUserInformationForm, SponsorCompanyForm
-from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order
+from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order, AuditPointChange
 
 
 def login(request):
