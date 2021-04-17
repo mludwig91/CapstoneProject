@@ -577,10 +577,10 @@ def edit_user(request, value):
         # Case 2a: The user exists in our user information table.
         if UserInformation.objects.filter(user=value).exists():
             form = EditUserInformationForm(instance=UserInformation.objects.get(user=value),
-                                       initial={'user_email': request.user.email})
+                                       initial={'user_email': driverUser.user.email})
         # Case 2b: The user email doesn't exist in our user information table.
         else:
-            form = EditUserInformationForm(initial={'user_email': request.user.email})
+            form = EditUserInformationForm()
 
         request.session.set_expiry(0)
         return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': driverUser})
