@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from django.contrib import admin
-from .models import CatalogFavorite, CatalogItem, CatalogItemImage, SponsorCatalogItem, ItemReview
+from .models import CatalogFavorite, CatalogItem, CatalogItemImage, SponsorCatalogItem, ItemReview, CatalogFavorite
 
 # Register your models here. 
 admin.site.register(CatalogItem)

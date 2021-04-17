@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
-from accounts.forms import UserInformationForm, SponsorCompanyForm
+from accounts.forms import UserInformationForm, EditUserInformationForm, SponsorCompanyForm
 from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order
 
 
@@ -536,9 +536,9 @@ def edit_user(request, value):
         # Check to see if we are creating a new user information entry or updating an existing one
         if UserInformation.objects.filter(user=value).exists():
             current_sponsor = UserInformation.objects.get(user=value).sponsor_company
-            form = UserInformationForm(request.POST, instance=UserInformation.objects.get(user=value))
+            form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(user=value))
         else:
-            form = UserInformationForm(request.POST)
+            form = EditUserInformationForm(request.POST)
         # Case 1a: A valid user profile form
         if form.is_valid():
             # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
@@ -572,11 +572,11 @@ def edit_user(request, value):
     else:
         # Case 2a: The user exists in our user information table.
         if UserInformation.objects.filter(user=value).exists():
-            form = UserInformationForm(instance=UserInformation.objects.get(user=value),
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value),
                                        initial={'user_email': request.user.email})
         # Case 2b: The user email doesn't exist in our user information table.
         else:
-            form = UserInformationForm(initial={'user_email': request.user.email})
+            form = EditUserInformationForm(initial={'user_email': request.user.email})
 
         request.session.set_expiry(0)
         return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': driverUser})
