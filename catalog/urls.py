@@ -16,7 +16,7 @@ urlpatterns = [
     path('items', views.Get_Items.as_view(), name = 'items'),
     path('sponsor-items', views.Get_Sponsor_Items.as_view(), name = 'sponsor-items'),
     path('browse', views.browse, name = 'browse'),
-    path('<int:id>', views.product_page, name = 'product_page'),
+    path('product-page/<int:id>', views.product_page, name = 'product_page'),
     path('add_item/<int:id>/', views.add_item_to_cart, name = 'add_item_to_cart'),
     path('remove_item_from_cart/<int:id>/', views.remove_item_from_cart, name = 'remove_item_from_cart'),
     path('add_item_from_cart_page/<int:id>/', views.add_item_from_cart_page, name = 'add_item_from_cart_page'),
@@ -25,5 +25,7 @@ urlpatterns = [
     path('approve_pending_product_reviews/<int:id>/<int:user>', views.approve_pending_product_reviews, name= 'approve_pending_product_reviews'),
     path('checkout', views.checkout, name = 'checkout'),
     path('order-history', views.order_history, name = 'order_history'),
+    path('favorite_item/<int:id>/', views.favorite_item, name = 'favorite_item'),
+    path('browse_favorites', views.browse_favorites, name = 'browse_favorites'),
 
 ]

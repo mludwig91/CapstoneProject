@@ -13,12 +13,12 @@
 
 {% for orders, sponsors, items in data %}
 
-    <div>For Order On: {{orders.last_status_change}}</div>
+<div class = "container p-5">
+    <h5>For Order On: {{orders.last_status_change}}</h5>
+    <h5>{{items.item_name}}</h5>
     <div>Status: {{orders.order_status}} </div>
-    <div>{{items.item_name}}</div>
     <div>Points: {{orders.points_at_order}}</div>
-    <div>Order ID: {{orders.pk}}</div>
-    <br><br>
 
+</div>
 {% endfor %}
 {% endblock %}

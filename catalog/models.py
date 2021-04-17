@@ -28,7 +28,7 @@ class CatalogItemImage(models.Model):
     """
     catalog_item = models.ForeignKey(CatalogItem, related_name='images', on_delete=CASCADE)
     image_link = models.URLField("Static Image Link")
-
+    big_image_link = models.URLField("Static Image Link")
 
 class SponsorCatalogItem(models.Model):
     """
@@ -62,3 +62,4 @@ class CatalogFavorite(models.Model):
     """
     catalog_item = catalog_item = models.ForeignKey(CatalogItem, on_delete=CASCADE, null=True)
     user = models.ForeignKey("accounts.UserInformation", on_delete=CASCADE, null=True)
+    has_favorited = models.BooleanField("Has user favorited item", default=False)

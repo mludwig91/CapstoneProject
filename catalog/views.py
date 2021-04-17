@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.conf import settings
 from accounts.models import SponsorCompany, UserInformation, Order
-from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage, ItemReview
+from catalog.models import CatalogItem, SponsorCatalogItem, CatalogItemImage, ItemReview, CatalogFavorite
 from catalog.serializers import ItemSerializer, SponsorCatalogItemSerializer
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -16,7 +16,7 @@ from rest_framework import generics
 from django.utils import timezone
 from.forms import ItemReviewForm
 import json
-import requests
+import requests 
 
 # Create your views here.
 
@@ -88,7 +88,10 @@ def all_items(request):
 def product_page(request, id):
     user = UserInformation.objects.get(user=request.user)
     item = CatalogItem.objects.get(api_item_Id = id)
-    
+    if CatalogFavorite.objects.filter(catalog_item=item, user=user, has_favorited=True).exists():
+        fave = CatalogFavorite.objects.get(catalog_item=item, user=user)
+    else:
+        fave = None
     #If user hasn't left a review for this item before
     if not ItemReview.objects.filter(catalog_item=item, reviewer=user).exists():
         #If user is submitting review
@@ -103,7 +106,6 @@ def product_page(request, id):
                 r.is_approved = False
                 r.save()
                 form = None
-                #return HttpResponseRedirect("")
         #otherwise display review form
         else:
             form = ItemReviewForm()
@@ -122,8 +124,8 @@ def product_page(request, id):
     for review in reviews.iterator():
         reviewlist.append(review)
     points = user.points
-    listings = zip(items, sponsors, images)
-    return render(request, "catalog/product_page.html", context = {'listings' : listings, 'points': points, 'reviewlist': reviewlist, 'form': form})    
+    listings = zip(items, sponsors)
+    return render(request, "catalog/product_page.html", context = {'listings' : listings, 'images': images, 'points': points, 'reviewlist': reviewlist, 'form': form, 'fave':fave})    
         
 
 def browse(request):
@@ -133,7 +135,7 @@ def browse(request):
 
         #add new instance catalog item
         if not CatalogItem.objects.filter(api_item_Id=add_ID).exists():
-            url = base_url + '/listings/{}?includes=Images:1&api_key={}'.format(add_ID, key)
+            url = base_url + '/listings/{}?includes=Images&api_key={}'.format(add_ID, key)
             response = requests.request("GET", url)
             search_was_successful = (response.status_code == 200)
             data = response.json()
@@ -157,9 +159,11 @@ def browse(request):
 
             images = listing_data['Images']
             for image in images:
-                if image['rank'] == 1:
-                    main_image = image['url_170x135']
-            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
+                CatalogItemImage.objects.create(catalog_item = listing, image_link = image['url_170x135'], big_image_link = image['url_570xN'] )
+
+                #if image['rank'] == 1:
+                    #main_image = image['url_170x135']
+            #CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
 
 
         user = UserInformation.objects.get(user=request.user)
@@ -246,7 +250,7 @@ def my_cart(request):
             numitems = obj.sponsor_catalog_item.qty_in_cart
             obj.points_at_order = obj.sponsor_catalog_item.point_value
             obj.retail_at_order =  obj.sponsor_catalog_item.catalog_item.retail_price
-            image = CatalogItemImage.objects.get(catalog_item=obj.sponsor_catalog_item.catalog_item)
+            image = CatalogItemImage.objects.filter(catalog_item=obj.sponsor_catalog_item.catalog_item).first()
             obj.save()
             order.append(obj)
             images.append(image)
@@ -397,3 +401,38 @@ def update_item(id):
                 if image['rank'] == 1:
                     main_image = image['url_170x135']
             CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
+
+@login_required(login_url="/accounts/login")
+def favorite_item(request, id):
+    item = CatalogItem.objects.get(api_item_Id=id)
+    user = UserInformation.objects.get(user=request.user)
+    # if object has been created already, modify has favorited value
+    if CatalogFavorite.objects.filter(catalog_item=item, user=user).exists():
+        fav = CatalogFavorite.objects.get(catalog_item=item, user=user)
+        print("doing stuff")
+        if fav.has_favorited == False:
+            fav.has_favorited = True
+        else:
+            fav.has_favorited = False
+        fav.save()
+    else:
+        CatalogFavorite.objects.create(catalog_item=item, user=user, has_favorited=True)
+
+    return product_page(request,id)
+
+def browse_favorites(request):
+    user = UserInformation.objects.get(user=request.user)
+    if CatalogFavorite.objects.filter(user=user, has_favorited=True).exists():
+        favorite_items = CatalogFavorite.objects.filter(user = user, has_favorited=True)
+        items = []
+        images = []
+        # for all favorited items get the image
+        for item in favorite_items.iterator():
+            items.append(item.catalog_item)
+            image = CatalogItemImage.objects.get(catalog_item=item.catalog_item)
+            images.append(image)
+        item_list = zip(items, images)
+    else:
+        item_list = None
+
+    return render(request, "catalog/favorites.html", context = {'item_list':item_list})
