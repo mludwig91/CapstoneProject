@@ -270,7 +270,7 @@ def remove_item_from_cart(request, id):
     user = UserInformation.objects.get(user=request.user)
     old_item = CatalogItem.objects.get(api_item_Id=id)
     sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item)
-    order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item)
+    order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item, order_status='inCart')
     if order.sponsor_catalog_item.qty_in_cart > 1:
         user.item_count = user.item_count-1
         order.sponsor_catalog_item.qty_in_cart = order.sponsor_catalog_item.qty_in_cart - 1
@@ -291,7 +291,7 @@ def add_item_from_cart_page(request, id):
     user = UserInformation.objects.get(user=request.user)
     old_item = CatalogItem.objects.get(api_item_Id=id)
     sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item)
-    order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item)
+    order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item, order_status='inCart')
     user.item_count = user.item_count + 1
     order.sponsor_catalog_item.qty_in_cart = order.sponsor_catalog_item.qty_in_cart + 1
     user.save()

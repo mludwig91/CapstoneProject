@@ -74,7 +74,7 @@ class UserInformation(models.Model):
     state = models.CharField("State", choices=STATES, max_length=20, blank=True)
     item_count = models.IntegerField("Number of items in users Cart", null=True, default=0)
     viewing = models.BooleanField("Viewing Other User", default=False)
-    type_to_revert_to = models.CharField("Type To Revert To", max_length=25, choices=ROLE_NAME_CHOICES, default="sponsor",
+    type_to_revert_to = models.CharField("Type To Revert To", max_length=25, choices=ROLE_NAME_CHOICES, default="driver",
                                  validators=[MinLengthValidator(1)])
     is_admin = models.BooleanField("Is an Admin", default=False)
 

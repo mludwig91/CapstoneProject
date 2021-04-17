@@ -13,7 +13,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
 from accounts.forms import UserInformationForm, EditUserInformationForm, SponsorCompanyForm
-from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order
+from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order, AuditPointChange
 
 
 def login(request):
@@ -209,15 +209,10 @@ def edit_profile(request):
 
 @login_required(login_url='/accounts/login/')
 def point_change_logs(request):
-    """function logout This function handles the view for the logout page of the application.
+     
+    pointChange = AuditPointChange.objects.all().order_by('-change_time')
 
-    Args:
-        request (HTTPRequest): A http request object created automatically by Django.
-
-    Returns:
-        HttpResponse: A generated http response object to the request.
-    """
-    return render(request, "accounts/point_change_logs.html")
+    return render(request, "accounts/point_change_logs.html" , {'pointChange' : pointChange})
 
 
 @login_required(login_url='/accounts/login/')
@@ -545,8 +540,10 @@ def create_user(request, value):
 def edit_user(request, value):
 
     adminUser = UserInformation.objects.get(user=request.user)
+    print(value, "*****")
     if UserInformation.objects.filter(user=value).exists():
         driverUser = UserInformation.objects.get(user=value)
+
     else:
         driverUser = None
         coreUser = User()
@@ -631,7 +628,7 @@ def swap_type(request):
         if user_info.role_name == "admin":
             user_info.is_admin = True
         user_info.role_name = 'driver'
-        user_info.points = 1000
+        user_info.points = 99999
         user_info.save()
     elif request.POST.get('swapBack'):
         user_info = UserInformation.objects.get(user=request.user)
