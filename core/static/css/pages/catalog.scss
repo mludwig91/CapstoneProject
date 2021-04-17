@@ -85,14 +85,17 @@
         border-right: 1px solid;
         border-right-color: $gunmetal;
     }
-#cart-count {
-    font-size: 10px;
-    background: grey;
-    color: #fff;
-    padding: 0 5px;
-    vertical-align: top;
-    margin-left: -10px; 
-}
+
+    #cart-count {
+        font-size: 10px;
+        background: grey;
+        color: #fff;
+        padding: 0 5px;
+        vertical-align: top;
+        margin-left: -10px; 
+    }
+
+
 
     /* clears the ‘X’ from Internet Explorer */
     input[type=search]::-ms-clear { display: none; width : 0; height: 0; }
