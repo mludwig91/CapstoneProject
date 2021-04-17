@@ -523,6 +523,25 @@ def user_management(request):
     return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
 
 @login_required(login_url='/accounts/login/')
+def create_user(request, value):
+    creatorUser = UserInformation.objects.get(user=request.user)
+    newUserRole = value
+
+    if request.method == 'POST':
+        form = EditUserInformationForm(request.POST)
+
+        if form.is_valid():
+            newUserInfo = form.save(commit=False)
+
+            if (newUserRole == 'driver'):
+                driverSponsor = form.cleaned_data['all_companies'].first()
+                newUserInfo.sponsor_company = driverSponsor
+
+            newUserInfo.user = User()
+            newUserInfo.save()
+            form.save_m2m()
+
+@login_required(login_url='/accounts/login/')
 def edit_user(request, value):
 
     adminUser = UserInformation.objects.get(user=request.user)
@@ -545,7 +564,6 @@ def edit_user(request, value):
         if form.is_valid():
             # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
             user_info = form.save(commit=False)
-            print(form)
 
             user_info.user = driverUser.user
             user_info.sponsor_company = current_sponsor
