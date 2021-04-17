@@ -11,36 +11,19 @@
 {% endblock %}
 
 {% block main_content %}
-    {% if driver_user %}
         <br>
-        <h3 class='text-center mb-3'>  Editing {{driver_user.first_name}} {{driver_user.last_name}}'s Information </h3>
+        <h3 class='text-center mb-3'> Creating New {{ new_user_role }}User </h3>
         <br>
         <div class="container">
             <div class="row gutters">
                 <div class="card h-100">
                     <div class="card-body">
-                        <form action="{% url 'accounts:edit_user' value=driver_user.id%}" method="POST">
+                        <form action="{% url 'accounts:create_user' value=new_user_role%}" method="POST">
                         {% csrf_token %}
                             <div class="error">{{ error }}</div>
                             <div class="row gutters">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <h6 class="mb-2 text-primary">General Info</h6>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        {{ form.user_email|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    {% if driver_user.role_name == 'sponsor' %}
-                                    <div class="form-group" >
-                                        {{ form.sponsor_company|as_crispy_field }}
-                                    </div>
-                                    {% else %}
-                                    <div class="form-group" hidden>
-                                        {{ form.sponsor_company|as_crispy_field }}
-                                    </div>
-                                    {% endif %}
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
@@ -54,6 +37,16 @@
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
+                                        {{ form.phone_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        {{ form.sponsor_company|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
                                         {{ form.license_number|as_crispy_field }}
                                     </div>
                                 </div>
@@ -61,23 +54,6 @@
                                     <div class="form-group">
                                         {{ form.state|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        {{ form.phone_number|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    {% if driver_user.role_name == 'sponsor' %}
-                                        <div class="form-group">
-                                            {{ form.sponsor_company|as_crispy_field }}
-                                        </div>
-                                    {% endif %}
-                                    {% if driver_user.role_name == 'driver' %}
-                                        <div class="form-group">
-                                            {{ form.all_companies|as_crispy_field }}
-                                        </div>
-                                    {% endif %}
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="form-group">
@@ -88,14 +64,11 @@
                             <br>
                             <div class="row gutters">
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="text-left">
-                                        <a class="btn btn-danger" href="{% url 'accounts:delete_user' value=driver_user.id%}">Delete User</a>
-                                    </div>
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="text-right">
                                         <a class="btn btn-secondary" href="{% url 'accounts:user_management'%}">Cancel</a>
-                                        <button type="submit" class="btn btn-primary" aria-expanded="true">Update</button>
+                                        <button type="submit" class="btn btn-success" aria-expanded="true">Save</button>
                                     </div>
                                 </div>
                             </div>
@@ -105,11 +78,6 @@
                 </div>
             </div>
         </div>
-    {% else %}
-        <br>
-        <h3 class='text-center mb-3'> User Not Found! </h3>
-        <br>
-    {% endif %}
 
     <style>
         body {

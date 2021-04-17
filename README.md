@@ -2,19 +2,17 @@
 The Driver Incentive Program -- DriveRite (by DriveRite Technologies) is a Django-based web application designed to empower transportation companies to give points to their drivers, and 
 allow those drivers to pick rewards from a sponsor-curated set of online-shoppable items.
 
-# Getting Started
-
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
-
-# Build and Test
+# Build and Test Locally
 
 1.	pip install -r requirements.txt --user
 2.	python manage.py makemigrations
 3.	python manage.py migrate
-4.	python manage.py runserver
+4.  python manage.py createsuperuser
+        **Creating superuser is crucial if this code is run locally with a from-scratch DB
+        - Log into [base-url]/admin with the new superuser
+        - Add a UserInformation Record, connect to your superuser User account, add Role 'admin', check "IsAdmin" bool
+        - With this initial admin account, all other user management can be done from frontend
+5.	python manage.py runserver
 
 # Contribute
 

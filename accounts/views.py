@@ -541,6 +541,12 @@ def create_user(request, value):
             newUserInfo.save()
             form.save_m2m()
 
+    else:
+        form = EditUserInformationForm()
+
+        request.session.set_expiry(0)
+        return render(request, "accounts/edit_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole})
+
 @login_required(login_url='/accounts/login/')
 def edit_user(request, value):
 
