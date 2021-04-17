@@ -215,7 +215,7 @@ def point_change_logs(request):
     if current_user.role_name == 'admin':
         pointChange = AuditPointChange.objects.all().order_by('-change_time')
     else:
-        driversInCompany = SponsorCompany.objects.filter(id=current_user.sponsor_company)
+        driversInCompany = SponsorCompany.objects.filter(company_name=current_user.sponsor_company)
         pointChange = AuditPointChange.objects.filter(driver=driversInCompany).order_by('-change_time')
 
     return render(request, "accounts/point_change_logs.html" , {'pointChange' : pointChange})
