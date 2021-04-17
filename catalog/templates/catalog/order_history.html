@@ -3,7 +3,7 @@
 
 {% block css %}
     {% compress css %}
-        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/signin.scss' %}" media="screen">
+        <link rel="stylesheet" type="text/x-scss" href="{% static 'css/pages/catalog.scss' %}" media="screen">
     {% endcompress %}
 {% endblock %}
 
@@ -11,11 +11,13 @@
 
 <h3 class = "m-5" style = "text-align: center;">Order History</h3>
 
-{% for orders, sponsors, items in data %}
+{% for orders, sponsors, items, images in data %}
 
-<div class = "container p-5">
-    <h5>For Order On: {{orders.last_status_change}}</h5>
+<div class = "order container p-5">
+    
     <h5>{{items.item_name}}</h5>
+    <img class="m-2 mx-auto img-thumbnail" src="{{ images.image_link }}" width="auto" height="auto" />
+    <p>Ordered on: {{orders.last_status_change}}<p>
     <div>Status: {{orders.order_status}} </div>
     <div>Points: {{orders.points_at_order}}</div>
 
