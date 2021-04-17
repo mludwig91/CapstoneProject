@@ -36,7 +36,9 @@
                             {% elif app.apply_status == 'accepted' %}
                                 {{ app.sponsor_company }} {{ user.userinformation.role_name}}
                             {% endif %}
+                            <br>
                         {% endfor %}
+                        <br>
 
                         <h6>Last Login: {{ user.userinformation.last_login | date:"F j, Y" }}</h6><br>
                     </div>

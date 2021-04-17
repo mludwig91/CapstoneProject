@@ -526,8 +526,10 @@ def user_management(request):
 def edit_user(request, value):
 
     adminUser = UserInformation.objects.get(user=request.user)
+    print(value, "*****")
     if UserInformation.objects.filter(user=value).exists():
         driverUser = UserInformation.objects.get(user=value)
+
     else:
         driverUser = None
         coreUser = User()
