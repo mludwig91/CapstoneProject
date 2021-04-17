@@ -17,7 +17,7 @@ function getSponsorItemCards(items) {
             '<img class="m-2 mx-auto img-thumbnail" src="' + items.catalog_item.images[0].image_link + '" width="auto" height="auto" />' +
             '<h5 class="card-title font-weight-bold" data-toggle="tooltip" title="' + items.catalog_item.item_name + '">' + items.catalog_item.item_name.slice(0,30) + '...</h5>' +
             '<p class="card-text">points: ' + items.point_value + '</p>' +
-            '<a href="/catalog/' + items.catalog_item.api_item_Id + ' " class="btn btn-primary px-auto">See full details</a>' +
+            '<a href="/catalog/product-page/' + items.catalog_item.api_item_Id + ' " class="btn btn-primary px-auto">See full details</a>' +
             '</div></div>'
         ); 
     });
