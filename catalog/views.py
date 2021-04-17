@@ -124,8 +124,8 @@ def product_page(request, id):
     for review in reviews.iterator():
         reviewlist.append(review)
     points = user.points
-    listings = zip(items, sponsors, images)
-    return render(request, "catalog/product_page.html", context = {'listings' : listings, 'points': points, 'reviewlist': reviewlist, 'form': form, 'fave':fave})    
+    listings = zip(items, sponsors)
+    return render(request, "catalog/product_page.html", context = {'listings' : listings, 'images': images, 'points': points, 'reviewlist': reviewlist, 'form': form, 'fave':fave})    
         
 
 def browse(request):
@@ -135,7 +135,7 @@ def browse(request):
 
         #add new instance catalog item
         if not CatalogItem.objects.filter(api_item_Id=add_ID).exists():
-            url = base_url + '/listings/{}?includes=Images:1&api_key={}'.format(add_ID, key)
+            url = base_url + '/listings/{}?includes=Images&api_key={}'.format(add_ID, key)
             response = requests.request("GET", url)
             search_was_successful = (response.status_code == 200)
             data = response.json()
@@ -159,9 +159,11 @@ def browse(request):
 
             images = listing_data['Images']
             for image in images:
-                if image['rank'] == 1:
-                    main_image = image['url_170x135']
-            CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
+                CatalogItemImage.objects.create(catalog_item = listing, image_link = image['url_170x135'], big_image_link = image['url_570xN'] )
+
+                #if image['rank'] == 1:
+                    #main_image = image['url_170x135']
+            #CatalogItemImage.objects.create(catalog_item = listing, image_link = main_image)
 
 
         user = UserInformation.objects.get(user=request.user)
@@ -248,7 +250,7 @@ def my_cart(request):
             numitems = obj.sponsor_catalog_item.qty_in_cart
             obj.points_at_order = obj.sponsor_catalog_item.point_value
             obj.retail_at_order =  obj.sponsor_catalog_item.catalog_item.retail_price
-            image = CatalogItemImage.objects.get(catalog_item=obj.sponsor_catalog_item.catalog_item)
+            image = CatalogItemImage.objects.filter(catalog_item=obj.sponsor_catalog_item.catalog_item).first()
             obj.save()
             order.append(obj)
             images.append(image)
