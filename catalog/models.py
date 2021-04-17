@@ -28,7 +28,7 @@ class CatalogItemImage(models.Model):
     """
     catalog_item = models.ForeignKey(CatalogItem, related_name='images', on_delete=CASCADE)
     image_link = models.URLField("Static Image Link")
-
+    big_image_link = models.URLField("Static Image Link")
 
 class SponsorCatalogItem(models.Model):
     """
