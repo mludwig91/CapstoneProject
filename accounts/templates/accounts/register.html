@@ -30,9 +30,6 @@
                 {{ form.state|as_crispy_field }}
                 {{ form.address|as_crispy_field }}
             </div>
-            <div hidden>
-                {{ form.all_companies|as_crispy_field }}
-            </div>
             <div class="d-flex p-0 justify-content-center">
                 <button type="submit" class="btn btn-success" aria-expanded="true">Confirm</button>
                 <a href="{% url 'accounts:profile' %}" class="btn btn-danger ml-2" role="button" aria-pressed="true">Cancel</a>
