@@ -209,8 +209,13 @@ def edit_profile(request):
 
 @login_required(login_url='/accounts/login/')
 def point_change_logs(request):
-     
-    pointChange = AuditPointChange.objects.all().order_by('-change_time')
+    
+    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+
+    if current_user.role_name == 'admin':
+        pointChange = AuditPointChange.objects.all().order_by('-change_time')
+    else:
+        pointChange = AuditPointChange.objects.filter(id=current_user.sponsor_company).order_by('-change_time')
 
     return render(request, "accounts/point_change_logs.html" , {'pointChange' : pointChange})
 
