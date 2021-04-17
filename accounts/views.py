@@ -209,15 +209,10 @@ def edit_profile(request):
 
 @login_required(login_url='/accounts/login/')
 def point_change_logs(request):
-    """function logout This function handles the view for the logout page of the application.
+     
+    pointChange = AuditPointChange.objects.all().order_by('-change_time')
 
-    Args:
-        request (HTTPRequest): A http request object created automatically by Django.
-
-    Returns:
-        HttpResponse: A generated http response object to the request.
-    """
-    return render(request, "accounts/point_change_logs.html")
+    return render(request, "accounts/point_change_logs.html" , {'pointChange' : pointChange})
 
 
 @login_required(login_url='/accounts/login/')
