@@ -1,6 +1,7 @@
 """
 This module contains our Django views for the "accounts" application.
 """
+from django.db.models.expressions import Exists
 from catalog.models import CatalogFavorite
 import pytz
 from django.contrib import messages
@@ -13,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
-from accounts.forms import UserInformationForm, EditUserInformationForm, EditUserPointsForm, SponsorCompanyForm
+from accounts.forms import UserInformationForm, EditUserInformationForm, EditAdminForm, EditSponsorForm, EditUserPointsForm, SponsorCompanyForm
 from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order, AuditPointChange
 
 
@@ -588,18 +589,22 @@ def create_user(request, value):
     newUserRole = value
 
     if request.method == 'POST':
-        form = EditUserInformationForm(request.POST)
+        if (newUserRole == 'admin'):
+            form = EditAdminForm(request.POST)
+        if (newUserRole == 'sponsor'):
+            form = EditSponsorForm(request.POST)
+        if (newUserRole == 'driver'):
+            form = EditUserInformationForm(request.POST)
 
         if form.is_valid():
             newUserInfo = form.save(commit=False)
 
             if (newUserRole == 'driver'):
-                driverSponsor = form.cleaned_data['all_companies'].first()
-                newUserInfo.sponsor_company = driverSponsor
+                #driverSponsor = form.cleaned_data['all_companies'].first()
+                #newUserInfo.sponsor_company = driverSponsor
                 newUserInfo.role_name = 'driver'
                 
             if (newUserRole == 'sponsor'):
-                newUserInfo.sponsor_company = creatorUser.sponsor_company
                 newUserInfo.type_to_revert_to = 'sponsor'
                 newUserInfo.role_name = 'sponsor'
 
@@ -615,44 +620,6 @@ def create_user(request, value):
             newUserInfo.save()
 
             if (newUserRole == 'driver'):
-                newPointsObject = Points(user=newUserInfo, sponsor=driverSponsor)
-                newPointsObject.save()
-
-            form.save_m2m()
-
-            request.session.set_expiry(0)
-            return redirect("/accounts/user_management")
-        else:
-            print(form.errors)
-            return redirect("/accounts/company_management")
-
-    else:
-        if (newUserRole == 'admin'):
-            form = EditUserInformationForm(initial={'all_companies': None, 'sponsor_company': None})
-        if (newUserRole == 'sponsor'):
-            form = EditUserInformationForm(initial={'all_companies': None})
-        if (newUserRole == 'driver'):
-            form = EditUserInformationForm()
-
-        request.session.set_expiry(0)
-        return render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole})
-
-@login_required(login_url='/accounts/login/')
-def edit_user(request, role, value):
-
-    editingUser = UserInformation.objects.get(user=request.user)
-    editedUser = UserInformation.objects.get(id=value)
-
-    # Case 1: We have received a POST request with some data
-    if request.method == 'POST':
-
-        form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(user=value))
-
-        # Case 1a: A valid user profile form
-        if form.is_valid():
-            user_info = form.save(commit=False)
-
-            if(role == 'driver'):
                 targetSponsor = form.cleaned_data['sponsor_company']
                 allSponsors = form.cleaned_data['all_companies']
 
@@ -666,9 +633,91 @@ def edit_user(request, role, value):
                 if(validM2M == False):
                     allSponsorError = "Driver's All Companies List must include the Sponsor Dropdown choice."
                     print(allSponsorError)
-                    return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error' : allSponsorError})
+                    render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole, 'error': form.errors})
+                else:
+                    for company in form.cleaned_data['all_companies'] :
+                        newPointsObject = Points(user=newUserInfo, sponsor=company)
+                        newPointsObject.save()
+                    form.save_m2m()
+
+            request.session.set_expiry(0)
+            return redirect("/accounts/user_management")
+        else:
+            print(form.errors)
+            render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole, 'error': form.errors})
+
+    else:
+        if (newUserRole == 'admin'):
+            form = EditAdminForm()
+        if (newUserRole == 'sponsor'):
+            if (creatorUser.role_name == 'sponsor'):
+                form = EditSponsorForm(initial={'sponsor_company': creatorUser.sponsor_company})
             else:
-                user_info.all_companies = None
+                form = EditSponsorForm()
+        if (newUserRole == 'driver'):
+            form = EditUserInformationForm()
+
+        request.session.set_expiry(0)
+        return render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole})
+
+@login_required(login_url='/accounts/login/')
+def edit_user(request, role, value):
+
+    editingUser = UserInformation.objects.get(user=request.user)
+
+    if (role == 'driver'):
+        editedUser = Points.objects.get(id=value)
+    else:
+        editedUser = UserInformation.objects.get(id=value)
+        
+
+    # Case 1: We have received a POST request with some data
+    if request.method == 'POST':
+
+        if (role == 'admin'):
+            form = EditAdminForm(request.POST, instance=UserInformation.objects.get(user=value))
+        if (role == 'sponsor'):
+            form = EditSponsorForm(request.POST, instance=UserInformation.objects.get(user=value))
+        if (role == 'driver'):
+            form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(id=editedUser.user.id))
+
+        # Case 1a: A valid user profile form
+        if form.is_valid():
+            user_info = form.save(commit=False)
+
+            if(role == 'driver'):
+                targetSponsor = form.cleaned_data['sponsor_company']
+                allSponsors = form.cleaned_data['all_companies']
+
+                allPoints = Points.objects.filter(user=editedUser.user.id).all()
+
+                validM2M = False
+                changePointsData = False
+
+                for company in allSponsors:
+                    if (company == targetSponsor):
+                        validM2M = True
+
+                for company in allSponsors:
+                    for pointsObject in allPoints:
+                        if (pointsObject.sponsor != company) :
+                            changePointsData = True
+                    if (changePointsData) :
+                        if (allPoints.filter(sponsor=company).exists()):
+                            oldPointsObject = allPoints.get(sponsor=company)
+                            oldPointsObject.delete()
+                        else:
+                            newPointsObject = Points(user=editedUser.user, sponsor=company)
+                            newPointsObject.save()
+
+                for pointsObject in allPoints:
+                    if (pointsObject.sponsor != allSponsors.any()):
+                        pointsObject.delete()
+                
+                if(validM2M == False):
+                    allSponsorError = "Driver's All Companies List must include the Sponsor Dropdown choice."
+                    print(allSponsorError)
+                    return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error' : allSponsorError})
 
             user_info.save()
             form.save_m2m()
@@ -685,19 +734,19 @@ def edit_user(request, role, value):
     else:
 
         if (role == 'admin'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
-                initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=1)})
+            form = EditAdminForm(instance=UserInformation.objects.get(user=value), 
+                initial={'user_email': editedUser.user.email})
         
         if (role == 'sponsor'):
             if(editingUser.role_name == 'admin'):
-                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
-                    initial={'user_email': editedUser.user.email, 'all_companies': None})
+                form = EditSponsorForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email})
             if(editingUser.role_name == 'sponsor'):
-                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
-                    initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=editingUser.sponsor_company.id)})
+                form = EditSponsorForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email, 'sponsor_company': editingUser.sponsor_company})
 
         if (role == 'driver'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+            form = EditUserInformationForm(instance=UserInformation.objects.get(id=editedUser.user.id), 
                 initial={'user_email': editedUser.user.user.email})
 
         request.session.set_expiry(0)
