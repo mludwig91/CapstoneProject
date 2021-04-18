@@ -108,7 +108,8 @@ function getEtsyItems() {
 function getSponsorItems() {
     $('#item').empty();
     tab = "manage";
-    var endpoint = "/catalog/sponsor-items";
+    var filter = getFilters();
+    var endpoint = "/catalog/sponsor-items" + filter;
     $.ajax({
         url : endpoint,
     })
@@ -125,12 +126,14 @@ function getItemCards(items) {
             var image = items.images[0].image_link;
             var name = items.item_name;
             var price = items.retail_price;
+            var review = "";
         }
         else if(tab === "manage") {
             var ID = items.catalog_item.api_item_Id;
             var image = items.catalog_item.images[0].image_link;
             var name = items.catalog_item.item_name;
             var price = items.catalog_item.retail_price;
+            var review = '<a href="/catalog/browse_pending_product_reviews/' + ID + ' " class="btn btn-primary mt-2">Pending reviews</a>';
         }
         //etsy
         else {
@@ -138,23 +141,27 @@ function getItemCards(items) {
             var image = items.Images[0].url_170x135;
             var name = items.title;
             var price = parseFloat(items.price);
+            var review = "";
         }
-        inSponsor(ID);
+        inSponsor(ID, price);
         $('#item').append(
             '<div class="card m-2 col-sm-4" id="' + ID + '" style="max-width: 20rem;"> ' +
             '<div class="card-body text-center">' +
             '<img class="m-2 mx-auto img-thumbnail" src="' + image + '" width="auto" height="auto" />' +
             '<h5 class="card-title font-weight-bold" data-toggle="tooltip" title="' + name + '">' + name.slice(0,30) + '...</h5>' +
-            '<p class="card-text">price: $' + price.toFixed(2) + '</p>' + 
+            '<p class="card-text">price: $' + price.toFixed(2) + '</p>' +
+            '<p class="card-text points" id="' + ID + '"></p>' + 
             '<input type="button" class="btn btn-primary change" name="change" id="' + ID + '" value="change" />' +
-            '<a href="/catalog/browse_pending_product_reviews/' + ID + ' " class="btn btn-primary mt-2">Pending reviews</a>' +
-            '</div></div>'
-        ); 
+            review +
+            '</div></div>'   
+        );
     });
+    
 
-    function inSponsor(ID) {
+    function inSponsor(ID, price) {
         let body = {
-            "ID": ID
+            "ID": ID,
+            "price": price
         };
         var props = getProps(body);
         fetch('/catalog/all_items', props)
@@ -162,6 +169,7 @@ function getItemCards(items) {
             return response.json();
         })
         .then(function(response) { 
+            
             if (Boolean(response.inSponsor)) {
                 $('#'+ID+'.change').val("Add to Catalog");
                 $('#'+ID+'.card').removeClass("active_card");
@@ -171,6 +179,9 @@ function getItemCards(items) {
                 $('#'+ID+".change").val("Remove from Catalog");
                 $('#'+ID+'.card').addClass("active_card");
                 
+            }
+            if (response.points !== 0) {
+                $('#'+ID+'.points').text("points: " + response.points);
             }
         })
     }
@@ -187,7 +198,7 @@ function getItemCards(items) {
             return response;
         })
         .then(function() {
-            inSponsor(ID);
+            inSponsor(ID, 0);
         })
     })
 }
@@ -212,7 +223,12 @@ function getAllSidebar() {
 
     $(".last_mod").click(function() { 
         buttonActiveSide("last_mod");
-        order = "last_modified";
+        if (tab === "manage") {
+            order = "date_added";
+        }
+        else {
+            order = "last_modified"
+        }
         etsysort = "created";
         etsysortorder = "up";
         getItems();
@@ -220,15 +236,25 @@ function getAllSidebar() {
 
     $(".last_mod-").click(function() {
         buttonActiveSide("last_mod-");
+        if (tab === "manage") {
+            order = "-date_added";
+        }
+        else {
+            order = "-last_modified"
+        }
         etsysort = "created";
         etsysortorder = "down";
-        order = "-last_modified";
         getItems();
     });
 
     $(".price").click(function() { 
         buttonActiveSide("price");
-        order = "retail_price";
+        if (tab === "manage") {
+            order = "point_value";
+        }
+        else {
+            order = "retail_price";
+        }
         etsysort = "price";
         etsysortorder = "up";
         getItems();
@@ -236,7 +262,12 @@ function getAllSidebar() {
 
     $(".price-").click(function() {
         buttonActiveSide("price-");
-        order = "-retail_price";
+        if (tab === "manage") {
+            order = "-point_value";
+        }
+        else {
+            order = "-retail_price";
+        }
         etsysort = "price";
         etsysortorder = "down";
         getItems();

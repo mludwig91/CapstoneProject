@@ -85,7 +85,7 @@ def browse(request):
         if not SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
             # calculate points
             ratio = company.company_point_ratio 
-            cents = (int)(catalog_item.retail_price * 100)
+            cents = round(catalog_item.retail_price * 100)
             points = (int)(cents/ratio)
 
             # create new sponspor item and add to database
@@ -149,20 +149,28 @@ class Get_Sponsor_Items(generics.ListCreateAPIView):
 
 def all_items(request):
     if request.method == 'POST':
-        add_ID = json.load(request)['ID']
+        data = json.load(request)
+        add_ID = data['ID']
+        price = data['price']
+        
         user = UserInformation.objects.get(user=request.user)
         if user.role_name == 'sponsor':
             company = user.sponsor_company
         else:
             company = user.sponsor_company
+        
+        ratio = company.company_point_ratio 
+        cents = round(price * 100)
+        points = (int)(cents/ratio)
         if CatalogItem.objects.filter(api_item_Id=add_ID).exists():
             catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
+            
             if SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
-                return JsonResponse({'inSponsor' : False})
+                return JsonResponse({'inSponsor' : False, 'points': points})
             else:
-                return JsonResponse({'inSponsor' : True})
+                return JsonResponse({'inSponsor' : True, 'points': points})
         else:
-            return JsonResponse({'inSponsor' : True})
+            return JsonResponse({'inSponsor' : True, 'points': points})
 
 
 @login_required(login_url='/accounts/login')
@@ -280,8 +288,9 @@ def my_cart(request):
 def remove_item_from_cart(request, id):
 
     user = UserInformation.objects.get(user=request.user)
+    sponsor = user.company
     old_item = CatalogItem.objects.get(api_item_Id=id)
-    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item)
+    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item, sponsor_company=sponsor)
     order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item, order_status='inCart')
     if order.sponsor_catalog_item.qty_in_cart > 1:
         user.item_count = user.item_count-1
@@ -301,8 +310,9 @@ def remove_item_from_cart(request, id):
 def add_item_from_cart_page(request, id):
 
     user = UserInformation.objects.get(user=request.user)
+    sponsor = user.company
     old_item = CatalogItem.objects.get(api_item_Id=id)
-    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item)
+    sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item, sponsor_company = sponsor)
     order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item, order_status='inCart')
     user.item_count = user.item_count + 1
     order.sponsor_catalog_item.qty_in_cart = order.sponsor_catalog_item.qty_in_cart + 1
