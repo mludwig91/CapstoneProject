@@ -180,7 +180,9 @@ function getItemCards(items) {
                 $('#'+ID+'.card').addClass("active_card");
                 
             }
-            $('#'+ID+'.points').text("points: " + response.points);
+            if (response.points !== 0) {
+                $('#'+ID+'.points').text("points: " + response.points);
+            }
         })
     }
 
@@ -196,7 +198,7 @@ function getItemCards(items) {
             return response;
         })
         .then(function() {
-            inSponsor(ID);
+            inSponsor(ID, 0);
         })
     })
 }
