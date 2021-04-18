@@ -8,77 +8,46 @@
 {% endblock %}
 
 {% block main_content %}
-    {% if company %}
+    {% if editing_user.role_name != 'driver' %}
+        {% if edited_user.user.role_name == 'driver' %}
         <br>
-        <h3 class='text-center mb-3'>  Editing {{company.company_name}}'s Information </h3>
+        <h3 class='text-center mb-3'>  Altering {{edited_user.user.first_name}} {{edited_user.user.last_name}}'s Points </h3>
         <br>
         <div class="container">
             <div class="row gutters">
                 <div class="card h-100">
                     <div class="card-body">
-                        <form action="{% url 'accounts:edit_company' value=company.id%}" method="POST">
+                        <form action="{% url 'accounts:edit_points' value=edited_user.id%}" method="POST">
                         {% csrf_token %}
                             <div class="error">{{ error }}</div>
                             <div class="row gutters">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <h6 class="mb-2 text-primary">General Info</h6>
+                                    <h5 class="mb-2 text-primary">**Point Change May be Positive or Negative.</h5>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                <br>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12" hidden>
                                     <div class="form-group">
-                                        {{ form.company_name|as_crispy_field }}
+                                        {{ form.points|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
-                                        {{ form.company_phone_number|as_crispy_field }}
+                                        {{ form.point_change|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
-                                        {{ form.company_point_ratio|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        {{ form.company_about_info|as_crispy_field }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row gutters">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <h6 class="mt-3 mb-2 text-primary">Address</h6>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        {{ form.company_street_address|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        {{ form.company_city|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        {{ form.company_state|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        {{ form.company_zipcode|as_crispy_field }}
+                                        {{ form.change_reason|as_crispy_field }}
                                     </div>
                                 </div>
                             </div>
                             <br>
                             <div class="row gutters">
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="text-left">
-                                        <a class="btn btn-danger" href="{% url 'accounts:delete_company' value=company.id%}">Delete Company</a>
-                                    </div>
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="text-right">
-                                        <a class="btn btn-secondary" href="{% url 'accounts:company_management'%}">Cancel</a>
+                                        <a class="btn btn-secondary" href="{% url 'accounts:user_management'%}">Cancel</a>
                                         <button type="submit" class="btn btn-primary" aria-expanded="true">Update</button>
                                     </div>
                                 </div>
@@ -89,6 +58,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     {% endif %}
 
     <style>

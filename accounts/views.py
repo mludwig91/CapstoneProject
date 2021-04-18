@@ -735,7 +735,7 @@ def edit_points(request, value):
         if form.is_valid():
             #user_points = form.save(commit=False)
             
-            affectedDriver = UserInformation.objects.get(user=editedUserPoints.user)
+            affectedDriver = UserInformation.objects.get(id=editedUserPoints.user.id)
             pointChange = form.cleaned_data['point_change']
             changeReason = form.cleaned_data['change_reason']
 

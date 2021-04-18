@@ -108,7 +108,7 @@ class EditUserPointsForm(forms.ModelForm):
 
     # Fields that will need to be completed in this form
     change_reason = forms.CharField(label='Reason For Points Change', max_length=100)
-    point_change = forms.IntegerField(label='Phone Number', max_value=1000000, min_value=-1000000)
+    point_change = forms.IntegerField(label='Point Change', max_value=1000000, min_value=-1000000)
 
     def __init__(self, *args, **kwargs):
         """function __init__ is called to instantiate the user points form
