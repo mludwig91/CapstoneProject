@@ -608,7 +608,7 @@ def create_user(request, value):
                 newUserInfo.type_to_revert_to = 'admin'
                 newUserInfo.role_name = 'admin'
 
-            newBaseUser = User(email=form.cleaned_data['user_email'])
+            newBaseUser = User(username=form.cleaned_data['user_email'] , email=form.cleaned_data['user_email'], first_name=newUserInfo.first_name, last_name=newUserInfo.last_name)
             newBaseUser.save()
 
             newUserInfo.user = newBaseUser
@@ -638,7 +638,7 @@ def create_user(request, value):
         return render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole})
 
 @login_required(login_url='/accounts/login/')
-def edit_user(request, value):
+def edit_user(request, role, value):
 
     editingUser = UserInformation.objects.get(user=request.user)
     editedUser = UserInformation.objects.get(id=value)
@@ -652,6 +652,23 @@ def edit_user(request, value):
         if form.is_valid():
             user_info = form.save(commit=False)
 
+            if(role == 'driver'):
+                targetSponsor = form.cleaned_data['sponsor_company']
+                allSponsors = form.cleaned_data['all_companies']
+
+                validM2M = False
+
+                for company in allSponsors:
+                    if (company == targetSponsor):
+                        validM2M = True
+                        break
+                
+                if(validM2M == False):
+                    allSponsorError = "Driver's All Companies List must include the Sponsor Dropdown choice."
+                    print(allSponsorError)
+                    return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error' : allSponsorError})
+            else:
+                user_info.all_companies = None
 
             user_info.save()
             form.save_m2m()
@@ -662,20 +679,29 @@ def edit_user(request, value):
         # Case 1b: Not a valid user profile form, render the register page with the current form
         else:
             print(form.errors)
-            return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser})
+            return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error': form.errors})
 
     # Case 2: We have received something other than a POST request
     else:
 
-        if (editedUser.role_name == 'admin'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': None})
-        if (editedUser.role_name == 'sponsor'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email, 'all_companies': None})
-        if (editedUser.role_name == 'driver'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(id=value), initial={'user_email': editedUser.user.email})
+        if (role == 'admin'):
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=1)})
+        
+        if (role == 'sponsor'):
+            if(editingUser.role_name == 'admin'):
+                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email, 'all_companies': None})
+            if(editingUser.role_name == 'sponsor'):
+                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=editingUser.sponsor_company.id)})
+
+        if (role == 'driver'):
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                initial={'user_email': editedUser.user.user.email})
 
         request.session.set_expiry(0)
-        return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser, 'editing_user' : editingUser})
+        return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'editing_user' : editingUser})
 
 @login_required(login_url='/accounts/login/')
 def delete_user(request, value):
