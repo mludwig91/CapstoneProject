@@ -11,7 +11,97 @@
 {% endblock %}
 
 {% block main_content %}
-    {% if driver_user %}
+    {% if editing_user.id == driver_user.id %}
+        <br>
+        <h3 class='text-center mb-3'>  Editing Your Information </h3>
+        <br>
+        <div class="container">
+            <div class="row gutters">
+                <div class="card h-100">
+                    <div class="card-body">
+                        {% if role == 'driver'%}
+                        <form action="{% url 'accounts:edit_user' role=driver_user.user.role_name value=driver_user.id%}" method="POST">
+                        {% else %}
+                        <form action="{% url 'accounts:edit_user' role=driver_user.role_name value=driver_user.id%}" method="POST">
+                        {% endif %}
+                        {% csrf_token %}
+                            <div class="error text-warning">{{ error }}</div>
+                            <br>
+                            <div class="row gutters">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <h6 class="mb-2 text-primary">General Info</h6>
+                                </div>
+                                    <div class="form-group" hidden>
+                                        {{ form.user_email|as_crispy_field }}
+                                    </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        {{ form.first_name|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        {{ form.last_name|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        {{ form.license_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        {{ form.state|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        {{ form.phone_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                {% if role == 'driver' %}
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group" hidden>
+                                        {{ form.sponsor_company|as_crispy_field }}
+                                    </div>
+                                </div>
+                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group" hidden>
+                                        {{ form.all_companies|as_crispy_field }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if role == 'sponsor'%}
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                </div>
+                                {% endif %}
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        {{ form.address|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row gutters">
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="text-right">
+                                        <a class="btn btn-secondary" href="{% url 'accounts:profile'%}">Cancel</a>
+                                        <button type="submit" class="btn btn-primary" aria-expanded="true">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+    
+    {% else %}
         <br>
         {% if role != 'driver' %}
         <h3 class='text-center mb-3'>  Editing {{driver_user.first_name}} {{driver_user.last_name}}'s Information </h3>
@@ -65,9 +155,9 @@
                                 </div>
                                 {% if role == 'driver' %}
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            {{ form.sponsor_company|as_crispy_field }}
-                                        </div>
+                                    <div class="form-group">
+                                        {{ form.sponsor_company|as_crispy_field }}
+                                    </div>
                                 </div>
                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
@@ -82,29 +172,8 @@
                                             {{ form.sponsor_company|as_crispy_field }}
                                         </div>
                                     </div>
-                                    {% else %}
-                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group" hidden>
-                                            {{ form.sponsor_company|as_crispy_field }}
-                                        </div>
-                                    </div>
                                     {% endif %}
-                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group" hidden>
-                                        {{ form.all_companies|as_crispy_field }}
-                                    </div>
-                                </div>
-                                {% endif %}
-                                {% if role == 'admin' %}
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group" hidden>
-                                        {{ form.sponsor_company|as_crispy_field }}
-                                    </div>
-                                </div>
-                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group" hidden>
-                                        {{ form.all_companies|as_crispy_field }}
-                                    </div>
                                 </div>
                                 {% endif %}
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -133,10 +202,6 @@
                 </div>
             </div>
         </div>
-    {% else %}
-        <br>
-        <h3 class='text-center mb-3'> User Not Found! </h3>
-        <br>
     {% endif %}
 
     <style>
