@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
-from accounts.forms import UserInformationForm, EditUserInformationForm, EditUserPointsForm, SponsorCompanyForm
+from accounts.forms import UserInformationForm, EditUserInformationForm, EditAdminForm, EditSponsorForm, EditUserPointsForm, SponsorCompanyForm
 from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order, AuditPointChange
 
 
@@ -588,18 +588,22 @@ def create_user(request, value):
     newUserRole = value
 
     if request.method == 'POST':
-        form = EditUserInformationForm(request.POST)
+        if (newUserRole == 'admin'):
+            form = EditAdminForm(request.POST)
+        if (newUserRole == 'sponsor'):
+            form = EditSponsorForm(request.POST)
+        if (newUserRole == 'driver'):
+            form = EditUserInformationForm(request.POST)
 
         if form.is_valid():
             newUserInfo = form.save(commit=False)
 
             if (newUserRole == 'driver'):
-                driverSponsor = form.cleaned_data['all_companies'].first()
-                newUserInfo.sponsor_company = driverSponsor
+                #driverSponsor = form.cleaned_data['all_companies'].first()
+                #newUserInfo.sponsor_company = driverSponsor
                 newUserInfo.role_name = 'driver'
                 
             if (newUserRole == 'sponsor'):
-                newUserInfo.sponsor_company = creatorUser.sponsor_company
                 newUserInfo.type_to_revert_to = 'sponsor'
                 newUserInfo.role_name = 'sponsor'
 
@@ -615,22 +619,40 @@ def create_user(request, value):
             newUserInfo.save()
 
             if (newUserRole == 'driver'):
-                newPointsObject = Points(user=newUserInfo, sponsor=driverSponsor)
-                newPointsObject.save()
+                targetSponsor = form.cleaned_data['sponsor_company']
+                allSponsors = form.cleaned_data['all_companies']
 
-            form.save_m2m()
+                validM2M = False
+
+                for company in allSponsors:
+                    if (company == targetSponsor):
+                        validM2M = True
+                        break
+                
+                if(validM2M == False):
+                    allSponsorError = "Driver's All Companies List must include the Sponsor Dropdown choice."
+                    print(allSponsorError)
+                    render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole, 'error': form.errors})
+                else:
+                    for company in form.cleaned_data['all_companies'] :
+                        newPointsObject = Points(user=newUserInfo, sponsor=company)
+                        newPointsObject.save()
+                    form.save_m2m()
 
             request.session.set_expiry(0)
             return redirect("/accounts/user_management")
         else:
             print(form.errors)
-            return redirect("/accounts/company_management")
+            render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole, 'error': form.errors})
 
     else:
         if (newUserRole == 'admin'):
-            form = EditUserInformationForm(initial={'all_companies': None, 'sponsor_company': None})
+            form = EditAdminForm()
         if (newUserRole == 'sponsor'):
-            form = EditUserInformationForm(initial={'all_companies': None})
+            if (creatorUser.role_name == 'sponsor'):
+                form = EditSponsorForm(initial={'sponsor_company': creatorUser.sponsor_company})
+            else:
+                form = EditSponsorForm()
         if (newUserRole == 'driver'):
             form = EditUserInformationForm()
 
