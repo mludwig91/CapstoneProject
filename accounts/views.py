@@ -663,15 +663,22 @@ def create_user(request, value):
 def edit_user(request, role, value):
 
     editingUser = UserInformation.objects.get(user=request.user)
-    if (role != 'driver'):
-        editedUser = UserInformation.objects.get(id=value)
-    else:
+
+    if (role == 'driver'):
         editedUser = Points.objects.get(id=value)
+    else:
+        editedUser = UserInformation.objects.get(id=value)
+        
 
     # Case 1: We have received a POST request with some data
     if request.method == 'POST':
 
-        form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(user=value))
+        if (role == 'admin'):
+            form = EditAdminForm(request.POST, instance=UserInformation.objects.get(user=value))
+        if (role == 'sponsor'):
+            form = EditSponsorForm(request.POST, instance=UserInformation.objects.get(user=value))
+        if (role == 'driver'):
+            form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(id=editedUser.user.id))
 
         # Case 1a: A valid user profile form
         if form.is_valid():
@@ -681,19 +688,26 @@ def edit_user(request, role, value):
                 targetSponsor = form.cleaned_data['sponsor_company']
                 allSponsors = form.cleaned_data['all_companies']
 
+                allPoints = Points.objects.filter(user=editedUser.user.id).all()
+                allPointCompanies = allPoints.sponsor.all()
+
                 validM2M = False
 
                 for company in allSponsors:
                     if (company == targetSponsor):
                         validM2M = True
-                        break
+                    if (company != allPointCompanies.any()):
+                        newPointsObject = Points(user=editedUser.user, sponsor=company)
+                        newPointsObject.save()
+
+                for pointsObject in allPoints:
+                    if (pointsObject.sponsor != allSponsors.any()):
+                        pointsObject.delete()
                 
                 if(validM2M == False):
                     allSponsorError = "Driver's All Companies List must include the Sponsor Dropdown choice."
                     print(allSponsorError)
                     return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error' : allSponsorError})
-            else:
-                user_info.all_companies = None
 
             user_info.save()
             form.save_m2m()
@@ -710,19 +724,19 @@ def edit_user(request, role, value):
     else:
 
         if (role == 'admin'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
-                initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=1)})
+            form = EditAdminForm(instance=UserInformation.objects.get(user=value), 
+                initial={'user_email': editedUser.user.email})
         
         if (role == 'sponsor'):
             if(editingUser.role_name == 'admin'):
-                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
-                    initial={'user_email': editedUser.user.email, 'all_companies': None})
+                form = EditSponsorForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email})
             if(editingUser.role_name == 'sponsor'):
-                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
-                    initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=editingUser.sponsor_company.id)})
+                form = EditSponsorForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email, 'sponsor_company': editingUser.sponsor_company})
 
         if (role == 'driver'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+            form = EditUserInformationForm(instance=UserInformation.objects.get(id=editedUser.user.id), 
                 initial={'user_email': editedUser.user.user.email})
 
         request.session.set_expiry(0)
