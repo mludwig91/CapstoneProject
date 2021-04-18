@@ -16,6 +16,20 @@
             <h5>Total Order Quantity: {{ total_sales }}</h5>
         </div>
 
+
+    <!-- Date Range Selector -->
+    <div class = "container m-5" >
+        <form class="form" action="" method = "POST">
+            {% csrf_token %} 
+            <div class = "row" style = "justify-content: center;">
+                <input type="date" value={{start}} name = "start">
+                <input type="button" class = "btn btn-filter ml-1" value = "to" disabled></input>
+                <input type="date" value={{end}} name = "end" class = "ml-1">
+                <input type="submit" class = "btn btn-filter ml-1" value = "Filter"></input>
+            </div>
+        </form>
+    </div>
+
         <div class="row">
             <div class="container col-2">
                 <div class ="card ml-2 mt-2">
@@ -24,6 +38,7 @@
                         <button class="btn sponsor m-2 spButton active" id="1">Driver</button>
                         <button class="btn newest m-2 nButton" id="2">Most Recent</button>
                         <button class="btn oldest m-2 oButton" id="3">Least Recent</button>
+
                     </div>
                 </div>
             </div>
