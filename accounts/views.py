@@ -225,8 +225,7 @@ def point_change_logs(request):
     if current_user.role_name == 'admin':
         pointChange = AuditPointChange.objects.all().order_by('-change_time')
     else:
-        driversInCompany = SponsorCompany.objects.filter(company_name=current_user.sponsor_company)
-        pointChange = AuditPointChange.objects.filter(driver=driversInCompany).order_by('-change_time')
+        pointChange = AuditPointChange.objects.filter(sponsor_company=current_user.sponsor_company).order_by('-change_time')
 
     pointChange = pointChange.filter(change_time__range=[start, end])
 
@@ -817,7 +816,7 @@ def edit_points(request, value):
             editedUserPoints.points += pointChange
             editedUserPoints.save()
 
-            pointsChange = AuditPointChange(change_time=datetime.now(), sponsor=editingUser, driver=affectedDriver, point_change=pointChange, change_reason=changeReason)
+            pointsChange = AuditPointChange(change_time=datetime.now(), sponsor=editingUser, driver=affectedDriver, point_change=pointChange, change_reason=changeReason, sponsor_company=editedUserPoints.sponsor)
             pointsChange.save()
 
             request.session.set_expiry(0)
