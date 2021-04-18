@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from datetime import datetime
-from accounts.forms import UserInformationForm, EditUserInformationForm, SponsorCompanyForm
+from accounts.forms import UserInformationForm, EditUserInformationForm, EditUserPointsForm, SponsorCompanyForm
 from accounts.models import AuditLoginAttempt, UserInformation, AuditApplication, SponsorCompany, Points, Order, AuditPointChange
 
 
@@ -721,6 +721,44 @@ def swap_type(request):
 
     return redirect("/accounts/profile")
 
+@login_required(login_url='/accounts/login/')
+def edit_points(request, value):
+    editingUser = UserInformation.objects.get(user=request.user)
+    editedUserPoints = Points.objects.get(id=value)
+
+    # Case 1: We have received a POST request with some data
+    if request.method == 'POST':
+
+        form = EditUserPointsForm(request.POST)
+
+        # Case 1a: A valid user profile form
+        if form.is_valid():
+            #user_points = form.save(commit=False)
+            
+            affectedDriver = UserInformation.objects.get(user=editedUserPoints.user)
+            pointChange = form.cleaned_data['point_change']
+            changeReason = form.cleaned_data['change_reason']
+
+            editedUserPoints.points += pointChange
+            editedUserPoints.save()
+
+            pointsChange = AuditPointChange(change_time=datetime.now(), sponsor=editingUser, driver=affectedDriver, point_change=pointChange, change_reason=changeReason)
+            pointsChange.save()
+
+            request.session.set_expiry(0)
+            return redirect("/accounts/user_management")
+
+        # Case 1b: Not a valid user profile form, render the register page with the current form
+        else:
+            print(form.errors)
+            return render(request, "accounts/edit_points.html", {'form': form, 'edited_user': editedUserPoints, 'editing_user' : editingUser})
+
+    # Case 2: We have received something other than a POST request
+    else:
+        form = EditUserPointsForm()
+
+        request.session.set_expiry(0)
+        return render(request, "accounts/edit_points.html", {'form': form, 'edited_user': editedUserPoints, 'editing_user' : editingUser})
 
 @login_required(login_url='/accounts/login/')
 def company_management(request):

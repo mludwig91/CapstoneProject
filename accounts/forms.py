@@ -3,7 +3,7 @@ This module contains custom forms used to collect the information needed to crea
 """
 from django import forms
 from django.db.models.query import QuerySet
-from .models import UserInformation, SponsorCompany
+from .models import Points, UserInformation, SponsorCompany
 
 
 class UserInformationForm(forms.ModelForm):
@@ -100,6 +100,35 @@ class EditUserInformationForm(forms.ModelForm):
         """
         model = UserInformation
         fields = ['user_email', 'first_name', 'last_name', 'phone_number', 'sponsor_company', 'address', 'license_number', 'state', 'all_companies']
+
+class EditUserPointsForm(forms.ModelForm):
+    """
+    This form creates an instance of a Points Change model and collects its fields
+    """
+
+    # Fields that will need to be completed in this form
+    change_reason = forms.CharField(label='Reason For Points Change', max_length=100)
+    point_change = forms.IntegerField(label='Phone Number', max_value=1000000, min_value=-1000000)
+
+    def __init__(self, *args, **kwargs):
+        """function __init__ is called to instantiate the user points form
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
+        super(EditUserPointsForm, self).__init__(*args, **kwargs)
+
+        # Validator that makes sure all the fields have been filled in
+        for _field_name, field in self.fields.items():
+            field.required = True
+
+    class Meta:
+        """
+        A class that stores the meta information about this form
+        """
+        model = Points
+        fields = ['points']
 
 
 class SponsorCompanyForm(forms.ModelForm):

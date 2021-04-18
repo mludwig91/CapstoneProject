@@ -31,6 +31,7 @@ urlpatterns = [
     path('edit_user/<int:value>', views.edit_user, name='edit_user'),
     path('create_user/<slug:value>', views.create_user, name='create_user'),
     path('swap_type', views.swap_type, name = 'swap_type'),
+    path('edit_points/<int:value>', views.edit_points, name ='edit_points'),
     path('company_management', views.company_management, name='company_management'),
     path('edit_company/<int:value>', views.edit_company, name='edit_company'),
     path('delete_company/<int:value>', views.delete_company, name='delete_company'),
