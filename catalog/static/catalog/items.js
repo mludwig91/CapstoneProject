@@ -94,7 +94,7 @@ function getEtsyItems() {
     var etsy_url = "https://openapi.etsy.com/v2"
     var etsy_key = "1a3ofydrsprc5cev28c3vb7l"
     var filter = getEtsyFilters();
-    var endpoint = etsy_url + '/listings/active.js?' + 'limit=24&includes=Images:1' + filter + '&api_key=' + etsy_key;
+    var endpoint = etsy_url + '/listings/active.js?' + 'limit=48&includes=Images:1' + filter + '&api_key=' + etsy_key;
     $.ajax({
         url: endpoint,
         dataType: 'jsonp',

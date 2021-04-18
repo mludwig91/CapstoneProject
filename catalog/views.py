@@ -25,109 +25,17 @@ key = settings.ETSY_API_KEY
 
 # Driver view
 def shop(request):      
+    user = UserInformation.objects.get(user=request.user)
+    company = user.sponsor_company
+
+    if SponsorCatalogItem.objects.filter(sponsor_company=company).exists():
+        most_recent_update = SponsorCatalogItem.objects.order_by('date_added').first().date_added
+        context = {'last_update' : most_recent_update}
+        return render(request, "catalog/shop.html", context=context)
+    #else
     return render(request, "catalog/shop.html")
 
-def my_catalog(request):
-    user = UserInformation.objects.get(user=request.user)
-    if user.role_name == 'sponsor':
-        company = user.sponsor_company
-    else:
-        company = user.sponsor_company
-    items = CatalogItem.objects.filter(sponsorcatalogitem__in=SponsorCatalogItem.objects.filter(sponsor_company=company)).order_by('pk')
-    sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items).order_by('catalog_item')
-    images = CatalogItemImage.objects.filter(catalog_item__in=items).order_by('catalog_item')
-    listings = zip(items, sponsors, images)
-    return render(request, "catalog/my-catalog.html", context = {'listings' : listings})
-
-# trying to use django-restframework & django-filters 
-class Get_Items(generics.ListAPIView):
-        queryset = CatalogItem.objects.all()
-        serializer_class = ItemSerializer
-        filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-        ordering_fields = ['last_modified', 'retail_price']
-        search_fields = ['item_name', 'item_description']
-
-class SponsorCompanyBackend(filters.BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-        company = UserInformation.objects.filter(user=self.request.user).sponsor_company
-        return queryset.filter(sponsor_company=company)
-
-class Get_Sponsor_Items(generics.ListCreateAPIView):
-    
-    def get_queryset(self):
-        user = UserInformation.objects.get(user=self.request.user)
-        if user.role_name == 'sponsor':
-            company = user.sponsor_company
-        else:
-            company = user.sponsor_company
-        return SponsorCatalogItem.objects.filter(sponsor_company=company)
-
-    serializer_class = SponsorCatalogItemSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['date_added', 'point_value']
-
-def all_items(request):
-    if request.method == 'POST':
-        add_ID = json.load(request)['ID']
-        user = UserInformation.objects.get(user=request.user)
-        if user.role_name == 'sponsor':
-            company = user.sponsor_company
-        else:
-            company = user.sponsor_company
-        if CatalogItem.objects.filter(api_item_Id=add_ID).exists():
-            catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
-            if SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
-                return JsonResponse({'inSponsor' : False})
-            else:
-                return JsonResponse({'inSponsor' : True})
-        else:
-            return JsonResponse({'inSponsor' : True})
-
-
-@login_required(login_url='/accounts/login')
-def product_page(request, id):
-    user = UserInformation.objects.get(user=request.user)
-    item = CatalogItem.objects.get(api_item_Id = id)
-    if CatalogFavorite.objects.filter(catalog_item=item, user=user, has_favorited=True).exists():
-        fave = CatalogFavorite.objects.get(catalog_item=item, user=user)
-    else:
-        fave = None
-    #If user hasn't left a review for this item before
-    if not ItemReview.objects.filter(catalog_item=item, reviewer=user).exists():
-        #If user is submitting review
-        if request.method == 'POST':
-            r = ItemReview.objects.create(catalog_item=item,reviewer=user)
-            r.save()
-            form = ItemReviewForm(request.POST)
-            if form.is_valid():
-                r.title = form.cleaned_data['title']
-                r.review = form.cleaned_data['review']
-                r.has_reviewed = True
-                r.is_approved = False
-                r.save()
-                form = None
-        #otherwise display review form
-        else:
-            form = ItemReviewForm()
-    else:
-        form = None
-
-    #Get associated product information
-    items = CatalogItem.objects.filter(api_item_Id = id)
-    sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items)
-    images = CatalogItemImage.objects.filter(catalog_item__in=items)
-    item = CatalogItem.objects.get(api_item_Id=id)
-    reviews = ItemReview.objects.filter(catalog_item=item, is_approved=True)    
-    reviewlist = []
-
-    #creating list of review objects    
-    for review in reviews.iterator():
-        reviewlist.append(review)
-    points = user.points
-    listings = zip(items, sponsors)
-    return render(request, "catalog/product_page.html", context = {'listings' : listings, 'images': images, 'points': points, 'reviewlist': reviewlist, 'form': form, 'fave':fave})    
-        
-
+# Sponsor view
 def browse(request):
 
     if request.method == 'POST':
@@ -196,6 +104,110 @@ def browse(request):
             return render(request, "catalog/browse.html", context=context)
         #else
         return render(request, "catalog/browse.html")
+
+
+def my_catalog(request):
+    user = UserInformation.objects.get(user=request.user)
+    if user.role_name == 'sponsor':
+        company = user.sponsor_company
+    else:
+        company = user.sponsor_company
+    items = CatalogItem.objects.filter(sponsorcatalogitem__in=SponsorCatalogItem.objects.filter(sponsor_company=company)).order_by('pk')
+    sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items).order_by('catalog_item')
+    images = CatalogItemImage.objects.filter(catalog_item__in=items).order_by('catalog_item')
+    listings = zip(items, sponsors, images)
+    return render(request, "catalog/my-catalog.html", context = {'listings' : listings})
+
+# trying to use django-restframework & django-filters 
+class Get_Items(generics.ListAPIView):
+        queryset = CatalogItem.objects.all()
+        serializer_class = ItemSerializer
+        filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+        ordering_fields = ['last_modified', 'retail_price']
+        search_fields = ['item_name', 'item_description']
+
+class SponsorCompanyBackend(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        company = UserInformation.objects.filter(user=self.request.user).sponsor_company
+        return queryset.filter(sponsor_company=company)
+
+class Get_Sponsor_Items(generics.ListCreateAPIView):
+    
+    def get_queryset(self):
+        user = UserInformation.objects.get(user=self.request.user)
+        if user.role_name == 'sponsor':
+            company = user.sponsor_company
+        else:
+            company = user.sponsor_company
+        return SponsorCatalogItem.objects.filter(sponsor_company=company)
+
+    serializer_class = SponsorCatalogItemSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    ordering_fields = ['date_added', 'point_value']
+    search_fields = ['catalog_item__item_name', 'catalog_item__item_description']
+
+
+def all_items(request):
+    if request.method == 'POST':
+        add_ID = json.load(request)['ID']
+        user = UserInformation.objects.get(user=request.user)
+        if user.role_name == 'sponsor':
+            company = user.sponsor_company
+        else:
+            company = user.sponsor_company
+        if CatalogItem.objects.filter(api_item_Id=add_ID).exists():
+            catalog_item = CatalogItem.objects.filter(api_item_Id=add_ID)[0]
+            if SponsorCatalogItem.objects.filter(sponsor_company=company, catalog_item=catalog_item).exists():
+                return JsonResponse({'inSponsor' : False})
+            else:
+                return JsonResponse({'inSponsor' : True})
+        else:
+            return JsonResponse({'inSponsor' : True})
+
+
+@login_required(login_url='/accounts/login')
+def product_page(request, id):
+    user = UserInformation.objects.get(user=request.user)
+    item = CatalogItem.objects.get(api_item_Id = id)
+    if CatalogFavorite.objects.filter(catalog_item=item, user=user, has_favorited=True).exists():
+        fave = CatalogFavorite.objects.get(catalog_item=item, user=user)
+    else:
+        fave = None
+    #If user hasn't left a review for this item before
+    if not ItemReview.objects.filter(catalog_item=item, reviewer=user).exists():
+        #If user is submitting review
+        if request.method == 'POST':
+            r = ItemReview.objects.create(catalog_item=item,reviewer=user)
+            r.save()
+            form = ItemReviewForm(request.POST)
+            if form.is_valid():
+                r.title = form.cleaned_data['title']
+                r.review = form.cleaned_data['review']
+                r.has_reviewed = True
+                r.is_approved = False
+                r.save()
+                form = None
+        #otherwise display review form
+        else:
+            form = ItemReviewForm()
+    else:
+        form = None
+
+    #Get associated product information
+    items = CatalogItem.objects.filter(api_item_Id = id)
+    sponsors = SponsorCatalogItem.objects.filter(catalog_item__in=items)
+    images = CatalogItemImage.objects.filter(catalog_item__in=items)
+    item = CatalogItem.objects.get(api_item_Id=id)
+    reviews = ItemReview.objects.filter(catalog_item=item, is_approved=True)    
+    reviewlist = []
+
+    #creating list of review objects    
+    for review in reviews.iterator():
+        reviewlist.append(review)
+    points = user.points
+    listings = zip(items, sponsors)
+    return render(request, "catalog/product_page.html", context = {'listings' : listings, 'images': images, 'points': points, 'reviewlist': reviewlist, 'form': form, 'fave':fave})    
+        
 
 @login_required(login_url='/accounts/login/')
 def add_item_to_cart(request, id):
