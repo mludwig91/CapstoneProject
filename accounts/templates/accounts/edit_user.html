@@ -73,6 +73,9 @@
                                 {% endif %}
                                 {% if role == 'sponsor'%}
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group" hidden>
+                                        {{ form.sponsor_company|as_crispy_field }}
+                                    </div>
                                 </div>
                                 {% endif %}
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -169,6 +172,12 @@
                                     {% if editing_user.role_name == 'admin' %}
                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                         <div class="form-group">
+                                            {{ form.sponsor_company|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group" hidden>
                                             {{ form.sponsor_company|as_crispy_field }}
                                         </div>
                                     </div>

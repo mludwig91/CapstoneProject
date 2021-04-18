@@ -16,10 +16,14 @@
         <div class="container">
             <h1>Profile</h1>
             <div class="d-flex py-2">
-                <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_user' role=user.userinformation.role_name value=user.userinformation.id %}">Edit Profile</a>
+                {% if user.userinformation.role_name == 'driver' and not user.userinformation.viewing %}
+                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_user' role=user.userinformation.role_name value=points.id %}">Edit Profile</a>
+                {% else %}
+                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_user' role=user.userinformation.role_name value=user.userinformation.id %}">Edit Profile</a>
+                {% endif %}
                 <div class="divider"></div>
                 {% if user.userinformation.role_name == 'driver' %}
-                <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:register' %}"><i class="fas fa-plus"></i> Apply To New Company</a>
+                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:register' %}"><i class="fas fa-plus"></i> Apply To New Company</a>
                 {% endif %}
             </div>
         </div>

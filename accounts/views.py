@@ -52,6 +52,21 @@ def profile(request):
     Returns:
         HttpResponse: A generated http response object to the request.
     """
+
+    # find user logging in created by django
+    # find userinfo with that email, change user to ^that user
+    # delete original user that was created by us with invitation
+    if len(User.objects.filter(email=request.user.email)) > 1:
+        print(User.objects.filter(email=request.user.email), "####################", request.user.username)
+        my_users = User.objects.filter(email=request.user.email)
+        for obj in my_users:
+            if obj.id is not request.user.id:
+                print(obj)
+                temp_user_info = UserInformation.objects.get(user=obj)
+                temp_user_info.user = request.user
+                temp_user_info.save()
+                obj.delete()
+
     # Query for user in the 'User' table
     user = User.objects.get(email=request.user.email)
 
@@ -76,6 +91,10 @@ def profile(request):
 
         login_entry = AuditLoginAttempt(attempt_time=datetime.now(), login_user=user_info, is_successful=True)
         login_entry.save()
+        if user_info.role_name == 'driver' and not user_info.viewing:
+            points = Points.objects.filter(user=user_info.id)[0]
+            print(points)
+            return render(request, "accounts/profile.html", {"apps": all_apps, "points": points})
         return render(request, "accounts/profile.html", {"apps": all_apps})
     # Case 2: The user doesn't have an entry in our user information table,
     #          we redirect to the register page
@@ -662,9 +681,14 @@ def create_user(request, value):
 @login_required(login_url='/accounts/login/')
 def edit_user(request, role, value):
 
-    editingUser = UserInformation.objects.get(user=request.user)
+    temp_user = UserInformation.objects.get(user=request.user)
+    if temp_user.role_name == 'driver' and not temp_user.viewing:
+        editingUser = Points.objects.get(id=value)
+    else:
+        editingUser = UserInformation.objects.get(user=request.user)
 
     if (role == 'driver'):
+        print(value)
         editedUser = Points.objects.get(id=value)
     else:
         editedUser = UserInformation.objects.get(id=value)
@@ -674,9 +698,9 @@ def edit_user(request, role, value):
     if request.method == 'POST':
 
         if (role == 'admin'):
-            form = EditAdminForm(request.POST, instance=UserInformation.objects.get(user=value))
+            form = EditAdminForm(request.POST, instance=UserInformation.objects.get(id=value))
         if (role == 'sponsor'):
-            form = EditSponsorForm(request.POST, instance=UserInformation.objects.get(user=value))
+            form = EditSponsorForm(request.POST, instance=UserInformation.objects.get(id=value))
         if (role == 'driver'):
             form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(id=editedUser.user.id))
 
@@ -736,6 +760,8 @@ def edit_user(request, role, value):
             form.save_m2m()
 
             request.session.set_expiry(0)
+            if temp_user.role_name == 'driver' and not temp_user.viewing:
+                return redirect("/accounts/profile")
             return redirect("/accounts/user_management")
 
         # Case 1b: Not a valid user profile form, render the register page with the current form
@@ -747,15 +773,15 @@ def edit_user(request, role, value):
     else:
 
         if (role == 'admin'):
-            form = EditAdminForm(instance=UserInformation.objects.get(user=value), 
+            form = EditAdminForm(instance=UserInformation.objects.get(id=value),
                 initial={'user_email': editedUser.user.email})
         
         if (role == 'sponsor'):
             if(editingUser.role_name == 'admin'):
-                form = EditSponsorForm(instance=UserInformation.objects.get(user=value), 
+                form = EditSponsorForm(instance=UserInformation.objects.get(id=value),
                     initial={'user_email': editedUser.user.email})
             if(editingUser.role_name == 'sponsor'):
-                form = EditSponsorForm(instance=UserInformation.objects.get(user=value), 
+                form = EditSponsorForm(instance=UserInformation.objects.get(id=value),
                     initial={'user_email': editedUser.user.email, 'sponsor_company': editingUser.sponsor_company})
 
         if (role == 'driver'):
@@ -829,6 +855,9 @@ def edit_points(request, value):
 
             editedUserPoints.points += pointChange
             editedUserPoints.save()
+
+            affectedDriver.points += pointChange
+            affectedDriver.save()
 
             pointsChange = AuditPointChange(change_time=datetime.now(), sponsor=editingUser, driver=affectedDriver, point_change=pointChange, change_reason=changeReason, sponsor_company=editedUserPoints.sponsor)
             pointsChange.save()

@@ -9,7 +9,7 @@
 
 {% block main_content %}
 
-{% if user.userinformation.role_name == 'admin' %}
+{% if user.userinformation.role_name == 'admin' or user.userinformation.role_name == 'sponsor'%}
         <div class="page-section-heading my-3" style="padding-left: 50px;">
             <h1> Point Change Logs </h1>
         </div>
@@ -60,6 +60,7 @@
                             <br>
                         </div>
                 </div>
+            </div>
     {% endif %}
 
 {% endblock %}

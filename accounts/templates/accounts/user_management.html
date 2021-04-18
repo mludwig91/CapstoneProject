@@ -47,7 +47,6 @@
                                             <th>Email</th>
                                             <th>Phone Number</th>
                                             <th>Last Login</th>
-                                            <th>Approving User</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -59,7 +58,6 @@
                                             <td>{{admin.user.email | safe}}</td>
                                             <td>{{admin.phone_number | safe}}</td>
                                             <td>{{admin.last_login | safe}}</td>
-                                            <td>{{admin.approving_user.user.email | safe}}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -97,7 +95,6 @@
                                             <th>Email</th>
                                             <th>Phone Number</th>
                                             <th>Last Login</th>
-                                            <th>Approving User</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -110,7 +107,6 @@
                                             <td>{{sponsor.user.email | safe}}</td>
                                             <td>{{sponsor.phone_number | safe}}</td>
                                             <td>{{sponsor.last_login | safe}}</td>
-                                            <td>{{sponsor.approving_user.user.email | safe}}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -147,9 +143,6 @@
                                                 <th>Email</th>
                                                 <th>Phone Number</th>
                                                 <th>Last Login</th>
-                                                <th>Approving User</th>
-                                                <th>View Shopping Cart</th>
-                                                <th>View Past Orders</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -169,21 +162,6 @@
                                                 <td>{{info.user.user.email | safe}}</td>
                                                 <td>{{info.user.phone_number | safe}}</td>
                                                 <td>{{info.user.last_login | safe}}</td>
-                                                <td>{{info.user.approving_user.user.email | safe}}</td>
-                                                <td>
-                                                    {% if info.user.role_name == 'driver' %}
-                                                        <a class="btn btn-secondary" href="{% url 'catalog:driver_cart' value=info.user.id %}">View Cart</a>
-                                                    {% else %}
-                                                        <p style="text-center"><b>N/A</b></p>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {% if info.user.role_name == 'driver' %}
-                                                        <a class="btn btn-secondary" href="{% url 'catalog:order_history'%}">Past Orders</a>
-                                                    {% else %}
-                                                        <p style="text-center"><b>N/A</b></p>
-                                                    {% endif %}
-                                                </td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
