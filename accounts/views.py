@@ -230,11 +230,18 @@ def login_logs(request):
 
 @login_required(login_url='/accounts/login/')
 def application_logs(request):
-    
-    applications = AuditApplication.objects.all()
+    if request.method == "POST":
+        data = request.POST
+        start = data['start']
+        end = data['end']
+        
+    else: 
+        start = "2021-01-01"
+        end = "2022-01-01"
+        
+    applications = AuditApplication.objects.filter(submission_time__range=[start, end])
 
-
-    return render(request, "accounts/application_logs.html" , {'applications' : applications})
+    return render(request, "accounts/application_logs.html" , {'applications' : applications, 'start': start, 'end': end})
 
 
 @login_required(login_url='/accounts/login/')
