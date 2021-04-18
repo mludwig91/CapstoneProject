@@ -71,7 +71,7 @@ class EditUserInformationForm(forms.ModelForm):
     ]
 
     # Fields that will need to be completed in this form
-    user_email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'readonly': 'readonly'}))  # read only
+    user_email = forms.EmailField(label='Email', widget=forms.EmailInput())
     first_name = forms.CharField(label='First Name', max_length=25)
     last_name = forms.CharField(label='Last Name', max_length=25)
     phone_number = forms.IntegerField(label='Phone Number', max_value=9999999999, min_value=1000000000)

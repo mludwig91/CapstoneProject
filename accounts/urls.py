@@ -29,6 +29,7 @@ urlpatterns = [
     path('all_invoices', views.all_invoices, name='all_invoices'),
     path('invoice/<int:name>', views.invoice, name='invoice'),
     path('edit_user/<int:value>', views.edit_user, name='edit_user'),
+    path('create_user/<slug:value>', views.create_user, name='create_user'),
     path('swap_type', views.swap_type, name = 'swap_type'),
     path('company_management', views.company_management, name='company_management'),
     path('edit_company/<int:value>', views.edit_company, name='edit_company'),

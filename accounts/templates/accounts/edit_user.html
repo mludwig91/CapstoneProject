@@ -26,22 +26,9 @@
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <h6 class="mb-2 text-primary">General Info</h6>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
+                                    <div class="form-group" hidden>
                                         {{ form.user_email|as_crispy_field }}
                                     </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    {% if driver_user.role_name == 'sponsor' %}
-                                    <div class="form-group" >
-                                        {{ form.sponsor_company|as_crispy_field }}
-                                    </div>
-                                    {% else %}
-                                    <div class="form-group" hidden>
-                                        {{ form.sponsor_company|as_crispy_field }}
-                                    </div>
-                                    {% endif %}
-                                </div>
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
                                         {{ form.first_name|as_crispy_field }}
@@ -67,18 +54,50 @@
                                         {{ form.phone_number|as_crispy_field }}
                                     </div>
                                 </div>
+                                {% if driver_user.role_name == 'driver' %}
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    {% if driver_user.role_name == 'sponsor' %}
                                         <div class="form-group">
                                             {{ form.sponsor_company|as_crispy_field }}
                                         </div>
-                                    {% endif %}
-                                    {% if driver_user.role_name == 'driver' %}
-                                        <div class="form-group">
-                                            {{ form.all_companies|as_crispy_field }}
-                                        </div>
-                                    {% endif %}
                                 </div>
+                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        {{ form.all_companies|as_crispy_field }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if driver_user.role_name == 'sponsor'%}
+                                    {% if editing_user.role_name == 'admin' %}
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            {{ form.sponsor_company|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group" hidden>
+                                            {{ form.sponsor_company|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group" hidden>
+                                        {{ form.all_companies|as_crispy_field }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if driver_user.role_name == 'admin' %}
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group" hidden>
+                                        {{ form.sponsor_company|as_crispy_field }}
+                                    </div>
+                                </div>
+                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="form-group" hidden>
+                                        {{ form.all_companies|as_crispy_field }}
+                                    </div>
+                                </div>
+                                {% endif %}
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="form-group">
                                         {{ form.address|as_crispy_field }}

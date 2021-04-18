@@ -1,6 +1,7 @@
 """
 This module contains our Django views for the "accounts" application.
 """
+from catalog.models import CatalogFavorite
 import pytz
 from django.contrib import messages
 from django.core.exceptions import ValidationError
@@ -595,78 +596,86 @@ def create_user(request, value):
             if (newUserRole == 'driver'):
                 driverSponsor = form.cleaned_data['all_companies'].first()
                 newUserInfo.sponsor_company = driverSponsor
+                newUserInfo.role_name = 'driver'
+                
+            if (newUserRole == 'sponsor'):
+                newUserInfo.sponsor_company = creatorUser.sponsor_company
+                newUserInfo.type_to_revert_to = 'sponsor'
+                newUserInfo.role_name = 'sponsor'
 
-            newUserInfo.user = User()
+            if (newUserRole == 'admin'):
+                newUserInfo.is_admin = True
+                newUserInfo.type_to_revert_to = 'admin'
+                newUserInfo.role_name = 'admin'
+
+            newBaseUser = User(email=form.cleaned_data['user_email'])
+            newBaseUser.save()
+
+            newUserInfo.user = newBaseUser
             newUserInfo.save()
+
+            if (newUserRole == 'driver'):
+                newPointsObject = Points(user=newUserInfo, sponsor=driverSponsor)
+                newPointsObject.save()
+
             form.save_m2m()
 
+            request.session.set_expiry(0)
+            return redirect("/accounts/user_management")
+        else:
+            print(form.errors)
+            return redirect("/accounts/company_management")
+
     else:
-        form = EditUserInformationForm()
+        if (newUserRole == 'admin'):
+            form = EditUserInformationForm(initial={'all_companies': None, 'sponsor_company': None})
+        if (newUserRole == 'sponsor'):
+            form = EditUserInformationForm(initial={'all_companies': None})
+        if (newUserRole == 'driver'):
+            form = EditUserInformationForm()
 
         request.session.set_expiry(0)
-        return render(request, "accounts/edit_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole})
+        return render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole})
 
 @login_required(login_url='/accounts/login/')
 def edit_user(request, value):
 
-    adminUser = UserInformation.objects.get(user=request.user)
-    print(value, "*****")
-    if UserInformation.objects.filter(user=value).exists():
-        driverUser = UserInformation.objects.get(user=value)
-
-    else:
-        driverUser = None
-        coreUser = User()
+    editingUser = UserInformation.objects.get(user=request.user)
+    editedUser = UserInformation.objects.get(user=value)
 
     # Case 1: We have received a POST request with some data
     if request.method == 'POST':
-        current_sponsor = None
-        # Check to see if we are creating a new user information entry or updating an existing one
-        if UserInformation.objects.filter(user=value).exists():
-            current_sponsor = UserInformation.objects.get(user=value).sponsor_company
-            form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(user=value))
-        else:
-            form = EditUserInformationForm(request.POST)
+
+        form = EditUserInformationForm(request.POST, instance=UserInformation.objects.get(user=value))
+
         # Case 1a: A valid user profile form
         if form.is_valid():
-            # Since 'user' is a foreign key, we must store the queried entry from the 'User' table
             user_info = form.save(commit=False)
 
-            user_info.user = driverUser.user
-            user_info.sponsor_company = current_sponsor
+
             user_info.save()
             form.save_m2m()
 
-            sponsor = SponsorCompany.objects.get(company_name=form.cleaned_data['sponsor_company'])
-
             request.session.set_expiry(0)
-            current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
+            return redirect("/accounts/user_management")
 
-            if current_user.role_name == 'admin':
-                admin_users = UserInformation.objects.filter(role_name='admin').all()
-                sponsor_users = UserInformation.objects.filter(role_name='sponsor').all()
-                driver_users = Points.objects.all()
-            else:
-                admin_users = UserInformation.objects.filter(role_name='admin').all()
-                sponsor_users = UserInformation.objects.filter(role_name='sponsor').filter(sponsor_company=current_user.sponsor_company).all()
-                driver_users = Points.objects.filter(sponsor=current_user.sponsor_company).all()
-
-            return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
         # Case 1b: Not a valid user profile form, render the register page with the current form
         else:
-            return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': driverUser})
+            print(form.errors)
+            return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser})
+
     # Case 2: We have received something other than a POST request
     else:
-        # Case 2a: The user exists in our user information table.
-        if UserInformation.objects.filter(user=value).exists():
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value),
-                                       initial={'user_email': driverUser.user.email})
-        # Case 2b: The user email doesn't exist in our user information table.
-        else:
-            form = EditUserInformationForm()
+
+        if (editedUser.role_name == 'admin'):
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': None})
+        if (editedUser.role_name == 'sponsor'):
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email, 'all_companies': None})
+        if (editedUser.role_name == 'driver'):
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email})
 
         request.session.set_expiry(0)
-        return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': driverUser})
+        return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser, 'editing_user' : editingUser})
 
 @login_required(login_url='/accounts/login/')
 def delete_user(request, value):
@@ -675,18 +684,7 @@ def delete_user(request, value):
         user = UserInformation.objects.get(id=value)
         user.delete()
 
-    current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
-
-    if current_user.role_name == 'admin':
-        admin_users = UserInformation.objects.filter(role_name='admin').all()
-        sponsor_users = UserInformation.objects.filter(role_name='sponsor').all()
-        driver_users = Points.objects.all()
-    else:
-        admin_users = UserInformation.objects.filter(role_name='admin').all()
-        sponsor_users = UserInformation.objects.filter(role_name='sponsor').filter(sponsor_company=current_user.sponsor_company).all()
-        driver_users = Points.objects.filter(sponsor=current_user.sponsor_company).all()
-
-    return render(request, "accounts/user_management.html", {'current_user' : current_user, 'admins': admin_users, 'sponsors' : sponsor_users, 'drivers' : driver_users})
+    return redirect("/accounts/user_management")
 
 
 @login_required(login_url='/accounts/login/')
