@@ -692,31 +692,45 @@ def edit_user(request, role, value):
 
                 validM2M = False
                 changePointsData = False
+                differentCompanies = []
 
                 for company in allSponsors:
                     if (company == targetSponsor):
                         validM2M = True
 
-                for company in allSponsors:
-                    for pointsObject in allPoints:
-                        if (pointsObject.sponsor != company) :
-                            changePointsData = True
-                    if (changePointsData) :
-                        if (allPoints.filter(sponsor=company).exists()):
-                            oldPointsObject = allPoints.get(sponsor=company)
-                            oldPointsObject.delete()
-                        else:
-                            newPointsObject = Points(user=editedUser.user, sponsor=company)
-                            newPointsObject.save()
-
-                for pointsObject in allPoints:
-                    if (pointsObject.sponsor != allSponsors.any()):
-                        pointsObject.delete()
-                
                 if(validM2M == False):
                     allSponsorError = "Driver's All Companies List must include the Sponsor Dropdown choice."
                     print(allSponsorError)
                     return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error' : allSponsorError})
+
+                #Checks for incoming company which doesn't have a points object, creates
+                for company in allSponsors:
+                    for pointsObject in allPoints:
+                        if (pointsObject.sponsor == company):
+                            changePointsData = False
+                            break
+                        else:
+                            changePointsData = True
+                    if (changePointsData):
+                        newPointsObject = Points(user=editedUser.user, sponsor=company)
+                        newPointsObject.save()
+                    changePointsData = False
+
+                changePointsData = False
+                allPoints = Points.objects.filter(user=editedUser.user.id).all()
+
+                #Checks for existing points object which isn't part of incoming company list, deletes
+                for pointsObject in allPoints:
+                    for company in allSponsors:
+                        if (company == pointsObject.sponsor):
+                            changePointsData = False
+                            break
+                        else:
+                            changePointsData = True
+                    if (changePointsData):
+                        oldPointsObject = allPoints.get(sponsor=company)
+                        oldPointsObject.delete()
+                    changePointsData = False
 
             user_info.save()
             form.save_m2m()
