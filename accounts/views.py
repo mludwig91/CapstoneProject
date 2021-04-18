@@ -641,7 +641,7 @@ def create_user(request, value):
 def edit_user(request, value):
 
     editingUser = UserInformation.objects.get(user=request.user)
-    editedUser = UserInformation.objects.get(user=value)
+    editedUser = UserInformation.objects.get(id=value)
 
     # Case 1: We have received a POST request with some data
     if request.method == 'POST':
@@ -672,7 +672,7 @@ def edit_user(request, value):
         if (editedUser.role_name == 'sponsor'):
             form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email, 'all_companies': None})
         if (editedUser.role_name == 'driver'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email})
+            form = EditUserInformationForm(instance=UserInformation.objects.get(id=value), initial={'user_email': editedUser.user.email})
 
         request.session.set_expiry(0)
         return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser, 'editing_user' : editingUser})
