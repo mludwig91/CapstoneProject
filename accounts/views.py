@@ -608,7 +608,7 @@ def create_user(request, value):
                 newUserInfo.type_to_revert_to = 'admin'
                 newUserInfo.role_name = 'admin'
 
-            newBaseUser = User(email=form.cleaned_data['user_email'])
+            newBaseUser = User(username=form.cleaned_data['user_email'] , email=form.cleaned_data['user_email'], first_name=newUserInfo.first_name, last_name=newUserInfo.last_name)
             newBaseUser.save()
 
             newUserInfo.user = newBaseUser
@@ -687,11 +687,11 @@ def edit_user(request, role, value):
     # Case 2: We have received something other than a POST request
     else:
 
-        if (editedUser.role_name == 'admin'):
+        if (role == 'admin'):
             form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
                 initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=1)})
         
-        if (editedUser.role_name == 'sponsor'):
+        if (role == 'sponsor'):
             if(editingUser.role_name == 'admin'):
                 form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
                     initial={'user_email': editedUser.user.email, 'all_companies': None})
@@ -699,12 +699,12 @@ def edit_user(request, role, value):
                 form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
                     initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=editingUser.sponsor_company.id)})
 
-        if (editedUser.role_name == 'driver'):
+        if (role == 'driver'):
             form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
-                initial={'user_email': editedUser.user.email})
+                initial={'user_email': editedUser.user.user.email})
 
         request.session.set_expiry(0)
-        return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser, 'editing_user' : editingUser})
+        return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'editing_user' : editingUser})
 
 @login_required(login_url='/accounts/login/')
 def delete_user(request, value):
