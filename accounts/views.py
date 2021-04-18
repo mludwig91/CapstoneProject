@@ -1,6 +1,7 @@
 """
 This module contains our Django views for the "accounts" application.
 """
+from django.db.models.expressions import Exists
 from catalog.models import CatalogFavorite
 import pytz
 from django.contrib import messages
@@ -689,16 +690,25 @@ def edit_user(request, role, value):
                 allSponsors = form.cleaned_data['all_companies']
 
                 allPoints = Points.objects.filter(user=editedUser.user.id).all()
-                allPointCompanies = allPoints.sponsor.all()
 
                 validM2M = False
+                changePointsData = False
 
                 for company in allSponsors:
                     if (company == targetSponsor):
                         validM2M = True
-                    if (company != allPointCompanies.any()):
-                        newPointsObject = Points(user=editedUser.user, sponsor=company)
-                        newPointsObject.save()
+
+                for company in allSponsors:
+                    for pointsObject in allPoints:
+                        if (pointsObject.sponsor != company) :
+                            changePointsData = True
+                    if (changePointsData) :
+                        if (allPoints.filter(sponsor=company).exists()):
+                            oldPointsObject = allPoints.get(sponsor=company)
+                            oldPointsObject.delete()
+                        else:
+                            newPointsObject = Points(user=editedUser.user, sponsor=company)
+                            newPointsObject.save()
 
                 for pointsObject in allPoints:
                     if (pointsObject.sponsor != allSponsors.any()):
