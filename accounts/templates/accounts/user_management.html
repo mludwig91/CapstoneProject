@@ -172,7 +172,7 @@
                                                 <td>{{info.user.approving_user.user.email | safe}}</td>
                                                 <td>
                                                     {% if info.user.role_name == 'driver' %}
-                                                        <a class="btn btn-secondary" href="{% url 'catalog:driver_cart' value=info.user.pk%}">View Cart</a>
+                                                        <a class="btn btn-secondary" href="{% url 'catalog:driver_cart' value=info.user.id %}">View Cart</a>
                                                     {% else %}
                                                         <p style="text-center"><b>N/A</b></p>
                                                     {% endif %}
