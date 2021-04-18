@@ -352,7 +352,7 @@ def approve_pending_product_reviews(request, id, user):
 
 def driver_cart(request, value):
     adminUser = UserInformation.objects.get(user=request.user)
-    driverUser = UserInformation.objects.get(user=value)
+    driverUser = UserInformation.objects.get(id=value)
 
     shopping_cart = Order.objects.filter(ordering_driver=driverUser, order_status='inCart')
 
