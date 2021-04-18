@@ -206,10 +206,18 @@ def edit_profile(request):
     """
     return render(request, "accounts/edit_profile.html")
 
-
 @login_required(login_url='/accounts/login/')
 def point_change_logs(request):
-    
+
+    if request.method == "POST":
+        data = request.POST
+        start = data['start']
+        end = data['end']
+        
+    else: 
+        start = "2021-01-01"
+        end = "2021-12-31"
+
     current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
 
     if current_user.role_name == 'admin':
@@ -218,14 +226,25 @@ def point_change_logs(request):
         driversInCompany = SponsorCompany.objects.filter(company_name=current_user.sponsor_company)
         pointChange = AuditPointChange.objects.filter(driver=driversInCompany).order_by('-change_time')
 
-    return render(request, "accounts/point_change_logs.html" , {'pointChange' : pointChange})
+    pointChange = pointChange.filter(change_time__range=[start, end])
+
+    return render(request, "accounts/point_change_logs.html" , {'pointChange' : pointChange, 'start': start, 'end': end})
 
 @login_required(login_url='/accounts/login/')
 def login_logs(request):
-    
-    logins = AuditLoginAttempt.objects.all()
 
-    return render(request, "accounts/login_logs.html" , {'logins' : logins})
+    if request.method == "POST":
+        data = request.POST
+        start = data['start']
+        end = data['end']
+        
+    else: 
+        start = "2021-01-01"
+        end = "2021-12-31"
+        
+    logins = AuditLoginAttempt.objects.filter(attempt_time__range=[start, end])
+
+    return render(request, "accounts/login_logs.html" , {'logins' : logins, 'start': start, 'end': end})
 
 
 @login_required(login_url='/accounts/login/')
@@ -237,7 +256,7 @@ def application_logs(request):
         
     else: 
         start = "2021-01-01"
-        end = "2022-01-01"
+        end = "2021-12-31"
         
     applications = AuditApplication.objects.filter(submission_time__range=[start, end])
 
@@ -370,7 +389,17 @@ def disable_account(request):
 
 @login_required(login_url='/accounts/login/')
 def sales_reports(request):
-    sales = Order.objects.exclude(order_status='inCart').all()
+
+    if request.method == "POST":
+        data = request.POST
+        start = data['start']
+        end = data['end']
+        
+    else: 
+        start = "2021-01-01"
+        end = "2021-12-31"
+        
+    sales = Order.objects.exclude(order_status='inCart').all().filter(last_status_change__range=[start, end])
     sponsor_companies = SponsorCompany.objects.all()
     number_of_sponsors = len(sponsor_companies)
 
@@ -388,9 +417,8 @@ def sales_reports(request):
                 total_dollars += order.retail_at_order
         sales_per.append([company, count, dollars])
 
-    newest_first = Order.objects.exclude(order_status='inCart').all().order_by('last_status_change')
-    oldest_first = Order.objects.exclude(order_status='inCart').all().order_by('-last_status_change')
-    print(oldest_first)
+    newest_first = Order.objects.exclude(order_status='inCart').all().order_by('last_status_change').filter(last_status_change__range=[start, end])
+    oldest_first = Order.objects.exclude(order_status='inCart').all().order_by('-last_status_change').filter(last_status_change__range=[start, end])
 
     return render(request, "accounts/sales_reports.html", {'sales': sales,
                                                           'sponsors': sponsor_companies,
@@ -399,12 +427,23 @@ def sales_reports(request):
                                                           'total_dollars': total_dollars,
                                                           'total_sales': total_sales,
                                                            'oldest_first': oldest_first,
-                                                           'newest_first': newest_first})
+                                                           'newest_first': newest_first,
+                                                           'start': start, 'end': end})
 
 
 @login_required(login_url='/accounts/login/')
 def driver_sales(request):
-    sales = Order.objects.exclude(order_status='inCart').all()
+
+    if request.method == "POST":
+        data = request.POST
+        start = data['start']
+        end = data['end']
+        
+    else: 
+        start = "2021-01-01"
+        end = "2021-12-31"
+
+    sales = Order.objects.exclude(order_status='inCart').all().filter(last_status_change__range=[start, end])
     drivers = UserInformation.objects.filter(role_name='driver').all()
     number_of_drivers = len(drivers)
 
@@ -422,8 +461,10 @@ def driver_sales(request):
                 total_dollars += order.retail_at_order
         sales_per.append([driver, count, dollars])
 
-    newest_first = Order.objects.exclude(order_status='inCart').all().order_by('last_status_change')
-    oldest_first = Order.objects.exclude(order_status='inCart').all().order_by('-last_status_change')
+    newest_first = Order.objects.exclude(order_status='inCart').all().order_by('last_status_change').filter(last_status_change__range=[start, end])
+    oldest_first = Order.objects.exclude(order_status='inCart').all().order_by('-last_status_change').filter(last_status_change__range=[start, end])
+
+
 
     return render(request, "accounts/driver_sales.html", {'sales': sales,
                                                       'drivers': drivers,
@@ -432,7 +473,8 @@ def driver_sales(request):
                                                       'total_dollars': total_dollars,
                                                       'total_sales': total_sales,
                                                            'oldest_first': oldest_first,
-                                                           'newest_first': newest_first})
+                                                           'newest_first': newest_first,
+                                                           'start': start, 'end': end})
 
 
 @login_required(login_url='/accounts/login/')
@@ -452,7 +494,16 @@ def all_invoices(request):
         tup.sort(key=lambda x: x[5])
         return tup
 
-    sales = Order.objects.exclude(order_status='inCart').all()
+    if request.method == "POST":
+        data = request.POST
+        start = data['start']
+        end = data['end']
+        
+    else: 
+        start = "2021-01-01"
+        end = "2021-12-31"
+
+    sales = Order.objects.exclude(order_status='inCart').all().filter(last_status_change__range=[start, end])
     sponsor_companies = SponsorCompany.objects.all()
     number_of_sponsors = len(sponsor_companies)
 
@@ -486,7 +537,8 @@ def all_invoices(request):
                                                            'total_dollars': total_dollars,
                                                            'total_sales': total_sales,
                                                            'oldest_first': oldest_first,
-                                                           'newest_first': newest_first})
+                                                           'newest_first': newest_first,
+                                                           'start': start, 'end': end})
 
 
 @login_required(login_url='/accounts/login/')
