@@ -19,7 +19,11 @@
             <div class="row gutters">
                 <div class="card h-100">
                     <div class="card-body">
-                        <form action="{% url 'accounts:edit_user' value=driver_user.id%}" method="POST">
+                        {% if role == 'driver'%}
+                        <form action="{% url 'accounts:edit_user' role=driver_user.user.role_name value=driver_user.id%}" method="POST">
+                        {% else %}
+                        <form action="{% url 'accounts:edit_user' role=driver_user.role_name value=driver_user.id%}" method="POST">
+                        {% endif %}
                         {% csrf_token %}
                             <div class="error">{{ error }}</div>
                             <div class="row gutters">
@@ -54,7 +58,7 @@
                                         {{ form.phone_number|as_crispy_field }}
                                     </div>
                                 </div>
-                                {% if driver_user.role_name == 'driver' %}
+                                {% if role == 'driver' %}
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                         <div class="form-group">
                                             {{ form.sponsor_company|as_crispy_field }}
@@ -66,7 +70,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                {% if driver_user.role_name == 'sponsor'%}
+                                {% if role == 'sponsor'%}
                                     {% if editing_user.role_name == 'admin' %}
                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                         <div class="form-group">
@@ -86,7 +90,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                {% if driver_user.role_name == 'admin' %}
+                                {% if role == 'admin' %}
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group" hidden>
                                         {{ form.sponsor_company|as_crispy_field }}

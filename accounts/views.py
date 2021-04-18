@@ -638,10 +638,13 @@ def create_user(request, value):
         return render(request, "accounts/create_user.html", {'form': form, 'creator_user': creatorUser, 'new_user_role': newUserRole})
 
 @login_required(login_url='/accounts/login/')
-def edit_user(request, value):
+def edit_user(request, role, value):
 
     editingUser = UserInformation.objects.get(user=request.user)
-    editedUser = UserInformation.objects.get(user=value)
+    if (role != 'driver'):
+        editedUser = UserInformation.objects.get(id=value)
+    else:
+        editedUser = Points.objects.get(id=value)
 
     # Case 1: We have received a POST request with some data
     if request.method == 'POST':
@@ -652,6 +655,23 @@ def edit_user(request, value):
         if form.is_valid():
             user_info = form.save(commit=False)
 
+            if(role == 'driver'):
+                targetSponsor = form.cleaned_data['sponsor_company']
+                allSponsors = form.cleaned_data['all_companies']
+
+                validM2M = False
+
+                for company in allSponsors:
+                    if (company == targetSponsor):
+                        validM2M = True
+                        break
+                
+                if(validM2M == False):
+                    allSponsorError = "Driver's All Companies List must include the Sponsor Dropdown choice."
+                    print(allSponsorError)
+                    return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error' : allSponsorError})
+            else:
+                user_info.all_companies = None
 
             user_info.save()
             form.save_m2m()
@@ -662,17 +682,26 @@ def edit_user(request, value):
         # Case 1b: Not a valid user profile form, render the register page with the current form
         else:
             print(form.errors)
-            return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser})
+            return render(request, "accounts/edit_user.html", {'form': form, 'role': role, 'driver_user': editedUser, 'error': form.errors})
 
     # Case 2: We have received something other than a POST request
     else:
 
         if (editedUser.role_name == 'admin'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': None})
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=1)})
+        
         if (editedUser.role_name == 'sponsor'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email, 'all_companies': None})
+            if(editingUser.role_name == 'admin'):
+                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email, 'all_companies': None})
+            if(editingUser.role_name == 'sponsor'):
+                form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                    initial={'user_email': editedUser.user.email, 'all_companies': None, 'sponsor_company': SponsorCompany.objects.get(id=editingUser.sponsor_company.id)})
+
         if (editedUser.role_name == 'driver'):
-            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), initial={'user_email': editedUser.user.email})
+            form = EditUserInformationForm(instance=UserInformation.objects.get(user=value), 
+                initial={'user_email': editedUser.user.email})
 
         request.session.set_expiry(0)
         return render(request, "accounts/edit_user.html", {'form': form, 'driver_user': editedUser, 'editing_user' : editingUser})

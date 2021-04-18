@@ -53,7 +53,7 @@
                                     <tbody>
                                         {%for admin in admins%}
                                         <tr>
-                                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=admin.id%}">Edit</a></td>
+                                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' role='admin' value=admin.id%}">Edit</a></td>
                                             <td>{{admin.first_name | safe}}</td>
                                             <td>{{admin.last_name | safe}}</td>
                                             <td>{{admin.user.email | safe}}</td>
@@ -104,7 +104,7 @@
                                         {%for sponsor in sponsors%}
                                         <tr>
                                             <td>{{sponsor.sponsor_company.company_name | safe}}</td>
-                                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=sponsor.id%}">Edit</a></td>
+                                            <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' role='sponsor' value=sponsor.id%}">Edit</a></td>
                                             <td>{{sponsor.first_name | safe}}</td>
                                             <td>{{sponsor.last_name | safe}}</td>
                                             <td>{{sponsor.user.email | safe}}</td>
@@ -156,7 +156,7 @@
                                             {%for info in drivers%}
                                             <tr>
                                                 <td>{{info.sponsor.company_name | safe}}</td>
-                                                <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' value=info.user.pk%}">Edit</a></td>
+                                                <td><a class="btn btn-primary" href="{% url 'accounts:edit_user' role='driver' value=info.id%}">Edit</a></td>
                                                 <td>{{info.user.first_name | safe}} {{info.user.last_name | safe}}</td>
                                                 <td>
                                                     {% if info.user.role_name == 'driver' %} 
