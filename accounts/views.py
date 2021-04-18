@@ -728,7 +728,7 @@ def edit_user(request, role, value):
                         else:
                             changePointsData = True
                     if (changePointsData):
-                        oldPointsObject = allPoints.get(sponsor=company)
+                        oldPointsObject = allPoints.get(sponsor=company.id)
                         oldPointsObject.delete()
                     changePointsData = False
 

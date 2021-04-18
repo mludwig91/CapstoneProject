@@ -13,7 +13,11 @@
 {% block main_content %}
     {% if driver_user %}
         <br>
+        {% if role != 'driver' %}
         <h3 class='text-center mb-3'>  Editing {{driver_user.first_name}} {{driver_user.last_name}}'s Information </h3>
+        {% else %}
+        <h3 class='text-center mb-3'>  Editing {{driver_user.user.first_name}} {{driver_user.user.last_name}}'s Information </h3>
+        {% endif %}
         <br>
         <div class="container">
             <div class="row gutters">
@@ -25,7 +29,8 @@
                         <form action="{% url 'accounts:edit_user' role=driver_user.role_name value=driver_user.id%}" method="POST">
                         {% endif %}
                         {% csrf_token %}
-                            <div class="error">{{ error }}</div>
+                            <div class="error text-warning">{{ error }}</div>
+                            <br>
                             <div class="row gutters">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <h6 class="mb-2 text-primary">General Info</h6>
