@@ -211,12 +211,12 @@ def point_change_logs(request):
 
     if request.method == "POST":
         data = request.POST
-        start = data['start']
-        end = data['end']
+        start = data['start'] + " 00:00:00.0+00:00"
+        end = data['end'] + " 00:00:00.0+00:00"
         
     else: 
-        start = "2021-01-01"
-        end = "2021-12-31"
+        start = "2021-01-01 00:00:00.0+00:00"
+        end = "2021-12-31 00:00:00.0+00:00"
 
     current_user = UserInformation.objects.get(user=User.objects.get(email=request.user.email))
 
@@ -235,12 +235,12 @@ def login_logs(request):
 
     if request.method == "POST":
         data = request.POST
-        start = data['start']
-        end = data['end']
+        start = data['start'] + " 00:00:00.0+00:00"
+        end = data['end'] + " 00:00:00.0+00:00"
         
     else: 
-        start = "2021-01-01"
-        end = "2021-12-31"
+        start = "2021-01-01 00:00:00.0+00:00"
+        end = "2021-12-31 00:00:00.0+00:00"
         
     logins = AuditLoginAttempt.objects.filter(attempt_time__range=[start, end])
 
@@ -251,12 +251,12 @@ def login_logs(request):
 def application_logs(request):
     if request.method == "POST":
         data = request.POST
-        start = data['start']
-        end = data['end']
+        start = data['start'] + " 00:00:00.0+00:00"
+        end = data['end'] + " 00:00:00.0+00:00"
         
     else: 
-        start = "2021-01-01"
-        end = "2021-12-31"
+        start = "2021-01-01 00:00:00.0+00:00"
+        end = "2021-12-31 00:00:00.0+00:00"
         
     applications = AuditApplication.objects.filter(submission_time__range=[start, end])
 
@@ -392,12 +392,12 @@ def sales_reports(request):
 
     if request.method == "POST":
         data = request.POST
-        start = data['start']
-        end = data['end']
+        start = data['start'] + " 00:00:00.0+00:00"
+        end = data['end'] + " 00:00:00.0+00:00"
         
     else: 
-        start = "2021-01-01"
-        end = "2021-12-31"
+        start = "2021-01-01 00:00:00.0+00:00"
+        end = "2021-12-31 00:00:00.0+00:00"
         
     sales = Order.objects.exclude(order_status='inCart').all().filter(last_status_change__range=[start, end])
     sponsor_companies = SponsorCompany.objects.all()
@@ -436,12 +436,12 @@ def driver_sales(request):
 
     if request.method == "POST":
         data = request.POST
-        start = data['start']
-        end = data['end']
+        start = data['start'] + " 00:00:00.0+00:00"
+        end = data['end'] + " 00:00:00.0+00:00"
         
     else: 
-        start = "2021-01-01"
-        end = "2021-12-31"
+        start = "2021-01-01 00:00:00.0+00:00"
+        end = "2021-12-31 00:00:00.0+00:00"
 
     sales = Order.objects.exclude(order_status='inCart').all().filter(last_status_change__range=[start, end])
     drivers = UserInformation.objects.filter(role_name='driver').all()
@@ -496,12 +496,12 @@ def all_invoices(request):
 
     if request.method == "POST":
         data = request.POST
-        start = data['start']
-        end = data['end']
+        start = data['start'] + " 00:00:00.0+00:00"
+        end = data['end'] + " 00:00:00.0+00:00"
         
     else: 
-        start = "2021-01-01"
-        end = "2021-12-31"
+        start = "2021-01-01 00:00:00.0+00:00"
+        end = "2021-12-31 00:00:00.0+00:00"
 
     sales = Order.objects.exclude(order_status='inCart').all().filter(last_status_change__range=[start, end])
     sponsor_companies = SponsorCompany.objects.all()
