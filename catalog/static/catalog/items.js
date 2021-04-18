@@ -126,12 +126,14 @@ function getItemCards(items) {
             var image = items.images[0].image_link;
             var name = items.item_name;
             var price = items.retail_price;
+            var review = "";
         }
         else if(tab === "manage") {
             var ID = items.catalog_item.api_item_Id;
             var image = items.catalog_item.images[0].image_link;
             var name = items.catalog_item.item_name;
             var price = items.catalog_item.retail_price;
+            var review = '<a href="/catalog/browse_pending_product_reviews/' + ID + ' " class="btn btn-primary mt-2">Pending reviews</a>';
         }
         //etsy
         else {
@@ -139,6 +141,7 @@ function getItemCards(items) {
             var image = items.Images[0].url_170x135;
             var name = items.title;
             var price = parseFloat(items.price);
+            var review = "";
         }
         inSponsor(ID, price);
         $('#item').append(
@@ -149,10 +152,11 @@ function getItemCards(items) {
             '<p class="card-text">price: $' + price.toFixed(2) + '</p>' +
             '<p class="card-text points" id="' + ID + '"></p>' + 
             '<input type="button" class="btn btn-primary change" name="change" id="' + ID + '" value="change" />' +
-            '<a href="/catalog/browse_pending_product_reviews/' + ID + ' " class="btn btn-primary mt-2">Pending reviews</a>' +
-            '</div></div>'
-        ); 
+            review +
+            '</div></div>'   
+        );
     });
+    
 
     function inSponsor(ID, price) {
         let body = {
