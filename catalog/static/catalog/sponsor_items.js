@@ -1,4 +1,27 @@
-function getItems(filter) {
+var order = "";
+var search = "";
+
+function getFilters() {
+    var count = 0;
+    var filter="";
+    if (search !== "") {
+        filter = filter + "?search=" + search;
+        count++;
+    }
+    if (order !== "") {
+        if (count > 0) {
+            filter = filter + "&";
+        }
+        else {
+            filter = filter + "?";
+        }
+        filter = filter + "ordering=" + order;
+    }
+    return filter;
+}
+
+function getItems() {
+    var filter = getFilters();
     var endpoint = "/catalog/sponsor-items" + filter;
     $.ajax({
         url : endpoint,
@@ -23,22 +46,64 @@ function getSponsorItemCards(items) {
     });
 }
 
+//sidebar
+
+function getAllSidebar() {
+    $('#sidebar').empty();
+    $('#sidebar').append(
+    '<h5 class="font-weight-bold" style="text-align:center;">Sort By:</h5>' +
+    '<button class="btn btn-primary btn-block side_group date_added-">Most Recent</button>' +
+    '<button class="btn btn-primary btn-block side_group date_added">Least Recent</button> '+
+    '<button class="btn btn-primary btn-block side_group point_value-">Most Expensive</button>'  +
+    '<button class="btn btn-primary btn-block side_group point_value">Least Expensive</button>'
+    );
+    
+    function buttonActiveSide(name) {
+        $('.side_group').removeClass("btn-active");
+        $('.'+name).addClass("btn-active");
+    }
+
+    $(".date_added").click(function() { 
+        buttonActiveSide("date_added");
+        order = "date_added";
+        getItems();
+    });
+
+    $(".date_added-").click(function() {
+        buttonActiveSide("date_added-");
+        order = "-date_added";
+        getItems();
+    });
+
+    $(".point_value").click(function() { 
+        buttonActiveSide("point_value");
+        order = "point_value";
+        getItems();
+    });
+
+    $(".point_value-").click(function() {
+        buttonActiveSide("point_value-");
+        order = "-point_value";
+        getItems();
+    });
+
+}
+
+
+
 $(document).ready(function() {
     getItems("");  
+    getAllSidebar();
 });
 
-$(".date_added").click(function() { 
-    getItems("?ordering=date_added");
+$("#search").click(function() {
+    search = $("#searchbar").focus().val();
+    getItems();
 });
 
-$(".date_added-").click(function() {
-    getItems("?ordering=-date_added");
+$("#clearsearch").click(function() {
+    $("#searchbar").focus().val('');
+    search = "";
+    getItems();
 });
 
-$(".points").click(function() {
-    getItems("?ordering=point_value");
-});
-
-$(".points-").click(function() {
-    getItems("?ordering=-point_value");
-});

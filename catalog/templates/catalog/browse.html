@@ -10,34 +10,29 @@
 
 {% block main_content %}
 
-    <div class="container-fluid pt-5 head">
-        <h2 style="text-align:center">Manage Catalog</h2>
-        {% if last_update %}
-        <p style="text-align:center"> Catalog Last Updated: {{last_update|date:'F j, Y g:i A'}} </p>
-        {% endif %}
-        <nav class="navbar navbar-expand-sm pt-3 pb-3">
-            <div class="col-4">
-                <button type="button" name="etsy" class="btn btn-primary btn-block top_group etsy">Browse Products From Etsy</button>
-            </div>
-            <div class="col-4">
-                <button type="button" name="all" class="btn btn-primary btn-block top_group all">Browse Products Other Sponsor Use</button>
-            </div>
-            <div class="col-4">    
-                <button type="button" name="manage" class="btn btn-primary btn-block top_group manage">View Your Catalog</button>
-            </div>
-        </nav>
-
-    </div>
-
-
-
+<div class="container-fluid pt-5 head">
+    <h2 style="text-align:center">Manage Catalog</h2>
+    {% if last_update %}
+    <p style="text-align:center"> Catalog Last Updated: {{last_update|date:'F j, Y g:i A'}} </p>
+    {% endif %}
+    <nav class="navbar navbar-expand-sm pt-3 pb-3">
+        <div class="col-4">
+            <button type="button" name="etsy" class="btn btn-primary btn-block top_group etsy">Browse Products From Etsy</button>
+        </div>
+        <div class="col-4">
+            <button type="button" name="all" class="btn btn-primary btn-block top_group all">Browse Products Other Sponsor Use</button>
+        </div>
+        <div class="col-4">    
+            <button type="button" name="manage" class="btn btn-primary btn-block top_group manage">View Your Catalog</button>
+        </div>
+    </nav>
+</div>
 
 <div class = "container-fluid">
     <div class="row">
 
         <nav class="container-fluid col-2 sidebar">
-            <div class = "sticky-top pt-5" id="sidebar">
-            </div>
+            <div class = "sticky-top pt-5" id="sidebar"></div>
         </nav>
 
         <div class="container-fluid col-10">
@@ -57,7 +52,6 @@
             </div>
             <div class="row justify-content-center" id="item"></div>
         </div>
-
     </div>
 </div>
 
