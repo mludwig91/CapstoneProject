@@ -149,7 +149,7 @@ def register(request):
             'DriveRite',
             [user.email])
             msg.content_subtype = "html"
-            msg.send()
+            # msg.send()
 
             print(form.cleaned_data['sponsor_company'])
 
@@ -339,7 +339,7 @@ def review_apps(request):
                 'DriveRite',
                 [pending_user.user.email])
             msg.content_subtype = "html"
-            msg.send()
+            # msg.send()
 
         if request.POST.get('reject') is not None:
             print("rejecting ", request.POST.get('user'))
@@ -375,7 +375,7 @@ def review_apps(request):
                 'DriveRite',
                 [pending_user.user.email])
             msg.content_subtype = "html"
-            msg.send()
+            # msg.send()
 
     if current_user.role_name == 'sponsor':
         if AuditApplication.objects.filter(apply_status='pending').filter(sponsor_company=current_user.sponsor_company).all().exists():
