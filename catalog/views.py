@@ -288,7 +288,7 @@ def my_cart(request):
 def remove_item_from_cart(request, id):
 
     user = UserInformation.objects.get(user=request.user)
-    sponsor = user.company
+    sponsor = user.sponsor_company
     old_item = CatalogItem.objects.get(api_item_Id=id)
     sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item, sponsor_company=sponsor)
     order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item, order_status='inCart')
@@ -310,7 +310,7 @@ def remove_item_from_cart(request, id):
 def add_item_from_cart_page(request, id):
 
     user = UserInformation.objects.get(user=request.user)
-    sponsor = user.company
+    sponsor = user.sponsor_company
     old_item = CatalogItem.objects.get(api_item_Id=id)
     sponsor_item = SponsorCatalogItem.objects.get(catalog_item=old_item, sponsor_company = sponsor)
     order = Order.objects.get(ordering_driver=user, sponsor=sponsor_item.sponsor_company, sponsor_catalog_item=sponsor_item, order_status='inCart')

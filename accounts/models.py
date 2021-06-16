@@ -156,6 +156,7 @@ class AuditPointChange(models.Model):
     driver = models.ForeignKey(UserInformation, on_delete=CASCADE, null=True)
     point_change = models.IntegerField("Point Change for Driver")
     change_reason = models.CharField("Point Change Reason", max_length=128)
+    sponsor_company = models.ForeignKey(SponsorCompany, on_delete=CASCADE, null=True)
 
 
 class AuditLoginAttempt(models.Model):

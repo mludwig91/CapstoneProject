@@ -13,41 +13,46 @@
 
 {% block main_content %}
     <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <h1>Profile</h1>
-                <div class="d-flex py-2">
-                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_user' user.userinformation.id %}">Edit Profile</a>
-                    <div class="divider"></div>
+        <div class="container">
+            <h1>Profile</h1>
+            <div class="d-flex py-2">
+                {% if user.userinformation.role_name == 'driver' and not user.userinformation.viewing %}
+                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_user' role=user.userinformation.role_name value=points.id %}">Edit Profile</a>
+                {% else %}
+                    <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:edit_user' role=user.userinformation.role_name value=user.userinformation.id %}">Edit Profile</a>
+                {% endif %}
+                <div class="divider"></div>
+                {% if user.userinformation.role_name == 'driver' %}
                     <a class="btn btn-lg btn-jumbotron" href="{% url 'accounts:register' %}"><i class="fas fa-plus"></i> Apply To New Company</a>
-                       <a id=disable href="{% url 'accounts:disable_account' %}">Deactivate Account</a>
-                </div>
+                {% endif %}
             </div>
         </div>
+    </div>
 
-        <div class="container profile-head page-section-heading">
-            <div class="row">
-                <div class="col-10">
-                    <div class="profile-name">
-                        <h3> {{ user.userinformation.first_name }} {{ user.userinformation.last_name }} </h3>
+    <div class="container profile-head page-section-heading">
+        <div class="row">
+            <div class="col-10">
+                <div class="profile-name">
+                    <h3> {{ user.userinformation.first_name }} {{ user.userinformation.last_name }} </h3>
 
-                        {% for app in apps %}
-                            {% if app.apply_status == 'pending' %}
-                                {{ app.sponsor_company }} {{ user.userinformation.role_name}}: {{ app.apply_status }}
-                            {% elif app.apply_status == 'accepted' %}
-                                {{ app.sponsor_company }} {{ user.userinformation.role_name}}
-                            {% endif %}
-                            <br>
-                        {% endfor %}
+                    {% for app in apps %}
+                        {% if app.apply_status == 'pending' %}
+                            {{ app.sponsor_company }} {{ user.userinformation.role_name}}: {{ app.apply_status }}
+                        {% elif app.apply_status == 'accepted' %}
+                            {{ app.sponsor_company }} {{ user.userinformation.role_name}}
+                        {% endif %}
                         <br>
+                    {% endfor %}
+                    <br>
 
-                        <h6>Last Login: {{ user.userinformation.last_login | date:"F j, Y" }}</h6><br>
-                    </div>
+                    <h6>Last Login: {{ user.userinformation.last_login | date:"F j, Y" }}</h6><br>
                 </div>
             </div>
         </div>
+    </div>
 
-            <br>
-            <div class="container profile-info page-section-heading">
+    <br>
+    <div class="container profile-info page-section-heading">
 
                 <div class="row">
                     <div class="col-sm-6">
@@ -99,9 +104,9 @@
                 </div>
 
 
-            </div>
+    </div>
 
-            <div class="container profile-head">
+    <div class="container profile-head">
                 <div class="row">
                     <div class="col-10">
                         {% if user.userinformation.all_companies.all.count > 1 %}
@@ -123,6 +128,8 @@
                             {% endif %}
                     </div>
                 </div>
-            </div>
+    </div>
+    
+    <a class="btn btn-link" href="{% url 'accounts:disable_account' %}">Deactivate Account</a>
 
 {% endblock %}

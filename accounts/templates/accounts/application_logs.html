@@ -49,6 +49,7 @@
                                             <th>Date</th>
                                             <th>Status</th>
                                             <th>Reason</th>
+                                            <th>Approving User</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -59,6 +60,7 @@
                                             <td>{{ app.submission_time }}</td>
                                             <td>{{app.apply_status | safe}}</td>
                                             <td>{{app.reject_reason| safe}}</td>
+                                            <td>{{app.sponsor| safe}}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
